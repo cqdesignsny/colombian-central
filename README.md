@@ -2,7 +2,9 @@
 
 Todo lo nuestro, en un solo lugar. The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, products from back home, and trips to the motherland.
 
-Built with Next.js 16, Tailwind CSS v4, and Motion. Images generated with Higgsfield.
+Built with Next.js 16, Tailwind CSS v4, and Motion. Images generated with Higgsfield. Live at [colombiancentral.com](https://colombiancentral.com).
+
+Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + next steps), then [AGENTS.md](AGENTS.md) (conventions) and [MONETIZATION.md](MONETIZATION.md) (revenue plan).
 
 ## Sections
 

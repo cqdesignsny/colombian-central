@@ -6,7 +6,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Colombian Central
 
-The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tienda for Colombian products, and a travel desk for trips to Colombia. Live domain target: colombiancentral.com.
+The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tienda for Colombian products, and a travel desk for trips to Colombia. Live at colombiancentral.com.
+
+**Picking up the project?** Read `HANDOFF.md` first (current state, infra, next steps), then this file for conventions and `MONETIZATION.md` for the revenue plan and commerce stack.
 
 ## Stack
 
@@ -38,7 +40,7 @@ The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tie
 - **API routes**: `/api/newsletter` (signup + welcome email, idempotency key `welcome-email/<email>`), `/api/unsubscribe` (HMAC-signed links, flips both DB and Resend), `/api/order`, `/api/inquiry` (both store + send two emails with idempotency keys).
 - **Emails** are hand-built table-layout HTML in `src/lib/emails.ts` (inline styles, text alternatives, tricolor shell). The Resend SDK returns `{data, error}`, never throws: check `error`.
 - Env vars (see `.env.example`): set in Vercel for production + development; preview lacks the four Resend/app vars (CLI bug, add via dashboard when needed).
-- No rate limiting on the API routes yet. Add before driving heavy traffic.
+- **Abuse protection**: public POST routes use per-IP rate limiting (`src/lib/rate-limit.ts`, DB-backed via the `request_log` table, fails open) and a honeypot (`src/components/Honeypot.tsx`, submitted as `website`, silently dropped server-side). Swap the limiter for Upstash/Vercel KV at scale.
 
 ## Facts that must stay correct
 
