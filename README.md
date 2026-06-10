@@ -16,6 +16,8 @@ Built with Next.js 16, Tailwind CSS v4, and Motion. Images generated with Higgsf
 
 ```bash
 npm install
+cp .env.example .env.local   # fill in keys
+node --env-file=.env.local scripts/db-setup.mjs
 npm run dev
 ```
 
@@ -25,10 +27,14 @@ Open http://localhost:3000.
 
 All content lives in typed data files under `src/data/`: `products.ts`, `articles.ts`, `destinations.ts`, `futbol.ts`. Country-level config (brand, colors, nav, contact email) lives in `src/config/site.ts`. Swapping those files is the path to spinning up the next country in the Central network.
 
+## Email + data
+
+Email runs through Resend on the verified colombiancentral.com domain: El Boletín signups (welcome email + contact sync to the El Boletin segment), order notifications and confirmations, trip inquiry notifications and confirmations, and signed unsubscribe links. Subscribers, orders, and inquiries persist in Neon Postgres (`scripts/db-setup.mjs` has the schema).
+
 ## Roadmap
 
 - Stripe checkout for the tienda
-- Resend wiring for El Boletín (newsletter) and order confirmations
+- First El Boletín broadcast from the Resend dashboard
 - CMS or markdown pipeline for articles
 - Spanish/English toggle (i18n)
 - Live World Cup match data

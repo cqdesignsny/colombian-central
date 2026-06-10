@@ -28,9 +28,17 @@ The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tie
 
 - `src/config/site.ts` is the country config. The long-term vision is a multi-country "Central" network (Mexican Central, etc.): keep country-specific values here, not hardcoded in components.
 - `src/data/*.ts` holds all content (products, articles, destinations, World Cup fixtures). No CMS yet; these files are the source of truth.
-- Cart is client-side only (`src/components/cart.tsx`, localStorage). Checkout is a prefilled order email until Stripe lands.
-- Forms route to the business email defined in `site.contactEmail`.
-- The newsletter API (`src/app/api/newsletter/route.ts`) is a stub awaiting Resend wiring.
+- Cart is client state (localStorage) with a real checkout: POST `/api/order` stores the order in Neon and sends Resend emails (owner notification + customer confirmation). No online payment yet; Stripe is the next step.
+- Owner notifications (orders, trip inquiries) go to `site.contactEmail`.
+
+## Email + database (wired June 2026)
+
+- **Resend**: domain colombiancentral.com is verified (DKIM/SPF/MX/DMARC live in Vercel DNS, us-east-1). Senders: `boletin@` for El Boletín, `hola@` for transactional. The app key is full-access (named "colombian-central-app"); newsletter signups sync to Resend contacts and the "El Boletin" segment (`RESEND_SEGMENT_ID`) for dashboard broadcasts.
+- **Neon Postgres**: tables `subscribers`, `orders`, `trip_inquiries` (schema in `scripts/db-setup.mjs`, idempotent, run with `node --env-file=.env.local scripts/db-setup.mjs`). The DB is the source of truth for the list; Resend contact sync is best-effort.
+- **API routes**: `/api/newsletter` (signup + welcome email, idempotency key `welcome-email/<email>`), `/api/unsubscribe` (HMAC-signed links, flips both DB and Resend), `/api/order`, `/api/inquiry` (both store + send two emails with idempotency keys).
+- **Emails** are hand-built table-layout HTML in `src/lib/emails.ts` (inline styles, text alternatives, tricolor shell). The Resend SDK returns `{data, error}`, never throws: check `error`.
+- Env vars (see `.env.example`): set in Vercel for production + development; preview lacks the four Resend/app vars (CLI bug, add via dashboard when needed).
+- No rate limiting on the API routes yet. Add before driving heavy traffic.
 
 ## Facts that must stay correct
 

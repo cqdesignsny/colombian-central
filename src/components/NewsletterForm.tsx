@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type Status = "idle" | "loading" | "done" | "error";
+type Status = "idle" | "loading" | "done" | "already" | "error";
 
 export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
   const [email, setEmail] = useState("");
@@ -19,18 +19,21 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
         body: JSON.stringify({ email }),
       });
       if (!res.ok) throw new Error("bad response");
-      setStatus("done");
+      const data = await res.json();
+      setStatus(data.already ? "already" : "done");
     } catch {
       setStatus("error");
     }
   }
 
-  if (status === "done") {
+  if (status === "done" || status === "already") {
     return (
       <p
         className={`font-display text-2xl uppercase ${dark ? "text-paper" : "text-ink"}`}
       >
-        ¡Listo, parce! You&apos;re on the list.
+        {status === "already"
+          ? "Ya estabas en la lista, parce."
+          : "¡Listo, parce! Check your inbox."}
       </p>
     );
   }

@@ -6,10 +6,12 @@ import { site } from "@/config/site";
 
 export default function TripInquiryForm() {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [trip, setTrip] = useState("");
   const [travelers, setTravelers] = useState("2");
   const [dates, setDates] = useState("");
   const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   const options = [
     ...packages.map((p) => `Package: ${p.name}`),
@@ -17,34 +19,40 @@ export default function TripInquiryForm() {
     "Something custom",
   ];
 
-  const subject = `Trip inquiry: ${trip || "Colombia"}`;
-  const body = [
-    `Hola Colombian Central,`,
-    "",
-    `Name: ${name || "(your name)"}`,
-    `Trip: ${trip || "(not sure yet)"}`,
-    `Travelers: ${travelers}`,
-    `Rough dates: ${dates || "(flexible)"}`,
-    "",
-    "About the trip I want:",
-    notes || "(tell us anything: budget, vibe, must-sees, who is coming)",
-  ].join("\n");
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, trip, travelers, dates, notes }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error ?? "failed");
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
+  }
 
-  const mailto = `mailto:${site.contactEmail}?subject=${encodeURIComponent(
-    subject,
-  )}&body=${encodeURIComponent(body)}`;
+  if (status === "done") {
+    return (
+      <div className="py-6 text-center">
+        <p className="font-display text-4xl uppercase">¡Recibido, {name.split(" ")[0] || "parce"}!</p>
+        <p className="mx-auto mt-4 max-w-md text-sm text-ink-soft">
+          Your request is with the travel desk and a confirmation just landed
+          in your inbox. Expect an itinerary and a real price within a day.
+        </p>
+      </div>
+    );
+  }
 
   const inputStyles =
     "w-full border-2 border-ink/20 bg-paper px-4 py-3 text-sm font-medium outline-none placeholder:text-ink/40 focus:border-azul";
 
   return (
-    <form
-      className="grid gap-4 sm:grid-cols-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        window.location.href = mailto;
-      }}
-    >
+    <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
       <div>
         <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
           Tu nombre
@@ -54,6 +62,19 @@ export default function TripInquiryForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nombre y apellido"
+          required
+        />
+      </div>
+      <div>
+        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+          Tu email
+        </label>
+        <input
+          type="email"
+          className={inputStyles}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="tu@email.com"
           required
         />
       </div>
@@ -93,7 +114,7 @@ export default function TripInquiryForm() {
           ))}
         </select>
       </div>
-      <div>
+      <div className="sm:col-span-2">
         <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
           Fechas aproximadas
         </label>
@@ -118,13 +139,22 @@ export default function TripInquiryForm() {
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="w-full border-2 border-ink bg-ink px-8 py-4 text-sm font-bold tracking-[0.25em] text-paper uppercase transition-colors hover:bg-azul hover:border-azul sm:w-auto"
+          disabled={status === "loading"}
+          className="w-full border-2 border-ink bg-ink px-8 py-4 text-sm font-bold tracking-[0.25em] text-paper uppercase transition-colors hover:bg-azul hover:border-azul disabled:opacity-60 sm:w-auto"
         >
-          Pedir mi cotización
+          {status === "loading" ? "Enviando…" : "Pedir mi cotización"}
         </button>
+        {status === "error" && (
+          <p className="mt-3 text-sm font-bold text-rojo">
+            Something broke. Try again, or email us directly at{" "}
+            <a className="underline" href={`mailto:${site.contactEmail}`}>
+              {site.contactEmail}
+            </a>
+          </p>
+        )}
         <p className="mt-3 text-xs text-ink-soft">
-          Opens a prefilled email to {site.contactEmail}. A human answers
-          within a day. No payment until you approve the final plan.
+          A human answers within a day. No payment until you approve the final
+          plan.
         </p>
       </div>
     </form>
