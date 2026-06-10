@@ -2,21 +2,32 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { FROM, NOTIFY_TO, SEGMENT_ID, getResend, resendApi } from "@/lib/resend";
 import { welcomeEmail } from "@/lib/emails";
+import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
-  let email: unknown;
+  let body: { email?: unknown; website?: unknown };
   try {
-    ({ email } = await req.json());
+    body = await req.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Bad payload" }, { status: 400 });
   }
 
+  // Honeypot: pretend success so bots don't learn they were caught.
+  if (isHoneypotTripped(body.website)) {
+    return NextResponse.json({ ok: true, already: true });
+  }
+
+  const email = body.email;
   if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
     return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
   }
   const addr = email.trim().toLowerCase();
+
+  if (!(await rateLimit(req, "newsletter", { limit: 5, windowMinutes: 10 }))) {
+    return tooManyRequests();
+  }
 
   const db = getDb();
   const rows = (await db`

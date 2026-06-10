@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { FROM, NOTIFY_TO, getResend } from "@/lib/resend";
 import { inquiryCustomerEmail, inquiryOwnerEmail, type InquiryEmailInput } from "@/lib/emails";
+import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -11,6 +12,13 @@ export async function POST(req: Request) {
     body = await req.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Bad payload" }, { status: 400 });
+  }
+
+  if (isHoneypotTripped(body.website)) {
+    return NextResponse.json({ ok: true, inquiryId: 0 });
+  }
+  if (!(await rateLimit(req, "inquiry", { limit: 10, windowMinutes: 10 }))) {
+    return tooManyRequests();
   }
 
   const field = (key: string, max: number) =>

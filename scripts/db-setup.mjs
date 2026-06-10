@@ -45,6 +45,18 @@ await sql`
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
 
+// Lightweight per-IP request log backing the rate limiter on public POST routes.
+await sql`
+  CREATE TABLE IF NOT EXISTS request_log (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    ip TEXT NOT NULL,
+    action TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+await sql`
+  CREATE INDEX IF NOT EXISTS request_log_lookup
+  ON request_log (ip, action, created_at)`;
+
 const tables = await sql`
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name`;

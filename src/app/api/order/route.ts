@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { FROM, NOTIFY_TO, getResend } from "@/lib/resend";
 import { orderCustomerEmail, orderOwnerEmail, type OrderEmailInput } from "@/lib/emails";
 import { products } from "@/data/products";
+import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -11,6 +12,7 @@ type Body = {
   email?: unknown;
   address?: unknown;
   items?: unknown;
+  website?: unknown;
 };
 
 export async function POST(req: Request) {
@@ -19,6 +21,13 @@ export async function POST(req: Request) {
     body = await req.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Bad payload" }, { status: 400 });
+  }
+
+  if (isHoneypotTripped(body.website)) {
+    return NextResponse.json({ ok: true, orderId: 0 });
+  }
+  if (!(await rateLimit(req, "order", { limit: 10, windowMinutes: 10 }))) {
+    return tooManyRequests();
   }
 
   const name = typeof body.name === "string" ? body.name.trim().slice(0, 120) : "";

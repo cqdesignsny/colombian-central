@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { destinations, packages } from "@/data/destinations";
 import { site } from "@/config/site";
+import Honeypot from "@/components/Honeypot";
 
 export default function TripInquiryForm() {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ export default function TripInquiryForm() {
   const [travelers, setTravelers] = useState("2");
   const [dates, setDates] = useState("");
   const [notes, setNotes] = useState("");
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   const options = [
@@ -26,7 +28,7 @@ export default function TripInquiryForm() {
       const res = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, trip, travelers, dates, notes }),
+        body: JSON.stringify({ name, email, trip, travelers, dates, notes, website }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error ?? "failed");
@@ -53,6 +55,7 @@ export default function TripInquiryForm() {
 
   return (
     <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
+      <Honeypot value={website} onChange={setWebsite} />
       <div>
         <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
           Tu nombre

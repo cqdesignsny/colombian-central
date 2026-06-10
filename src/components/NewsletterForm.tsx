@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Honeypot from "@/components/Honeypot";
 
 type Status = "idle" | "loading" | "done" | "already" | "error";
 
 export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
   async function subscribe(e: React.FormEvent) {
@@ -16,7 +18,7 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website }),
       });
       if (!res.ok) throw new Error("bad response");
       const data = await res.json();
@@ -40,6 +42,7 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
 
   return (
     <form onSubmit={subscribe} className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+      <Honeypot value={website} onChange={setWebsite} />
       <input
         type="email"
         required

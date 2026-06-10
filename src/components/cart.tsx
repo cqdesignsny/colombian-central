@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/config/site";
+import Honeypot from "@/components/Honeypot";
 
 export type CartItem = {
   slug: string;
@@ -306,6 +307,7 @@ function CheckoutForm({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
   async function submit(e: React.FormEvent) {
@@ -319,6 +321,7 @@ function CheckoutForm({
           name,
           email,
           address,
+          website,
           items: items.map((i) => ({ slug: i.slug, qty: i.qty })),
         }),
       });
