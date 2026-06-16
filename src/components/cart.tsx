@@ -38,6 +38,8 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "cc-cart-v1";
+// Card-checkout copy turns on when Stripe is live (set NEXT_PUBLIC_STRIPE_ENABLED in Vercel).
+const STRIPE_ENABLED = process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -276,8 +278,9 @@ function CartDrawer() {
                       </span>
                     </div>
                     <p className="mb-4 text-xs text-ink-soft">
-                      Free U.S. shipping over $75. We confirm payment and
-                      shipping by email; nothing is charged online yet.
+                      {STRIPE_ENABLED
+                        ? "Free U.S. shipping over $75. Secure card checkout."
+                        : "Free U.S. shipping over $75. We confirm payment and shipping by email; nothing is charged online yet."}
                     </p>
                     <button
                       onClick={() => setStage("checkout")}
@@ -314,7 +317,7 @@ function CheckoutForm({
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch("/api/order", {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -327,6 +330,11 @@ function CheckoutForm({
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error ?? "failed");
+      if (data.url) {
+        // Stripe is live: hand off to the hosted checkout page.
+        window.location.href = data.url;
+        return;
+      }
       onDone(data.orderId);
     } catch {
       setStatus("error");
@@ -396,7 +404,13 @@ function CheckoutForm({
           disabled={status === "loading" || items.length === 0}
           className="block w-full bg-ink px-6 py-4 text-center text-sm font-bold tracking-[0.2em] text-paper uppercase transition-colors hover:bg-azul disabled:opacity-60"
         >
-          {status === "loading" ? "Enviando…" : "Confirmar pedido"}
+          {status === "loading"
+            ? STRIPE_ENABLED
+              ? "Redirigiendo…"
+              : "Enviando…"
+            : STRIPE_ENABLED
+              ? "Pagar con tarjeta"
+              : "Confirmar pedido"}
         </button>
         {status === "error" && (
           <p className="mt-3 text-xs font-bold text-rojo">
@@ -407,8 +421,9 @@ function CheckoutForm({
           </p>
         )}
         <p className="mt-3 text-xs text-ink-soft">
-          No payment online yet: we confirm your order and total by email
-          within a day, then arrange payment.
+          {STRIPE_ENABLED
+            ? "Secure checkout by Stripe. You will be redirected to pay by card."
+            : "No payment online yet: we confirm your order and total by email within a day, then arrange payment."}
         </p>
       </div>
     </form>

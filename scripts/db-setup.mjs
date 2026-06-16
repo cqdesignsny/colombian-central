@@ -45,6 +45,16 @@ await sql`
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
 
+// Stripe payment columns on orders (idempotent). Orders start 'unpaid'; the
+// webhook flips them to 'paid' once Stripe confirms the Checkout Session.
+await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid'`;
+await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_session_id TEXT`;
+await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS amount_total_cents INTEGER`;
+await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ`;
+await sql`
+  CREATE UNIQUE INDEX IF NOT EXISTS orders_stripe_session
+  ON orders (stripe_session_id) WHERE stripe_session_id IS NOT NULL`;
+
 // Lightweight per-IP request log backing the rate limiter on public POST routes.
 await sql`
   CREATE TABLE IF NOT EXISTS request_log (
