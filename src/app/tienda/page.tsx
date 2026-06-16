@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { shopNotes } from "@/data/products";
 import SectionHeader from "@/components/SectionHeader";
 import ShopGrid from "@/components/ShopGrid";
@@ -32,6 +33,19 @@ export default function TiendaPage() {
                 Artisan-direct sourcing
               </span>
             </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <Link
+              href="/futbol/hinchada"
+              className="mb-10 flex items-center justify-between gap-4 border-l-4 border-amarillo bg-crema px-5 py-4 transition-colors hover:bg-amarillo/20"
+            >
+              <span className="text-sm font-bold tracking-[0.1em] text-ink uppercase">
+                Nueva guía de la hinchada para el Mundial 2026
+              </span>
+              <span className="shrink-0 text-xs font-bold tracking-[0.2em] text-azul uppercase">
+                Ver →
+              </span>
+            </Link>
           </Reveal>
           <Reveal delay={0.1}>
             <ShopGrid />

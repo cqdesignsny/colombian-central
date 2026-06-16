@@ -142,10 +142,10 @@ export default function FutbolPage() {
               Houston or Atlanta. The diaspora travel math is already happening
               in our Viajes section.
               <Link
-                href="/viajes"
+                href="/viajes/mundial"
                 className="font-bold text-amarillo underline-offset-4 hover:underline"
               >
-                Mundial trip packages →
+                Guía de viaje al Mundial →
               </Link>
             </div>
           </Reveal>
@@ -210,6 +210,12 @@ export default function FutbolPage() {
               <div className="mt-8">
                 <NewsletterForm dark />
               </div>
+              <Link
+                href="/futbol/hinchada"
+                className="mt-6 inline-block text-sm font-bold tracking-[0.18em] text-amarillo uppercase underline-offset-4 hover:underline"
+              >
+                Arma la pinta completa: Guía de la hinchada →
+              </Link>
             </div>
           </Reveal>
           <Reveal delay={0.1}>

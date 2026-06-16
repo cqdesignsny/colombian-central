@@ -1,6 +1,6 @@
 # Colombian Central, session handoff
 
-Last updated June 10, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions and MONETIZATION.md for the revenue plan.
+Last updated June 16, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions and MONETIZATION.md for the revenue plan.
 
 ## What it is
 
@@ -40,14 +40,19 @@ Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4 (token
 
 ## Next steps
 
-### Decision pending (start of next session)
-Cesar was asked where to point the next build and ended the session before answering. The four options on the table, all from MONETIZATION.md:
-- **A. Affiliate money-pages** (recommended, lowest dependency): build the "send money to Colombia" comparison, Colombia tours page, and fan-gear guide, with outbound links gated behind a partners config so they activate when affiliate IDs are added. Captures World Cup traffic now.
-- **B. Printful merch integration**: fulfillment-aware product model, catalog sync, order routing to Printful, shipment webhooks. Scaffold first; Cesar adds account + designs.
-- **C. World Cup membership + Polla**: $19 tournament pass / $5-mo membership with a predictions game, shop discount, ad-free, on Stripe.
-- **D. Authentic-goods shop**: wire coffee dropship (Roastify/Dripshipper) + owned-stock routing for crafts and food.
+### Done: Option A, affiliate money-pages (June 16, 2026)
+Built the affiliate layer and three money pages, gated so they go live the moment Cesar adds his IDs. Build passes, verified in preview.
+- **Pages**: `/enviar-dinero` (remittance comparison: Wise vs Remitly vs Xe vs Western Union, the highest-ROI page), `/viajes/mundial` (matchday travel to the host cities Mexico City, Guadalajara, Miami, plus travel insurance, cross-linked to the Colombia travel desk), `/futbol/hinchada` (fan-gear guide: our own shop products first, Amazon Associates for the long tail we do not stock).
+- **Note on geography**: the 2026 Cup is hosted by USA/Mexico/Canada, so the travel guide sends fans to the host cities, not "to Colombia for the Cup." Host cities join the real fixtures in `src/data/futbol.ts` by matchday.
+- **Gating layer**: `src/config/partners.ts` holds every partner with an empty `affiliateUrl` plus a real `publicUrl` fallback, plus `amazonAssociateTag`. Pages link to the public URL until a tracking link exists, so they convert now and earn the moment IDs land. Helpers: `partnerHref`, `isPartnerActive`, `amazonSearch`. Components: `AffiliateLink` (rel="sponsored nofollow noopener", new tab) and `AffiliateDisclosure` (FTC, on every money page).
+- **To activate (Cesar)**: after each program approves you, paste the tracking link into that partner's `affiliateUrl` in `src/config/partners.ts`, and set `amazonAssociateTag`. One file, no page edits. Per-partner program terms are noted inline.
+- **Discoverability**: footer "Guías" column + contextual CTAs from /futbol, /viajes, /tienda.
+- **Later enhancement**: per-city Viator/GetYourGuide deep links on `/viajes/mundial` once Travelpayouts is approved (they currently point at the platform home as the gated fallback).
 
-Re-ask or just proceed with A unless Cesar says otherwise.
+### Next decision (remaining options from MONETIZATION.md)
+- **B. Printful merch integration**: fulfillment-aware product model, catalog sync, order routing to Printful, shipment webhooks. Scaffold first; Cesar adds account + designs.
+- **C. World Cup membership + Polla**: $19 tournament pass / $5-mo membership with a predictions game, shop discount, ad-free, on Stripe. The free Polla predictions game is the most time-sensitive piece (group stage is now).
+- **D. Authentic-goods shop**: wire coffee dropship (Roastify/Dripshipper) + owned-stock routing for crafts and food.
 
 ### Cesar's account signups (can't be automated, gate the affiliate/merch builds)
 Travelpayouts (GetYourGuide + insurance), Awin (Xe), Wise Partnerships, Remitly, Amazon Associates, Printful, Stripe, a coffee roaster (Roastify or Dripshipper), craft suppliers (Origin Colombia, Wayuu Market).

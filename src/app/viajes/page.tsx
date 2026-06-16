@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { destinations, packages, travelNotes } from "@/data/destinations";
 import { formatPrice } from "@/lib/format";
 import SectionHeader from "@/components/SectionHeader";
@@ -51,6 +52,26 @@ export default function ViajesPage() {
               Plan my trip
             </a>
           </Reveal>
+        </div>
+      </section>
+
+      {/* World Cup travel guide banner */}
+      <section className="border-b border-linea bg-ink text-paper">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div>
+            <p className="text-xs font-bold tracking-[0.25em] text-amarillo uppercase">
+              Mundial 2026
+            </p>
+            <p className="mt-1 font-display text-2xl uppercase sm:text-3xl">
+              Sigue a la Tricolor a CDMX, Guadalajara y Miami
+            </p>
+          </div>
+          <Link
+            href="/viajes/mundial"
+            className="shrink-0 border-2 border-amarillo bg-amarillo px-6 py-3 text-sm font-bold tracking-[0.2em] text-ink uppercase transition-transform hover:-translate-y-0.5"
+          >
+            Ver la guía
+          </Link>
         </div>
       </section>
 

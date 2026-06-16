@@ -13,7 +13,7 @@ export default function Footer() {
           {site.tagline}
         </p>
 
-        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <h3 className="mb-4 text-xs font-bold tracking-[0.25em] text-paper/50 uppercase">
               Explorar
@@ -29,6 +29,28 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-4 text-xs font-bold tracking-[0.25em] text-paper/50 uppercase">
+              Guías
+            </h3>
+            <ul className="space-y-2.5 text-sm text-paper/80">
+              <li>
+                <Link href="/enviar-dinero" className="hover:text-amarillo">
+                  Enviar dinero
+                </Link>
+              </li>
+              <li>
+                <Link href="/viajes/mundial" className="hover:text-amarillo">
+                  Viaje al Mundial
+                </Link>
+              </li>
+              <li>
+                <Link href="/futbol/hinchada" className="hover:text-amarillo">
+                  Guía de la hinchada
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
