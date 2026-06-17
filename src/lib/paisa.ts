@@ -7,7 +7,9 @@
  * gateway slug, so swapping providers is a one-line change.
  */
 
-export const PAISA_MODEL = "anthropic/claude-sonnet-4.6";
+// claude-haiku-4.5 is fast, capable for the persona, and works on the AI Gateway
+// free tier. Bump to sonnet/opus once paid credits are added (see HANDOFF).
+export const PAISA_MODEL = "anthropic/claude-haiku-4.5";
 
 export const PAISA_NAME = "El Paisa";
 
