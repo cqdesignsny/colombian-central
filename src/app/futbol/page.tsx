@@ -165,7 +165,7 @@ export default function FutbolPage() {
             <SectionHeader
               dark
               eyebrow={`DT: ${squad.coach}`}
-              title="El núcleo"
+              title="Los 26"
               sub={squad.note}
             />
           </Reveal>
@@ -179,7 +179,13 @@ export default function FutbolPage() {
                       : "border-paper/15 bg-paper/5"
                   }`}
                 >
-                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink">
+                  <div
+                    className="relative aspect-[4/5] w-full overflow-hidden bg-ink"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle at 50% 32%, rgba(255,205,0,0.13), transparent 70%)",
+                    }}
+                  >
                     {player.image ? (
                       <Image
                         src={player.image}
@@ -220,8 +226,7 @@ export default function FutbolPage() {
           </div>
           <Reveal>
             <p className="mt-8 text-xs text-paper/40">
-              Some player photos via Wikimedia Commons (CC BY-SA). Country flags are
-              public domain.
+              Country flags are public domain.
             </p>
           </Reveal>
         </div>
