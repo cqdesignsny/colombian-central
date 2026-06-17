@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getStripe } from "@/lib/stripe";
+import { detailsFromSession, getStripe } from "@/lib/stripe";
 import { finalizeOrder } from "@/lib/orders";
 
 // Stripe needs the raw body and the Node runtime to verify the signature.
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const orderId = Number(session.metadata?.order_id);
     if (Number.isInteger(orderId) && orderId > 0) {
       try {
-        await finalizeOrder(orderId, session.amount_total ?? null);
+        await finalizeOrder(orderId, detailsFromSession(session));
       } catch (err) {
         console.error("[stripe] finalize failed for order", orderId, (err as Error).message);
         // Non-2xx tells Stripe to retry the delivery.

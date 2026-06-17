@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ClearCart from "@/components/ClearCart";
 import TricolorBar from "@/components/TricolorBar";
-import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { detailsFromSession, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { finalizeOrder } from "@/lib/orders";
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default async function GraciasPage({
       const session = await getStripe().checkout.sessions.retrieve(session_id);
       const orderId = Number(session.metadata?.order_id);
       if (session.payment_status === "paid" && Number.isInteger(orderId) && orderId > 0) {
-        await finalizeOrder(orderId, session.amount_total ?? null);
+        await finalizeOrder(orderId, detailsFromSession(session));
       }
     } catch (err) {
       console.error("[gracias] finalize failed:", (err as Error).message);

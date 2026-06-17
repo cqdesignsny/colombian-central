@@ -4,8 +4,10 @@ import { orderCustomerEmail, orderOwnerEmail, type OrderEmailInput } from "@/lib
 import { products } from "@/data/products";
 
 /**
- * Shared order logic for the email-order route, the Stripe checkout route, and
- * the payment webhook. Prices always come from our catalog, never the client.
+ * Shared order logic for the checkout route, the Stripe webhook, and the success
+ * page. Prices always come from our catalog, never the client. The checkout now
+ * captures only the email up front; Stripe Checkout collects name, shipping
+ * address and phone, which finalizeOrder writes back when payment confirms.
  */
 
 export type PricedCart = { items: OrderEmailInput["items"]; subtotal: number };
@@ -29,21 +31,22 @@ export function priceCart(rawItems: unknown): PricedCart | null {
   return { items, subtotal };
 }
 
-/** Insert an order and return its id. paymentStatus 'unpaid' until a webhook confirms payment. */
+/** Insert an order. Only email + items are required; Stripe fills the rest at finalize. */
 export async function insertOrder(input: {
-  name: string;
   email: string;
-  address: string;
   items: OrderEmailInput["items"];
   subtotal: number;
+  name?: string | null;
+  address?: string | null;
+  phone?: string | null;
   paymentStatus?: string;
   stripeSessionId?: string | null;
 }): Promise<number> {
   const db = getDb();
   const rows = (await db`
-    INSERT INTO orders (name, email, address, items, subtotal_cents, payment_status, stripe_session_id)
+    INSERT INTO orders (name, email, address, phone, items, subtotal_cents, payment_status, stripe_session_id)
     VALUES (
-      ${input.name}, ${input.email}, ${input.address},
+      ${input.name ?? null}, ${input.email}, ${input.address ?? null}, ${input.phone ?? null},
       ${JSON.stringify(input.items)}::jsonb, ${Math.round(input.subtotal * 100)},
       ${input.paymentStatus ?? "unpaid"}, ${input.stripeSessionId ?? null}
     )
@@ -85,37 +88,56 @@ export async function sendOrderEmails(order: OrderEmailInput): Promise<void> {
   if (custErr) console.error("[order] customer confirm failed:", custErr.message);
 }
 
+/** Customer details Stripe Checkout collected, passed in at finalize time. */
+export type FinalizeDetails = {
+  amountTotalCents: number | null;
+  name?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  marketingOptIn?: boolean | null;
+};
+
 /**
- * Mark an order paid exactly once, then send its confirmation emails. Safe to
- * call from both the Stripe webhook and the success page: the WHERE guard makes
- * it idempotent, so whichever fires first wins and the other is a no-op.
+ * Mark an order paid exactly once, backfill what Stripe collected, then send the
+ * confirmation emails. Safe to call from both the webhook and the success page:
+ * the WHERE guard makes it idempotent, so whichever fires first wins.
  */
-export async function finalizeOrder(orderId: number, amountTotalCents: number | null): Promise<void> {
+export async function finalizeOrder(orderId: number, details: FinalizeDetails): Promise<void> {
   const db = getDb();
   const rows = (await db`
-    UPDATE orders
-    SET payment_status = 'paid', status = 'paid', amount_total_cents = ${amountTotalCents}, paid_at = now()
+    UPDATE orders SET
+      payment_status = 'paid',
+      status = 'paid',
+      amount_total_cents = ${details.amountTotalCents},
+      paid_at = now(),
+      name = COALESCE(${details.name ?? null}, name),
+      address = COALESCE(${details.address ?? null}, address),
+      phone = COALESCE(${details.phone ?? null}, phone),
+      marketing_opt_in = COALESCE(${details.marketingOptIn ?? null}, marketing_opt_in)
     WHERE id = ${orderId} AND payment_status <> 'paid'
-    RETURNING id, name, email, address, items, subtotal_cents
+    RETURNING id, name, email, address, phone, items, subtotal_cents
   `) as Array<{
     id: number;
-    name: string;
+    name: string | null;
     email: string;
-    address: string;
+    address: string | null;
+    phone: string | null;
     items: OrderEmailInput["items"];
     subtotal_cents: number;
   }>;
 
-  // No row means it was already finalized. Nothing to do.
+  // No row means it was already finalized (a webhook retry or the other path). Done.
   if (rows.length === 0) return;
 
   const o = rows[0];
   await sendOrderEmails({
     id: o.id,
-    name: o.name,
+    name: o.name ?? "Cliente",
     email: o.email,
-    address: o.address,
+    address: o.address ?? "",
+    phone: o.phone ?? undefined,
     items: o.items,
     subtotal: o.subtotal_cents / 100,
+    paid: true,
   });
 }

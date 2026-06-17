@@ -10,7 +10,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import type { Product } from "@/data/products";
+import { products, type Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/config/site";
 import Honeypot from "@/components/Honeypot";
@@ -40,6 +40,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "cc-cart-v1";
 // Card-checkout copy turns on when Stripe is live (set NEXT_PUBLIC_STRIPE_ENABLED in Vercel).
 const STRIPE_ENABLED = process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
+// Free U.S. shipping threshold (matches shopNotes.shipping). Drives the progress bar.
+const FREE_SHIP = 75;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -123,16 +125,59 @@ export function useCart() {
   return ctx;
 }
 
-type Stage = "cart" | "checkout" | "done";
+type Stage = "cart" | "done";
 
 function CartDrawer() {
-  const { items, subtotal, isOpen, setOpen, setQty, remove, clear } = useCart();
+  const { items, subtotal, isOpen, setOpen, setQty, remove, clear, add } = useCart();
   const [stage, setStage] = useState<Stage>("cart");
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
   function close() {
     setOpen(false);
     if (stage === "done") setStage("cart");
+  }
+
+  const remaining = Math.max(0, FREE_SHIP - subtotal);
+  const pct = subtotal === 0 ? 0 : Math.min(100, (subtotal / FREE_SHIP) * 100);
+  const crossSell = useMemo(
+    () =>
+      [...products]
+        .sort((a, b) => a.price - b.price)
+        .filter((p) => !items.some((i) => i.slug === p.slug))
+        .slice(0, 2),
+    [items],
+  );
+
+  async function pay(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || items.length === 0) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          website,
+          items: items.map((i) => ({ slug: i.slug, qty: i.qty })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error ?? "failed");
+      if (data.url) {
+        // Stripe is live: hand off to the hosted checkout page.
+        window.location.href = data.url;
+        return;
+      }
+      setOrderId(data.orderId);
+      clear();
+      setStage("done");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -161,7 +206,7 @@ function CartDrawer() {
             </div>
             <div className="flex items-center justify-between border-b border-linea px-6 py-4">
               <h2 className="font-display text-2xl tracking-wide uppercase">
-                {stage === "checkout" ? "Casi listo" : stage === "done" ? "¡Gracias!" : "Tu carrito"}
+                {stage === "done" ? "¡Gracias!" : "Tu carrito"}
               </h2>
               <button
                 onClick={close}
@@ -177,9 +222,7 @@ function CartDrawer() {
                   Pedido <span className="text-rojo">#{orderId}</span>
                 </p>
                 <p className="text-sm text-ink-soft">
-                  Recibido. Check your inbox: confirmation is already on the
-                  way, and a human follows up within a day to arrange payment
-                  and shipping. Nothing is charged yet.
+                  Recibido. Te confirmamos por email muy pronto. Gracias por el apoyo.
                 </p>
                 <button
                   onClick={close}
@@ -188,107 +231,178 @@ function CartDrawer() {
                   Seguir comprando
                 </button>
               </div>
-            ) : stage === "checkout" ? (
-              <CheckoutForm
-                onBack={() => setStage("cart")}
-                onDone={(id) => {
-                  setOrderId(id);
-                  clear();
-                  setStage("done");
-                }}
-              />
             ) : (
               <>
-                <div className="flex-1 overflow-y-auto px-6 py-4">
+                <div className="flex-1 overflow-y-auto">
                   {items.length === 0 ? (
-                    <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                    <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
                       <p className="font-display text-3xl uppercase">Vacío, parce</p>
                       <p className="max-w-xs text-sm text-ink-soft">
-                        Your cart is empty. The mochilas are not going to buy
-                        themselves.
+                        Your cart is empty. The mochilas are not going to buy themselves.
                       </p>
                     </div>
                   ) : (
-                    <ul className="divide-y divide-linea">
-                      {items.map((item) => (
-                        <li key={item.slug} className="flex gap-4 py-4">
+                    <>
+                      {/* Free-shipping progress bar */}
+                      <div className="border-b border-linea px-6 py-4">
+                        {remaining > 0 ? (
+                          <p className="text-xs font-bold tracking-[0.1em] text-ink uppercase">
+                            Añade <span className="text-rojo">{formatPrice(remaining)}</span> y el
+                            envío va gratis
+                          </p>
+                        ) : (
+                          <p className="text-xs font-bold tracking-[0.1em] text-azul uppercase">
+                            ✓ ¡Te ganaste el envío gratis!
+                          </p>
+                        )}
+                        <div className="mt-2 h-2 w-full border border-linea bg-crema">
                           <div
-                            className="relative h-20 w-20 shrink-0 overflow-hidden border border-linea"
-                            style={{ background: item.placeholderBg ?? "#EFE5CD" }}
-                          >
-                            {item.image && (
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                sizes="80px"
-                                className="object-cover"
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-1 flex-col">
-                            <div className="flex items-start justify-between gap-2">
-                              <p className="text-sm font-bold">{item.name}</p>
-                              <p className="text-sm font-bold">
-                                {formatPrice(item.price * item.qty)}
-                              </p>
+                            className="h-full bg-amarillo transition-all duration-500"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Items */}
+                      <ul className="divide-y divide-linea px-6">
+                        {items.map((item) => (
+                          <li key={item.slug} className="flex gap-4 py-4">
+                            <div
+                              className="relative h-20 w-20 shrink-0 overflow-hidden border border-linea"
+                              style={{ background: item.placeholderBg ?? "#EFE5CD" }}
+                            >
+                              {item.image && (
+                                <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  fill
+                                  sizes="80px"
+                                  className="object-cover"
+                                />
+                              )}
                             </div>
-                            <div className="mt-auto flex items-center gap-3">
-                              <div className="flex items-center border border-ink/20">
+                            <div className="flex flex-1 flex-col">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="text-sm font-bold">{item.name}</p>
+                                <p className="text-sm font-bold">
+                                  {formatPrice(item.price * item.qty)}
+                                </p>
+                              </div>
+                              <div className="mt-auto flex items-center gap-3">
+                                <div className="flex items-center border border-ink/20">
+                                  <button
+                                    className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
+                                    onClick={() => setQty(item.slug, item.qty - 1)}
+                                    aria-label={`Decrease ${item.name}`}
+                                  >
+                                    −
+                                  </button>
+                                  <span className="min-w-7 text-center text-sm font-bold">
+                                    {item.qty}
+                                  </span>
+                                  <button
+                                    className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
+                                    onClick={() => setQty(item.slug, item.qty + 1)}
+                                    aria-label={`Increase ${item.name}`}
+                                  >
+                                    +
+                                  </button>
+                                </div>
                                 <button
-                                  className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
-                                  onClick={() => setQty(item.slug, item.qty - 1)}
-                                  aria-label={`Decrease ${item.name}`}
+                                  onClick={() => remove(item.slug)}
+                                  className="text-xs tracking-widest text-ink-soft uppercase underline-offset-4 hover:underline"
                                 >
-                                  −
-                                </button>
-                                <span className="min-w-7 text-center text-sm font-bold">
-                                  {item.qty}
-                                </span>
-                                <button
-                                  className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
-                                  onClick={() => setQty(item.slug, item.qty + 1)}
-                                  aria-label={`Increase ${item.name}`}
-                                >
-                                  +
+                                  Quitar
                                 </button>
                               </div>
-                              <button
-                                onClick={() => remove(item.slug)}
-                                className="text-xs tracking-widest text-ink-soft uppercase underline-offset-4 hover:underline"
-                              >
-                                Quitar
-                              </button>
                             </div>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Cross-sell */}
+                      {crossSell.length > 0 && (
+                        <div className="border-t border-linea px-6 py-4">
+                          <p className="mb-3 text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
+                            Añade y completa el parche
+                          </p>
+                          <div className="space-y-2.5">
+                            {crossSell.map((p) => (
+                              <div key={p.slug} className="flex items-center gap-3">
+                                <div
+                                  className="relative h-11 w-11 shrink-0 overflow-hidden border border-linea"
+                                  style={{ background: p.placeholder?.bg ?? "#EFE5CD" }}
+                                >
+                                  {p.image && (
+                                    <Image
+                                      src={p.image}
+                                      alt={p.name}
+                                      fill
+                                      sizes="44px"
+                                      className="object-cover"
+                                    />
+                                  )}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-xs font-bold">{p.name}</p>
+                                  <p className="text-xs text-ink-soft">{formatPrice(p.price)}</p>
+                                </div>
+                                <button
+                                  onClick={() => add(p)}
+                                  className="shrink-0 border border-ink px-3 py-1.5 text-[11px] font-bold tracking-[0.1em] uppercase transition-colors hover:bg-amarillo"
+                                >
+                                  Añadir
+                                </button>
+                              </div>
+                            ))}
                           </div>
-                        </li>
-                      ))}
-                    </ul>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {items.length > 0 && (
-                  <div className="border-t border-linea px-6 py-5">
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-sm tracking-widest uppercase">
-                        Subtotal
-                      </span>
-                      <span className="font-display text-2xl">
-                        {formatPrice(subtotal)}
-                      </span>
+                  <form onSubmit={pay} className="border-t border-linea px-6 py-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm tracking-widest uppercase">Subtotal</span>
+                      <span className="font-display text-2xl">{formatPrice(subtotal)}</span>
                     </div>
-                    <p className="mb-4 text-xs text-ink-soft">
-                      {STRIPE_ENABLED
-                        ? "Free U.S. shipping over $75. Secure card checkout."
-                        : "Free U.S. shipping over $75. We confirm payment and shipping by email; nothing is charged online yet."}
-                    </p>
+                    <Honeypot value={website} onChange={setWebsite} />
+                    <label className="mb-1.5 block text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
+                      Email para tu recibo
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="tu@email.com"
+                      aria-label="Email address"
+                      className="mb-3 w-full border-2 border-ink/20 bg-paper px-4 py-3 text-sm font-medium outline-none placeholder:text-ink/40 focus:border-azul"
+                    />
                     <button
-                      onClick={() => setStage("checkout")}
-                      className="block w-full bg-ink px-6 py-4 text-center text-sm font-bold tracking-[0.2em] text-paper uppercase transition-colors hover:bg-azul"
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="block w-full bg-ink px-6 py-4 text-center text-sm font-bold tracking-[0.2em] text-paper uppercase transition-colors hover:bg-azul disabled:opacity-60"
                     >
-                      Hacer el pedido
+                      {status === "loading"
+                        ? "Un momento…"
+                        : STRIPE_ENABLED
+                          ? "Pagar con tarjeta"
+                          : "Hacer el pedido"}
                     </button>
-                  </div>
+                    {status === "error" && (
+                      <p className="mt-3 text-xs font-bold text-rojo">
+                        Algo falló. Intenta de nuevo o escríbenos a {site.contactEmail}.
+                      </p>
+                    )}
+                    <p className="mt-3 text-center text-[11px] text-ink-soft">
+                      {STRIPE_ENABLED
+                        ? "Pago seguro con Stripe · Envío desde Miami · Devoluciones fáciles"
+                        : "Confirmamos por email en un día · Envío desde Miami"}
+                    </p>
+                  </form>
                 )}
               </>
             )}
@@ -296,136 +410,5 @@ function CartDrawer() {
         </>
       )}
     </AnimatePresence>
-  );
-}
-
-function CheckoutForm({
-  onBack,
-  onDone,
-}: {
-  onBack: () => void;
-  onDone: (orderId: number) => void;
-}) {
-  const { items, subtotal } = useCart();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [website, setWebsite] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          address,
-          website,
-          items: items.map((i) => ({ slug: i.slug, qty: i.qty })),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "failed");
-      if (data.url) {
-        // Stripe is live: hand off to the hosted checkout page.
-        window.location.href = data.url;
-        return;
-      }
-      onDone(data.orderId);
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  const inputStyles =
-    "w-full border-2 border-ink/20 bg-paper px-4 py-3 text-sm font-medium outline-none placeholder:text-ink/40 focus:border-azul";
-
-  return (
-    <form onSubmit={submit} className="flex flex-1 flex-col overflow-y-auto px-6 py-5">
-      <button
-        type="button"
-        onClick={onBack}
-        className="self-start text-xs font-bold tracking-[0.25em] text-ink-soft uppercase hover:text-azul"
-      >
-        ← Volver al carrito
-      </button>
-
-      <div className="mt-5 space-y-4">
-        <div>
-          <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
-            Nombre
-          </label>
-          <input
-            className={inputStyles}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nombre y apellido"
-            required
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
-            Email
-          </label>
-          <input
-            type="email"
-            className={inputStyles}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@email.com"
-            required
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
-            Dirección de envío
-          </label>
-          <textarea
-            className={`${inputStyles} min-h-24 resize-y`}
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder={"Street, apt\nCity, State ZIP"}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="mt-auto pt-5">
-        <div className="mb-3 flex items-center justify-between border-t border-linea pt-4">
-          <span className="text-sm tracking-widest uppercase">Subtotal</span>
-          <span className="font-display text-2xl">{formatPrice(subtotal)}</span>
-        </div>
-        <button
-          type="submit"
-          disabled={status === "loading" || items.length === 0}
-          className="block w-full bg-ink px-6 py-4 text-center text-sm font-bold tracking-[0.2em] text-paper uppercase transition-colors hover:bg-azul disabled:opacity-60"
-        >
-          {status === "loading"
-            ? STRIPE_ENABLED
-              ? "Redirigiendo…"
-              : "Enviando…"
-            : STRIPE_ENABLED
-              ? "Pagar con tarjeta"
-              : "Confirmar pedido"}
-        </button>
-        {status === "error" && (
-          <p className="mt-3 text-xs font-bold text-rojo">
-            Something broke. Try again, or email us at{" "}
-            <a className="underline" href={`mailto:${site.contactEmail}`}>
-              {site.contactEmail}
-            </a>
-          </p>
-        )}
-        <p className="mt-3 text-xs text-ink-soft">
-          {STRIPE_ENABLED
-            ? "Secure checkout by Stripe. You will be redirected to pay by card."
-            : "No payment online yet: we confirm your order and total by email within a day, then arrange payment."}
-        </p>
-      </div>
-    </form>
   );
 }

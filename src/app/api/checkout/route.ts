@@ -1,32 +1,26 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { priceCart, insertOrder, sendOrderEmails } from "@/lib/orders";
-import type { OrderEmailInput } from "@/lib/emails";
+import { priceCart, insertOrder } from "@/lib/orders";
 import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
-import { site } from "@/config/site";
+import { siteUrl } from "@/lib/resend";
+import { products } from "@/data/products";
 
 export const runtime = "nodejs";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Body = {
-  name?: unknown;
   email?: unknown;
-  address?: unknown;
   items?: unknown;
   website?: unknown;
 };
 
-function siteUrl() {
-  return process.env.SITE_URL || site.url;
-}
-
 /**
- * Checkout. When Stripe is configured, creates a pending order and a Stripe
- * Checkout Session and returns its URL for redirect. When it is not (pre-launch),
- * falls back to the email-order flow so the store still works. Either way prices
- * come from the catalog, never the client.
+ * Checkout. We capture only the email here (so abandoned carts are recoverable);
+ * Stripe Checkout collects the name, shipping address and phone with autofill and
+ * wallets. Line items carry product images so the Stripe page looks like ours.
+ * Prices always come from the catalog, never the client.
  */
 export async function POST(req: Request) {
   let body: Body;
@@ -43,14 +37,9 @@ export async function POST(req: Request) {
     return tooManyRequests();
   }
 
-  const name = typeof body.name === "string" ? body.name.trim().slice(0, 120) : "";
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-  const address = typeof body.address === "string" ? body.address.trim().slice(0, 600) : "";
-  if (!name || !EMAIL_RE.test(email) || !address) {
-    return NextResponse.json(
-      { ok: false, error: "Name, email and address are required" },
-      { status: 400 },
-    );
+  if (!EMAIL_RE.test(email)) {
+    return NextResponse.json({ ok: false, error: "A valid email is required" }, { status: 400 });
   }
 
   const priced = priceCart(body.items);
@@ -58,37 +47,43 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Invalid cart" }, { status: 400 });
   }
 
-  // Pre-launch fallback: no Stripe key, so confirm by email like before.
+  // Dormant fallback: no Stripe key, so just save the cart as a recoverable lead.
   if (!isStripeConfigured()) {
-    const id = await insertOrder({ name, email, address, items: priced.items, subtotal: priced.subtotal });
-    const order: OrderEmailInput = { id, name, email, address, items: priced.items, subtotal: priced.subtotal };
-    await sendOrderEmails(order);
+    const id = await insertOrder({ email, items: priced.items, subtotal: priced.subtotal });
     return NextResponse.json({ ok: true, fallback: true, orderId: id });
   }
 
-  // Stripe live: pending order, then a Checkout Session that points back to it.
   const id = await insertOrder({
-    name,
     email,
-    address,
     items: priced.items,
     subtotal: priced.subtotal,
     paymentStatus: "unpaid",
+  });
+
+  // Build line items from the catalog with absolute image URLs for Checkout.
+  const rawList = (body.items as Array<{ slug?: unknown; qty?: unknown }>) ?? [];
+  const lineItems = rawList.map((r) => {
+    const product = products.find((p) => p.slug === r.slug)!;
+    const images = product.image ? [`${siteUrl()}${product.image}`] : undefined;
+    return {
+      quantity: Number(r.qty),
+      price_data: {
+        currency: "usd",
+        unit_amount: Math.round(product.price * 100),
+        product_data: { name: product.name, ...(images ? { images } : {}) },
+      },
+    };
   });
 
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create(
     {
       mode: "payment",
-      line_items: priced.items.map((i) => ({
-        quantity: i.qty,
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(i.price * 100),
-          product_data: { name: i.name },
-        },
-      })),
+      line_items: lineItems,
       customer_email: email,
+      shipping_address_collection: { allowed_countries: ["US"] },
+      phone_number_collection: { enabled: true },
+      allow_promotion_codes: true,
       metadata: { order_id: String(id) },
       payment_intent_data: { metadata: { order_id: String(id) } },
       success_url: `${siteUrl()}/gracias?order=${id}&session_id={CHECKOUT_SESSION_ID}`,
@@ -97,7 +92,6 @@ export async function POST(req: Request) {
     { idempotencyKey: `checkout-session/${id}` },
   );
 
-  // Record the session id for reconciliation and webhook matching.
   const db = getDb();
   await db`UPDATE orders SET stripe_session_id = ${session.id} WHERE id = ${id}`;
 

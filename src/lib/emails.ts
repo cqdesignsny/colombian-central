@@ -147,8 +147,11 @@ export type OrderEmailInput = {
   name: string;
   email: string;
   address: string;
+  phone?: string;
   items: Array<{ name: string; qty: number; price: number }>;
   subtotal: number;
+  /** True once Stripe confirms payment; flips the copy from "we'll confirm" to "paid". */
+  paid?: boolean;
 };
 
 function itemRows(items: OrderEmailInput["items"]) {
@@ -161,13 +164,19 @@ export function orderOwnerEmail(order: OrderEmailInput) {
     p(`${esc(order.name)} (${esc(order.email)}) placed an order for <strong>${formatPrice(order.subtotal)}</strong>.`),
     itemRows(order.items),
     detailRows([
-      ["Ship to", esc(order.address).replaceAll("\n", "<br>")],
-      ["Status", "New. Reply to this email to confirm with the customer (reply-to is set to them)."],
+      ["Ship to", esc(order.address || "Collected at checkout").replaceAll("\n", "<br>")],
+      ...(order.phone ? ([["Phone", esc(order.phone)]] as Array<[string, string]>) : []),
+      [
+        "Status",
+        order.paid
+          ? "Paid via Stripe. Pack it and ship it from Miami."
+          : "New. Reply to this email to confirm with the customer (reply-to is set to them).",
+      ],
     ]),
   ].join("");
 
   return {
-    subject: `Nuevo pedido #${order.id}: ${formatPrice(order.subtotal)} (${order.name})`,
+    subject: `${order.paid ? "Pedido pagado" : "Nuevo pedido"} #${order.id}: ${formatPrice(order.subtotal)} (${order.name})`,
     html: shell(`Pedido de ${order.name}`, content),
     text: [
       `Nuevo pedido #${order.id} de ${order.name} (${order.email})`,
@@ -187,12 +196,16 @@ export function orderCustomerEmail(order: OrderEmailInput) {
     p(`Gracias, ${esc(order.name)}. Your order <strong>#${order.id}</strong> is in. Here is what we have:`),
     itemRows(order.items),
     detailRows([["Subtotal", formatPrice(order.subtotal)]]),
-    p("A human confirms your order, shipping, and payment by email within a day. Nothing is charged yet. Free U.S. shipping on orders over $75, shipped from Miami."),
+    p(
+      order.paid
+        ? "Your payment went through and your order is confirmed. We ship from Miami in 2 to 4 business days and email you tracking. Free U.S. shipping over $75. Gracias por el apoyo."
+        : "A human confirms your order, shipping, and payment by email within a day. Nothing is charged yet. Free U.S. shipping on orders over $75, shipped from Miami.",
+    ),
     button(`${siteUrl()}/tienda`, "Seguir comprando"),
   ].join("");
 
   return {
-    subject: `Pedido recibido #${order.id} · Colombian Central`,
+    subject: `${order.paid ? "Pago recibido" : "Pedido recibido"} #${order.id} · Colombian Central`,
     html: shell("Confirmamos por email dentro de un día.", content),
     text: [
       `¡Pedido recibido! Order #${order.id}`,
@@ -201,6 +214,57 @@ export function orderCustomerEmail(order: OrderEmailInput) {
       `Subtotal: ${formatPrice(order.subtotal)}`,
       "",
       "A human confirms your order, shipping, and payment by email within a day. Nothing is charged yet.",
+    ].join("\n"),
+  };
+}
+
+/* ------------------------------------------------------------------ */
+
+export type AbandonedCartInput = {
+  id: number;
+  email: string;
+  items: OrderEmailInput["items"];
+  subtotal: number;
+  /** 1 = ~1h nudge, 2 = ~24h, 3 = ~72h last call. No discounts: margins are thin. */
+  stage: 1 | 2 | 3;
+  recoverUrl: string;
+};
+
+export function abandonedCartEmail(cart: AbandonedCartInput) {
+  const headline =
+    cart.stage === 1 ? "¿Se te quedó algo?" : cart.stage === 2 ? "Tu carrito te espera" : "Última llamada, parce";
+  const lead =
+    cart.stage === 1
+      ? "You left these in your cart at Colombian Central, so we saved them for you. Pick up right where you left off."
+      : cart.stage === 2
+        ? "Still thinking it over? Your cart is right here. Lo bueno se mueve rápido, sobre todo con el Mundial encima."
+        : "We are about to put your cart back on the shelf. Grab it before it is gone.";
+  const subject =
+    cart.stage === 1
+      ? "¿Se te quedó algo en el carrito?"
+      : cart.stage === 2
+        ? "Tu carrito sigue aquí · Colombian Central"
+        : "Última llamada: tu carrito te espera";
+
+  const content = [
+    h1(headline),
+    p(lead),
+    itemRows(cart.items),
+    detailRows([["Subtotal", formatPrice(cart.subtotal)]]),
+    button(cart.recoverUrl, "Completar mi compra"),
+    p("Free U.S. shipping over $75, shipped from Miami. Authentic and artisan-direct, como debe ser."),
+  ].join("");
+
+  return {
+    subject,
+    html: shell("Lo tuyo te espera en Colombian Central.", content, unsubscribeFooter(cart.email)),
+    text: [
+      headline,
+      "",
+      ...cart.items.map((i) => `- ${i.qty} x ${i.name} (${formatPrice(i.price * i.qty)})`),
+      `Subtotal: ${formatPrice(cart.subtotal)}`,
+      "",
+      `Complete your order: ${cart.recoverUrl}`,
     ].join("\n"),
   };
 }
