@@ -8,11 +8,15 @@ Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + nex
 
 ## Sections
 
-- **Fútbol** (`/futbol`): Colombia at the 2026 World Cup. Group K fixtures (Portugal, Uzbekistan, DR Congo), live countdown to the debut, squad, and watch party newsletter.
-- **Tienda** (`/tienda`): Colombian products with a client-side cart. Checkout is order-by-email while payments are in beta.
-- **Viajes** (`/viajes`): destination guides, sample trip packages (including World Cup travel), and a trip inquiry form.
+- **Fútbol** (`/futbol`): Colombia at the 2026 World Cup. Group K fixtures (Portugal, Uzbekistan, DR Congo) with opponent flags, live countdown to the debut, the official 26-man squad, and a watch party newsletter. `/futbol/hinchada` is the fan-gear guide.
+- **Música** (`/musica`): top Colombian artists, a guide to the genres (vallenato, cumbia, salsa, champeta, urbano, bambuco), and upcoming US concerts.
+- **Comida** (`/comida`): real recipes you can cook, a Colombian restaurant finder by US metro (with a "find near you" map search), and a pantry cross-sell to the tienda.
+- **Tienda** (`/tienda`): Colombian products with a client-side cart and real Stripe card checkout (gated by a flag, with an order-by-email fallback).
+- **Viajes** (`/viajes`): destination guides, sample trip packages (including World Cup travel at `/viajes/mundial`), and a trip inquiry form.
 - **Noticias** (`/noticias`): editorial articles on fútbol, café, music, food, and travel.
 - **Nosotros** (`/nosotros`): the story, plus the Central network vision.
+
+The remittance comparison (`/enviar-dinero`) and the fan-gear and matchday-travel guides are affiliate money-pages, gated behind `src/config/partners.ts` until tracking IDs are added.
 
 ## Getting started
 
@@ -27,7 +31,7 @@ Open http://localhost:3000.
 
 ## Content
 
-All content lives in typed data files under `src/data/`: `products.ts`, `articles.ts`, `destinations.ts`, `futbol.ts`. Country-level config (brand, colors, nav, contact email) lives in `src/config/site.ts`. Swapping those files is the path to spinning up the next country in the Central network.
+All content lives in typed data files under `src/data/`: `products.ts`, `articles.ts`, `destinations.ts`, `futbol.ts`, `musica.ts`, `comida.ts`. Country-level config (brand, colors, nav, contact email) lives in `src/config/site.ts`, and affiliate partners in `src/config/partners.ts`. Swapping those files is the path to spinning up the next country in the Central network.
 
 ## Email + data
 
@@ -35,8 +39,12 @@ Email runs through Resend on the verified colombiancentral.com domain: El Bolet�
 
 ## Roadmap
 
-- Stripe checkout for the tienda
+Stripe card checkout, the affiliate money-pages, and the abandoned-cart automation are live (see [HANDOFF.md](HANDOFF.md)). Next:
+
+- World Cup membership + free Polla predictions game (on Stripe)
+- Printful merch and an authentic-goods supply chain (see [MONETIZATION.md](MONETIZATION.md))
 - First El Boletín broadcast from the Resend dashboard
+- Homepage cards for Música and Comida; a live music-news feed
 - CMS or markdown pipeline for articles
 - Spanish/English toggle (i18n)
 - Live World Cup match data
