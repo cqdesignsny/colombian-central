@@ -220,8 +220,8 @@ export default function FutbolPage() {
           </div>
           <Reveal>
             <p className="mt-8 text-xs text-paper/40">
-              Player photos via Wikimedia Commons (CC BY-SA). Country flags are public
-              domain.
+              Some player photos via Wikimedia Commons (CC BY-SA). Country flags are
+              public domain.
             </p>
           </Reveal>
         </div>
