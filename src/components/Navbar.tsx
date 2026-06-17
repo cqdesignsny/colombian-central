@@ -25,12 +25,12 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
           >
             <Image
-              src="/brand/logo.png"
+              src="/brand/Col-Central_logo-New.png"
               alt="Colombian Central"
-              width={446}
-              height={250}
+              width={983}
+              height={612}
               priority
-              className="h-11 w-auto"
+              className="h-12 w-auto sm:h-16"
             />
           </Link>
 

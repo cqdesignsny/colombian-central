@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { artists, genres, concerts, musicIntro } from "@/data/musica";
+import { artists, genres, concerts, musicIntro, musicNews } from "@/data/musica";
 import SectionHeader from "@/components/SectionHeader";
 import Reveal from "@/components/Reveal";
 import TricolorBar from "@/components/TricolorBar";
@@ -23,7 +24,16 @@ export default function MusicaPage() {
     <>
       {/* Hero (dark, concert energy) */}
       <section className="relative overflow-hidden bg-ink text-paper">
-        <div className="mx-auto max-w-7xl px-4 pt-32 pb-16 sm:px-6">
+        <Image
+          src={musicIntro.heroImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-45"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/50" />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-32 pb-16 sm:px-6">
           <Reveal>
             <p className="mb-4 text-xs font-bold tracking-[0.3em] text-amarillo uppercase">
               Música · La cultura
@@ -46,7 +56,52 @@ export default function MusicaPage() {
             </a>
           </Reveal>
         </div>
-        <TricolorBar className="h-2" />
+        <TricolorBar className="relative z-10 h-2" />
+      </section>
+
+      {/* News + concerts highlights */}
+      <section className="border-b border-linea bg-crema py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Lo último"
+              title="Noticias y conciertos"
+              sub="What is moving in Colombian music right now, from stadium tours to the folclor filling stages."
+            />
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {musicNews.map((n, i) => (
+              <Reveal key={n.title} delay={(i % 3) * 0.06}>
+                <article className="group flex h-full flex-col overflow-hidden border-2 border-ink bg-paper transition-transform hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]">
+                  <div className="relative aspect-[16/9] overflow-hidden border-b-2 border-ink">
+                    <Image
+                      src={n.image}
+                      alt={n.title}
+                      fill
+                      sizes="(max-width:768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <span className="absolute top-3 left-3 bg-amarillo px-2 py-0.5 text-[10px] font-bold tracking-[0.18em] text-ink uppercase">
+                      {n.tag}
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <p className="text-[11px] font-bold tracking-[0.2em] text-rojo uppercase">
+                      {n.date}
+                    </p>
+                    <h3 className="display-tight mt-1 font-display text-2xl uppercase">{n.title}</h3>
+                    <p className="mt-2 text-sm text-ink-soft">{n.summary}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal>
+            <p className="mt-6 text-xs text-ink-soft/70">
+              Curated by hand and updated regularly. ¿Nos faltó algo? Escríbenos.
+            </p>
+          </Reveal>
+        </div>
       </section>
 
       {/* Genres */}

@@ -139,43 +139,63 @@ export default function Home() {
             <Reveal>
               <Link
                 href="/musica"
-                className="group relative flex min-h-[18rem] flex-col justify-end overflow-hidden border-2 border-ink bg-ink p-8 text-paper transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
+                className="group relative flex min-h-[20rem] flex-col justify-end overflow-hidden border-2 border-ink p-8 text-paper transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
               >
-                <span className="absolute top-6 right-6 text-xs font-bold tracking-[0.25em] text-amarillo uppercase">
+                <Image
+                  src="/images/musica/hero.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width:768px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-ink/30" />
+                <span className="absolute top-6 right-6 z-10 text-xs font-bold tracking-[0.25em] text-amarillo uppercase">
                   Música
                 </span>
-                <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
-                  La banda sonora de Colombia
-                </h3>
-                <p className="mt-3 max-w-sm text-paper/75">
-                  Artists, genres, and every Colombian concert coming through the US.
-                </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
-                  Ver música
-                  <span className="transition-transform group-hover:translate-x-1.5">→</span>
-                </span>
-                <TricolorBar className="absolute inset-x-0 bottom-0 h-1.5" />
+                <div className="relative z-10">
+                  <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
+                    La banda sonora de Colombia
+                  </h3>
+                  <p className="mt-3 max-w-sm text-paper/80">
+                    Artists, genres, and every Colombian concert coming through the US.
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
+                    Ver música
+                    <span className="transition-transform group-hover:translate-x-1.5">→</span>
+                  </span>
+                </div>
+                <TricolorBar className="absolute inset-x-0 bottom-0 z-10 h-1.5" />
               </Link>
             </Reveal>
             <Reveal delay={0.08}>
               <Link
                 href="/comida"
-                className="group relative flex min-h-[18rem] flex-col justify-end overflow-hidden border-2 border-ink bg-crema p-8 transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
+                className="group relative flex min-h-[20rem] flex-col justify-end overflow-hidden border-2 border-ink p-8 text-paper transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
               >
-                <span className="absolute top-6 right-6 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+                <Image
+                  src="/images/comida/hero.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width:768px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-ink/30" />
+                <span className="absolute top-6 right-6 z-10 text-xs font-bold tracking-[0.25em] text-amarillo uppercase">
                   Comida
                 </span>
-                <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
-                  El sabor de la tierra
-                </h3>
-                <p className="mt-3 max-w-sm text-ink-soft">
-                  Recipes you can actually cook, plus a Colombian restaurant finder for your city.
-                </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-azul uppercase">
-                  Ver comida
-                  <span className="transition-transform group-hover:translate-x-1.5">→</span>
-                </span>
-                <TricolorBar className="absolute inset-x-0 bottom-0 h-1.5" />
+                <div className="relative z-10">
+                  <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
+                    El sabor de la tierra
+                  </h3>
+                  <p className="mt-3 max-w-sm text-paper/80">
+                    Recipes you can actually cook, plus a Colombian restaurant finder for your city.
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
+                    Ver comida
+                    <span className="transition-transform group-hover:translate-x-1.5">→</span>
+                  </span>
+                </div>
+                <TricolorBar className="absolute inset-x-0 bottom-0 z-10 h-1.5" />
               </Link>
             </Reveal>
           </div>

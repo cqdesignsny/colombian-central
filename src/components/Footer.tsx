@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/config/site";
 import TricolorBar from "@/components/TricolorBar";
@@ -6,10 +7,14 @@ export default function Footer() {
   return (
     <footer className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <p className="display-tight font-display text-[clamp(2.5rem,9vw,7rem)] uppercase leading-none text-paper/95">
-          Colombian Central
-        </p>
-        <p className="mt-3 font-serif text-xl italic text-amarillo sm:text-2xl">
+        <Image
+          src="/brand/Col-Central_logo-New.png"
+          alt="Colombian Central"
+          width={983}
+          height={612}
+          className="h-auto w-full max-w-lg"
+        />
+        <p className="mt-5 font-serif text-xl italic text-amarillo sm:text-2xl">
           {site.tagline}
         </p>
 

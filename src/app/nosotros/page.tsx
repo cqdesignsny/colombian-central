@@ -69,11 +69,11 @@ export default function NosotrosPage() {
               <div className="relative border border-linea bg-crema p-10 sm:p-14">
                 <Stamp className="absolute -top-7 -right-7 h-28 w-28 text-ink" />
                 <Image
-                  src="/brand/logo.png"
+                  src="/brand/Col-Central_logo-New.png"
                   alt="Colombian Central logo"
-                  width={446}
-                  height={250}
-                  className="mx-auto h-auto w-full max-w-sm"
+                  width={983}
+                  height={612}
+                  className="mx-auto h-auto w-full max-w-md"
                 />
                 <p className="mt-6 text-center font-serif text-2xl italic">
                   {site.tagline}

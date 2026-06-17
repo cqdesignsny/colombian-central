@@ -9,6 +9,18 @@
   --color-azul: #003087;
   --color-rojo: #c8102e;
   --color-linea: #ded2b6;
+
+  /* Reading sizes bumped ~20% for legibility. Tiny labels (text-xs and px sizes) stay put. */
+  --text-sm: 1.05rem;
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1.2rem;
+  --text-base--line-height: 1.8rem;
+  --text-lg: 1.35rem;
+  --text-lg--line-height: 1.95rem;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 2.1rem;
+  --text-2xl: 1.8rem;
+  --text-2xl--line-height: 2.3rem;
 }
 
 @theme inline {
