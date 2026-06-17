@@ -10,7 +10,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 const WELCOME: Msg = {
   role: "assistant",
   content:
-    "Quiubo, parce. Soy El Paisa, tu guia colombiano. Preguntame lo que sea: el Mundial, musica, comida, viajes, lo que necesites. En que te ayudo?",
+    "¡Quiubo pues, parce! Soy El Paisa, your Colombian guide y su servidor. Pregúnteme lo que sea: el Mundial, la música, la comida, viajes, lo que se le antoje. ¿Bien o qué? Hágale.",
 };
 
 const SUGGESTIONS = [
@@ -30,6 +30,13 @@ export default function ElPaisaChat() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, open]);
+
+  // Let anything on the page open the chat (for example the homepage mascot CTA).
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("paisa:open", handler);
+    return () => window.removeEventListener("paisa:open", handler);
+  }, []);
 
   async function send(text: string) {
     const content = text.trim();
@@ -81,8 +88,14 @@ export default function ElPaisaChat() {
         aria-label="Abrir el chat de El Paisa"
         className="fixed right-4 bottom-4 z-40 flex items-center gap-2 border-2 border-ink bg-amarillo py-1.5 pr-4 pl-1.5 shadow-[4px_4px_0_0_var(--color-ink)] transition-transform hover:-translate-y-0.5 sm:right-5 sm:bottom-5"
       >
-        <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-ink">
-          <Image src="/images/paisa/avatar.jpg" alt="El Paisa" fill sizes="36px" className="object-cover" />
+        <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-ink bg-crema">
+          <Image
+            src="/images/paisa/el-paisa.png"
+            alt="El Paisa"
+            fill
+            sizes="40px"
+            className="origin-top scale-[1.55] object-cover object-top"
+          />
         </span>
         <span className="text-sm font-bold tracking-[0.12em] text-ink uppercase">
           Pregúntale a El Paisa
@@ -100,8 +113,14 @@ export default function ElPaisaChat() {
           >
             {/* Header */}
             <div className="flex items-center gap-3 bg-ink px-4 py-3 text-paper">
-              <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-amarillo">
-                <Image src="/images/paisa/avatar.jpg" alt="El Paisa" fill sizes="40px" className="object-cover" />
+              <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-amarillo bg-crema">
+                <Image
+                  src="/images/paisa/el-paisa.png"
+                  alt="El Paisa"
+                  fill
+                  sizes="44px"
+                  className="origin-top scale-[1.55] object-cover object-top"
+                />
               </span>
               <div className="flex-1">
                 <p className="font-display text-lg leading-none uppercase">El Paisa</p>

@@ -89,6 +89,9 @@ export type Player = {
 
 export const squad = {
   coach: "Néstor Lorenzo",
+  coachImage: "/images/players/lorenzo.avif",
+  coachLine:
+    "El arquitecto. Calm, clear, and the man who turned a golden generation into a real team. The unbeaten qualifying run carries his fingerprint.",
   note: "Los 26 que van al Mundial. La Tricolor de Néstor Lorenzo, nombre por nombre.",
   players: [
     { name: "David Ospina", position: "GK", line: "El histórico. A thousand games of calm between the posts.", image: "/images/players/ospina.avif" },

@@ -17,6 +17,7 @@ import MatchCard from "@/components/MatchCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import Stamp from "@/components/Stamp";
 import TricolorBar from "@/components/TricolorBar";
+import PaisaButton from "@/components/PaisaButton";
 
 const tickerItems = [
   "Mundial 2026 · Grupo K",
@@ -299,6 +300,39 @@ export default function Home() {
                 </div>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* El Paisa mascot */}
+      <section className="relative overflow-hidden border-y border-linea bg-crema">
+        <div className="mx-auto grid max-w-7xl items-end gap-4 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="relative mx-auto h-72 w-full max-w-[16rem] self-end sm:h-96 lg:mx-0">
+            <Image
+              src="/images/paisa/el-paisa.png"
+              alt="El Paisa, tu guía colombiano"
+              fill
+              sizes="(max-width: 1024px) 256px, 460px"
+              className="object-contain object-bottom"
+            />
+          </div>
+          <div className="pb-12 sm:py-16">
+            <p className="mb-3 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+              Conoce a El Paisa
+            </p>
+            <h2 className="display-tight font-display text-4xl uppercase sm:text-6xl">
+              Tu pana que lo
+              <br />
+              sabe todo
+            </h2>
+            <p className="mt-4 max-w-md text-ink-soft">
+              Mitad guía, mitad cuento. Ask him anything about Colombia or this site, en
+              español, in English, o en el Spanglish más bacano. He has got the recipes, the
+              squad, the music, y un dicho para cada cosa.
+            </p>
+            <PaisaButton className="mt-6 inline-flex items-center gap-2 border-2 border-ink bg-amarillo px-7 py-4 text-sm font-bold tracking-[0.2em] text-ink uppercase shadow-[4px_4px_0_0_var(--color-ink)] transition-transform hover:-translate-y-0.5">
+              Háblale a El Paisa →
+            </PaisaButton>
           </div>
         </div>
       </section>

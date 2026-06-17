@@ -170,6 +170,34 @@ export default function FutbolPage() {
             />
           </Reveal>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {squad.coachImage && (
+              <Reveal>
+                <div className="flex h-full flex-col overflow-hidden border border-amarillo bg-amarillo/10">
+                  <div
+                    className="relative aspect-[4/5] w-full overflow-hidden bg-ink"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle at 50% 32%, rgba(255,205,0,0.16), transparent 70%)",
+                    }}
+                  >
+                    <Image
+                      src={squad.coachImage}
+                      alt={squad.coach}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover object-top"
+                    />
+                    <span className="absolute top-2 left-2 bg-amarillo px-2 py-0.5 text-[11px] font-bold tracking-[0.2em] text-ink uppercase">
+                      Director Técnico
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <p className="display-tight font-display text-2xl uppercase">{squad.coach}</p>
+                    <p className="mt-2 text-sm text-paper/65">{squad.coachLine}</p>
+                  </div>
+                </div>
+              </Reveal>
+            )}
             {squad.players.map((player, i) => (
               <Reveal key={player.name} delay={(i % 3) * 0.05}>
                 <div
