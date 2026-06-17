@@ -13,10 +13,12 @@ Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + nex
 - **Comida** (`/comida`): real recipes you can cook, a Colombian restaurant finder by US metro (with a "find near you" map search), and a pantry cross-sell to the tienda.
 - **Tienda** (`/tienda`): Colombian products with a client-side cart and real Stripe card checkout (gated by a flag, with an order-by-email fallback).
 - **Viajes** (`/viajes`): destination guides, sample trip packages (including World Cup travel at `/viajes/mundial`), and a trip inquiry form.
-- **Noticias** (`/noticias`): editorial articles on fútbol, café, music, food, and travel.
+- **Noticias** (`/noticias`): editorial articles plus **El Escritorio de El Paisa**, the feed the AI mascot writes himself.
 - **Nosotros** (`/nosotros`): the story, plus the Central network vision.
 
 The remittance comparison (`/enviar-dinero`) and the fan-gear and matchday-travel guides are affiliate money-pages, gated behind `src/config/partners.ts` until tracking IDs are added.
+
+**El Paisa** is the site's Colombian AI mascot: a full-Spanglish chat on every page plus an autonomous desk that writes its own posts, both powered by the Vercel AI Gateway. See [HANDOFF.md](HANDOFF.md) for the architecture and the paid-credits upgrade path.
 
 ## Getting started
 

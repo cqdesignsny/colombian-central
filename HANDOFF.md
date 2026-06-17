@@ -20,7 +20,8 @@ Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4 (token
 ## Infrastructure (all wired and verified)
 
 - **Hosting**: Vercel, team `cq-marketings-projects`, project `colombian-central`. NOT the easyoeepro or tz-electric teams (other clients). Hourly cron defined in `vercel.json`.
-- **Database**: Neon Postgres, connected as a Vercel integration. Tables: `subscribers`, `orders`, `trip_inquiries`, `request_log`. Schema is idempotent in `scripts/db-setup.mjs` (run `node --env-file=.env.local scripts/db-setup.mjs`). The DB is the source of truth.
+- **AI**: Vercel AI Gateway powers El Paisa (`AI_GATEWAY_API_KEY` in env, free tier, model `anthropic/claude-haiku-4.5`). See the El Paisa section.
+- **Database**: Neon Postgres, connected as a Vercel integration. Tables: `subscribers`, `orders`, `trip_inquiries`, `request_log`, `paisa_posts`. Schema is idempotent in `scripts/db-setup.mjs` (run `node --env-file=.env.local scripts/db-setup.mjs`). The DB is the source of truth.
 - **Payments**: Stripe, **live**, on a dedicated Colombian Central account (`acct_1Tj3kbQny3EkJJVW`), not the CQM account. Real hosted Checkout. See the Payments section below.
 - **Email**: Resend on the verified domain colombiancentral.com (account colombiancentral@gmail.com). DKIM/SPF/MX/DMARC live in Vercel DNS, region us-east-1. Senders: `boletin@` (newsletter), `hola@` (transactional). Owner notifications go to cesar@creativequalitymarketing.com. Newsletter segment "El Boletin" (id `25e0cc2a-99e2-450a-b492-8b27ac7f5a53`). App runs on the full-access key "colombian-central-app".
 - **Secrets**: live in `.env.local` (gitignored) and Vercel envs. See `.env.example` for the list. Env changes in Vercel require a redeploy to take effect.
@@ -54,6 +55,16 @@ Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4 (token
 - **Comida** (`/comida`): authentic recipes with full ingredients and steps, a Colombian restaurant finder across 9 US metros plus a "find near you" Google Maps search, and a pantry cross-sell to the tienda. Data in `src/data/comida.ts`.
 - Nav now carries seven items (Fútbol, Música, Comida, Tienda, Viajes, Noticias, Nosotros); the inline nav shows at the `lg` breakpoint, hamburger below.
 
+## El Paisa (the AI mascot)
+
+El Paisa is the site's Colombian AI: a visitor chat plus an autonomous "desk" that writes its own content. Persona, site knowledge, model, and a library of paisa sayings live once in `src/lib/paisa.ts`, reused by both.
+
+- **Brain = Vercel AI Gateway.** `AI_GATEWAY_API_KEY` is set in the project env (created via `vercel ai-gateway api-keys create`; I have Vercel CLI access as cqdesignsny). The Gateway is on the **FREE TIER**, which only allows cheaper models: El Paisa runs on **`anthropic/claude-haiku-4.5`** (great for the persona). Sonnet/Opus return a 403 `RestrictedModelsError` until paid credits are added (top up in the Vercel dashboard). Web search is also paid, so the desk has no live web access yet. Note: `vercel env add` needs the value piped with a trailing newline or it stores empty.
+- **Chat** (`/api/paisa/chat` + `src/components/ElPaisaChat.tsx`): a floating, streaming chat in Cesar's mascot art, site-wide. Full Spanglish with real sayings, grounded in `SITE_KNOWLEDGE`, per-IP rate limited, friendly fallback if the Gateway is down. Any element opens it by firing a `paisa:open` window event (`PaisaButton`): used by the homepage "Conoce a El Paisa" section and the footer.
+- **Autonomous desk** (`/api/paisa/refresh` + `src/components/PaisaDesk.tsx` + `paisa_posts` table): a daily cron (`vercel.json`, CRON_SECRET-guarded GET) where El Paisa writes ~3 short posts grounded ONLY in `SITE_KNOWLEDGE` (a match preview + spotlights), stores them, and revalidates `/noticias`, where they render as "El Escritorio de El Paisa." Throttled to ~daily; renders nothing until he has posted; no fabrication by design.
+- **Art**: Cesar's own El Paisa cartoon at `public/brand/El-Paisa.png` (transparent PNG), optimized to `public/images/paisa/el-paisa.png`. Used as the chat avatar (CSS head crop) and the homepage/footer mascot. Do not regenerate.
+- **Upgrade path (Cesar)**: add paid AI Gateway credits, then (1) bump `PAISA_MODEL` to sonnet/opus for richer answers, and (2) give the desk + chat live web search, turning the desk into the true autonomous reporter (real news + final scores).
+
 ## Affiliate money-pages (Option A, built, gated)
 
 Three pages plus a gating layer, live the moment Cesar pastes his tracking IDs.
@@ -75,6 +86,10 @@ Three pages plus a gating layer, live the moment Cesar pastes his tracking IDs.
 5. Wrote COMPETITIVE-RESEARCH.md (colombiaone.com and other Colombian media/socials).
 6. Added real fútbol imagery: opponent flags and the official FIFA 26-man squad as transparent cutouts on dark cards, matched exactly to the FIFA roster.
 7. Built the **Música** and **Comida** pillar pages and added them to the nav.
+8. New logo across the site, ~20% larger reading type, real imagery + "news" sections on `/musica` and `/comida`, and homepage features for both pillars.
+9. Replaced the empanada photo with an authentic Colombian one (researched: golden-orange fried cornmeal).
+10. Public contact is now `info@colombiancentral.com` (owner notifications still route to the business inbox).
+11. Built **El Paisa**: the live AI chat and the autonomous desk on `/noticias`, plus coach Néstor Lorenzo on `/futbol`.
 
 ## Next steps
 
@@ -86,10 +101,12 @@ Travelpayouts (GetYourGuide + insurance), Awin (Xe), Wise Partnerships, Remitly,
 - **C. World Cup membership + Polla**: tournament pass / monthly membership with a predictions game, on Stripe (now that Stripe is live). The free Polla is the most time-sensitive piece since the group stage is now.
 - **D. Authentic-goods shop**: coffee dropship + owned-stock routing for crafts and food.
 
+### El Paisa upgrade (Cesar)
+Add paid AI Gateway credits (Vercel dashboard top-up). Then bump `PAISA_MODEL` to sonnet/opus for richer chat, and turn on web search so the desk + chat get live Colombian news and final match scores (the true autonomous reporter). A review-queue/admin for the desk is the next build after that.
+
 ### Product / content
-- Homepage cards featuring Música and Comida (nav + footer already link them; the landing page does not yet).
-- A live music-news feed if /musica should update automatically (same CMS/feed decision as Noticias).
 - More recipes; expand the restaurant finder.
+- The desk currently posts to `/noticias`; consider surfacing the latest El Paisa post on the homepage too.
 
 ## Known gaps, caveats, and security
 
@@ -100,6 +117,7 @@ Travelpayouts (GetYourGuide + insurance), Awin (Xe), Wise Partnerships, Remitly,
 - **Rate limiter is DB-backed.** Fine for now; swap to Upstash/Vercel KV at scale.
 - **Other secrets passed through chat** (Neon password, Resend key): rotating them is a free one-click reset.
 - **`/musica` and `/comida` are curated**, not CMS-driven. Concert and restaurant data is researched and flagged where uncertain; confirm before relying on specific dates/hours.
+- **El Paisa runs on the AI Gateway FREE TIER** (`claude-haiku-4.5`). Premium models and web search need paid credits, so the desk writes from site facts only (no live news/scores) until then. See the El Paisa section.
 - **Fulfillment-aware product model not built yet**, deliberately deferred until the dropship/Printful stack is wired (see MONETIZATION.md).
 
 ## Run it locally
