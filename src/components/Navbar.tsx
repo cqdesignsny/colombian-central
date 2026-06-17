@@ -34,7 +34,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <div className="hidden items-center gap-7 md:flex">
+          <div className="hidden items-center gap-5 lg:flex">
             {site.nav.map((item) => {
               const active = pathname.startsWith(item.href);
               return (
@@ -62,7 +62,7 @@ export default function Navbar() {
               </span>
             </button>
             <button
-              className="flex flex-col gap-1.5 p-2 md:hidden"
+              className="flex flex-col gap-1.5 p-2 lg:hidden"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
@@ -87,7 +87,7 @@ export default function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden border-t border-linea md:hidden"
+              className="overflow-hidden border-t border-linea lg:hidden"
             >
               <div className="flex flex-col px-6 py-4">
                 {site.nav.map((item) => (

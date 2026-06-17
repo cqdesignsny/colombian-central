@@ -22,6 +22,8 @@ export const site = {
   },
   nav: [
     { label: "Fútbol", href: "/futbol" },
+    { label: "Música", href: "/musica" },
+    { label: "Comida", href: "/comida" },
     { label: "Tienda", href: "/tienda" },
     { label: "Viajes", href: "/viajes" },
     { label: "Noticias", href: "/noticias" },
