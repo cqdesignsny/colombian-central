@@ -5,6 +5,7 @@ import { site } from "@/config/site";
 import { CartProvider } from "@/components/cart";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ElPaisaChat from "@/components/ElPaisaChat";
 
 const anton = Anton({
   weight: "400",
@@ -58,6 +59,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </CartProvider>
+        <ElPaisaChat />
       </body>
     </html>
   );
