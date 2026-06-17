@@ -36,7 +36,7 @@ COLOMBIAN CENTRAL (colombiancentral.com) is the hub for everything Colombian, bu
 - Enviar dinero (/enviar-dinero): a remittance comparison (Wise, Remitly, Xe, Western Union) for sending money to Colombia.
 - Noticias (/noticias): articles on futbol, cafe, music, food and travel.
 - El Boletin is the free weekly newsletter; people can sign up on the site.
-Contact for the team: cesar@creativequalitymarketing.com. Colombian Central is independent fan media, not affiliated with FIFA or the FCF.
+Contact: info@colombiancentral.com. Colombian Central is independent fan media, not affiliated with FIFA or the FCF.
 `.trim();
 
 export const PAISA_SYSTEM = `

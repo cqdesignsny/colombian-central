@@ -15,6 +15,7 @@ export const site = {
   description:
     "Colombian Central is the hub for everything Colombian: La Tricolor at the 2026 World Cup, products from back home, travel to Colombia, and stories from the culture and the diaspora.",
   contactEmail: "cesar@creativequalitymarketing.com",
+  publicEmail: "info@colombiancentral.com",
   flag: {
     amarillo: "#FFCD00",
     azul: "#003087",

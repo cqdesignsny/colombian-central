@@ -16,7 +16,11 @@ export async function POST(req: Request) {
 
   // El Paisa runs on the Vercel AI Gateway. Until the key is set, answer kindly
   // instead of throwing, so the widget never looks broken.
-  if (!process.env.AI_GATEWAY_API_KEY) {
+  const gatewayReady =
+    process.env.AI_GATEWAY_API_KEY ||
+    process.env.VERCEL_OIDC_TOKEN ||
+    process.env.VERCEL === "1";
+  if (!gatewayReady) {
     return new Response(
       "Ey, soy El Paisa. Todavia me estan terminando de conectar el cerebro. Vuelve en un ratico, parce.",
       { headers: PLAIN },

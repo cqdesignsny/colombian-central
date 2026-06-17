@@ -2,21 +2,45 @@ import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/config/site";
 import TricolorBar from "@/components/TricolorBar";
+import PaisaButton from "@/components/PaisaButton";
 
 export default function Footer() {
   return (
     <footer className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <Image
-          src="/brand/Col-Central_logo-New.png"
-          alt="Colombian Central"
-          width={983}
-          height={612}
-          className="h-auto w-full max-w-lg"
-        />
-        <p className="mt-5 font-serif text-xl italic text-amarillo sm:text-2xl">
-          {site.tagline}
-        </p>
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <Image
+              src="/brand/Col-Central_logo-New.png"
+              alt="Colombian Central"
+              width={983}
+              height={612}
+              className="h-auto w-full max-w-sm sm:max-w-md"
+            />
+            <p className="mt-5 font-serif text-xl italic text-amarillo sm:text-2xl">
+              {site.tagline}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-4 border-2 border-amarillo/30 p-3">
+            <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-amarillo bg-crema">
+              <Image
+                src="/images/paisa/el-paisa.png"
+                alt="El Paisa"
+                fill
+                sizes="64px"
+                className="origin-top scale-[1.55] object-cover object-top"
+              />
+            </span>
+            <div>
+              <p className="font-display text-lg leading-tight uppercase">
+                ¿Dudas? Habla con El Paisa
+              </p>
+              <PaisaButton className="mt-2 inline-flex items-center gap-2 border-2 border-amarillo bg-amarillo px-4 py-2 text-xs font-bold tracking-[0.18em] text-ink uppercase transition-transform hover:-translate-y-0.5">
+                Háblale →
+              </PaisaButton>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div>
@@ -90,10 +114,10 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm text-paper/80">
               <li>
                 <a
-                  href={`mailto:${site.contactEmail}`}
+                  href={`mailto:${site.publicEmail}`}
                   className="hover:text-amarillo"
                 >
-                  {site.contactEmail}
+                  {site.publicEmail}
                 </a>
               </li>
               <li>
