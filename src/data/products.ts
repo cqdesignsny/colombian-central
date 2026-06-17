@@ -79,7 +79,7 @@ export const products: Product[] = [
     name: "Bocadillo Veleño 12-Pack",
     price: 14,
     category: "Café & Cocina",
-    placeholder: { bg: "#C8102E", fg: "#F7F1E3" },
+    image: "/images/products/bocadillo.jpg",
     blurb:
       "Guava and panela pressed into the snack of every Colombian childhood. Wrapped in bijao leaf, just like in Vélez.",
     details: [
@@ -94,7 +94,7 @@ export const products: Product[] = [
     name: "Chocolatera & Molinillo Set",
     price: 34,
     category: "Café & Cocina",
-    placeholder: { bg: "#003087", fg: "#F7F1E3" },
+    image: "/images/products/chocolatera.jpg",
     blurb:
       "The aluminum pitcher and wooden whisk that made every abuela's hot chocolate taste better. Santafereño breakfast, unlocked.",
     details: [
@@ -109,7 +109,7 @@ export const products: Product[] = [
     name: "Pueblos de Colombia Print",
     price: 24,
     category: "Lifestyle",
-    placeholder: { bg: "#FFCD00", fg: "#17130E" },
+    image: "/images/products/pueblos.jpg",
     blurb:
       "A travel-poster style print celebrating the pueblos: Guatapé, Salento, Barichara, Jardín, Mompox. Printed on heavy matte stock.",
     details: [
@@ -124,7 +124,7 @@ export const products: Product[] = [
     name: "Tricolor Pulseras 3-Pack",
     price: 9,
     category: "Lifestyle",
-    placeholder: { bg: "#EFE5CD", fg: "#17130E" },
+    image: "/images/products/pulseras.jpg",
     blurb:
       "Woven tricolor bracelets, the unofficial uniform of game day. Three per pack: one for you, two for the parceros.",
     details: [
