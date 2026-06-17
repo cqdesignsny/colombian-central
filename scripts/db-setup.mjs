@@ -77,6 +77,23 @@ await sql`
   CREATE INDEX IF NOT EXISTS request_log_lookup
   ON request_log (ip, action, created_at)`;
 
+// El Paisa's autonomous desk: short posts the agent writes and publishes.
+await sql`
+  CREATE TABLE IF NOT EXISTS paisa_posts (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    kind TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    link TEXT,
+    dedupe_key TEXT UNIQUE,
+    status TEXT NOT NULL DEFAULT 'live',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+await sql`
+  CREATE INDEX IF NOT EXISTS paisa_posts_recent
+  ON paisa_posts (status, created_at DESC)`;
+
 const tables = await sql`
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name`;

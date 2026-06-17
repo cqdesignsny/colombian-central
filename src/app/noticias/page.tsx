@@ -4,6 +4,10 @@ import ArticleCard from "@/components/ArticleCard";
 import SectionHeader from "@/components/SectionHeader";
 import Reveal from "@/components/Reveal";
 import NewsletterForm from "@/components/NewsletterForm";
+import PaisaDesk from "@/components/PaisaDesk";
+
+// ISR: El Paisa's desk reads the DB; regenerate at most every 30 minutes.
+export const revalidate = 1800;
 
 export const metadata: Metadata = {
   title: "Noticias: fútbol, cultura y la diáspora",
@@ -48,6 +52,8 @@ export default function NoticiasPage() {
           </div>
         </div>
       </section>
+
+      <PaisaDesk />
 
       <section className="border-t border-linea bg-amarillo py-16">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
