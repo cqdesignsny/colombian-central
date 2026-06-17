@@ -16,6 +16,7 @@ import DestinationCard from "@/components/DestinationCard";
 import MatchCard from "@/components/MatchCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import Stamp from "@/components/Stamp";
+import TricolorBar from "@/components/TricolorBar";
 
 const tickerItems = [
   "Mundial 2026 · Grupo K",
@@ -120,6 +121,63 @@ export default function Home() {
                 </Reveal>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Culture: Música + Comida */}
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              eyebrow="La cultura"
+              title="Más allá de la cancha"
+              sub="The music that plays at every party and the food that tastes like home. Two pillars of who we are."
+            />
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Reveal>
+              <Link
+                href="/musica"
+                className="group relative flex min-h-[18rem] flex-col justify-end overflow-hidden border-2 border-ink bg-ink p-8 text-paper transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
+              >
+                <span className="absolute top-6 right-6 text-xs font-bold tracking-[0.25em] text-amarillo uppercase">
+                  Música
+                </span>
+                <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
+                  La banda sonora de Colombia
+                </h3>
+                <p className="mt-3 max-w-sm text-paper/75">
+                  Artists, genres, and every Colombian concert coming through the US.
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
+                  Ver música
+                  <span className="transition-transform group-hover:translate-x-1.5">→</span>
+                </span>
+                <TricolorBar className="absolute inset-x-0 bottom-0 h-1.5" />
+              </Link>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <Link
+                href="/comida"
+                className="group relative flex min-h-[18rem] flex-col justify-end overflow-hidden border-2 border-ink bg-crema p-8 transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--color-ink)]"
+              >
+                <span className="absolute top-6 right-6 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+                  Comida
+                </span>
+                <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
+                  El sabor de la tierra
+                </h3>
+                <p className="mt-3 max-w-sm text-ink-soft">
+                  Recipes you can actually cook, plus a Colombian restaurant finder for your city.
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-azul uppercase">
+                  Ver comida
+                  <span className="transition-transform group-hover:translate-x-1.5">→</span>
+                </span>
+                <TricolorBar className="absolute inset-x-0 bottom-0 h-1.5" />
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>
