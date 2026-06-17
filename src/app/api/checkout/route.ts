@@ -85,7 +85,10 @@ export async function POST(req: Request) {
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
       metadata: { order_id: String(id) },
-      payment_intent_data: { metadata: { order_id: String(id) } },
+      payment_intent_data: {
+        description: `Pedido #${id}: ${priced.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}`,
+        metadata: { order_id: String(id) },
+      },
       success_url: `${siteUrl()}/gracias?order=${id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl()}/tienda?canceled=1`,
     },
