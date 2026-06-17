@@ -91,12 +91,18 @@ export default function FutbolPage() {
             {worldCup.groupTeams.map((team, i) => (
               <Reveal key={team.code} delay={i * 0.06}>
                 <div
-                  className={`h-full border p-6 ${
+                  className={`flex h-full flex-col border p-6 ${
                     team.code === "COL"
                       ? "border-amarillo bg-amarillo/10"
                       : "border-paper/15 bg-paper/5"
                   }`}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={team.flag}
+                    alt={`Flag of ${team.name}`}
+                    className="mb-4 h-9 w-14 border border-paper/15 object-cover"
+                  />
                   <p
                     className={`font-display text-5xl ${
                       team.code === "COL" ? "text-amarillo" : "text-paper"
@@ -167,30 +173,57 @@ export default function FutbolPage() {
             {squad.players.map((player, i) => (
               <Reveal key={player.name} delay={(i % 3) * 0.05}>
                 <div
-                  className={`flex h-full flex-col border p-5 ${
+                  className={`flex h-full flex-col overflow-hidden border ${
                     player.captain
                       ? "border-amarillo bg-amarillo/10"
                       : "border-paper/15 bg-paper/5"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="border border-paper/30 px-2 py-0.5 text-[11px] font-bold tracking-[0.2em] text-paper/70 uppercase">
+                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink">
+                    {player.image ? (
+                      <Image
+                        src={player.image}
+                        alt={player.name}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover object-top"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <span className="font-display text-6xl text-paper/20">
+                          {player.name
+                            .split(" ")
+                            .map((w) => w[0])
+                            .slice(0, 2)
+                            .join("")}
+                        </span>
+                      </div>
+                    )}
+                    <span className="absolute top-2 left-2 border border-paper/20 bg-ink/60 px-2 py-0.5 text-[11px] font-bold tracking-[0.2em] text-paper/80 uppercase">
                       {player.position}
                     </span>
                     {player.captain && (
-                      <span className="bg-amarillo px-2 py-0.5 text-[11px] font-bold tracking-[0.2em] text-ink uppercase">
+                      <span className="absolute top-2 right-2 bg-amarillo px-2 py-0.5 text-[11px] font-bold tracking-[0.2em] text-ink uppercase">
                         Capitán
                       </span>
                     )}
                   </div>
-                  <p className="display-tight mt-3 font-display text-2xl uppercase">
-                    {player.name}
-                  </p>
-                  <p className="mt-2 text-sm text-paper/65">{player.line}</p>
+                  <div className="flex flex-1 flex-col p-5">
+                    <p className="display-tight font-display text-2xl uppercase">
+                      {player.name}
+                    </p>
+                    <p className="mt-2 text-sm text-paper/65">{player.line}</p>
+                  </div>
                 </div>
               </Reveal>
             ))}
           </div>
+          <Reveal>
+            <p className="mt-8 text-xs text-paper/40">
+              Player photos via Wikimedia Commons (CC BY-SA). Country flags are public
+              domain.
+            </p>
+          </Reveal>
         </div>
       </section>
 
