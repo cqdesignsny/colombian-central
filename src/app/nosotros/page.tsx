@@ -42,7 +42,7 @@ export default function NosotrosPage() {
                   eyebrow="Nosotros"
                   title="De aquí y de allá"
                 />
-                <div className="space-y-5 text-[17px] leading-relaxed text-ink-soft">
+                <div className="font-reading space-y-5 text-[19px] leading-relaxed text-ink-soft">
                   <p>
                     Colombian Central started with a simple frustration:
                     everything Colombian lived in fifty different places. The
@@ -110,58 +110,10 @@ export default function NosotrosPage() {
           <Reveal>
             <SectionHeader
               eyebrow="La visión"
-              title="Primero Colombia. Después, el continente."
-              sub="Colombian Central is the first site in the Central network. The engine is built so that every country can get its own home base: same care, new flag."
+              title="Todo lo nuestro, bien hecho."
+              sub="One home base for the Colombian diaspora in the U.S.: news, fútbol, música, comida, la tienda, and the trip back home. Built con cariño by people who actually live it, and obsessed with getting the details right."
             />
           </Reveal>
-          <div className="grid gap-5 md:grid-cols-3">
-            {[
-              {
-                name: "Colombian Central",
-                status: "Live",
-                live: true,
-                note: "News, fútbol, tienda, viajes. You are here.",
-              },
-              {
-                name: "Mexican Central",
-                status: "On the roadmap",
-                live: false,
-                note: "Same engine, swapped config: México gets its own central.",
-              },
-              {
-                name: "Argentinian Central",
-                status: "On the roadmap",
-                live: false,
-                note: "And after that, wherever the diáspora calls home.",
-              },
-            ].map((item, i) => (
-              <Reveal key={item.name} delay={i * 0.07}>
-                <div
-                  className={`h-full border p-6 ${
-                    item.live
-                      ? "border-ink bg-ink text-paper"
-                      : "border-dashed border-ink/30 bg-paper"
-                  }`}
-                >
-                  <p
-                    className={`text-[11px] font-bold tracking-[0.25em] uppercase ${
-                      item.live ? "text-amarillo" : "text-ink-soft"
-                    }`}
-                  >
-                    {item.status}
-                  </p>
-                  <p className="display-tight mt-2 font-display text-3xl uppercase">
-                    {item.name}
-                  </p>
-                  <p
-                    className={`mt-3 text-sm ${item.live ? "text-paper/70" : "text-ink-soft"}`}
-                  >
-                    {item.note}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
           <Reveal>
             <div className="mt-14 flex flex-col items-start gap-5 border border-linea bg-crema p-8 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -174,10 +126,10 @@ export default function NosotrosPage() {
                 </p>
               </div>
               <a
-                href={`mailto:${site.contactEmail}`}
+                href={`mailto:${site.publicEmail}`}
                 className="border-2 border-ink bg-amarillo px-7 py-4 text-sm font-bold tracking-[0.2em] uppercase transition-transform hover:-translate-y-0.5"
               >
-                {site.contactEmail}
+                {site.publicEmail}
               </a>
             </div>
           </Reveal>

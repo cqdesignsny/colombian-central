@@ -1,7 +1,7 @@
 /** Rotating circular stamp, like the seal on a coffee bag. */
 export default function Stamp({
   className = "",
-  text = "100% COLOMBIANO · CON MUCHO ORGULLO · DESDE 2026 ·",
+  text = "CON MUCHO ORGULLO · DESDE 2026 · ",
 }: {
   className?: string;
   text?: string;

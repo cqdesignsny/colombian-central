@@ -13,7 +13,7 @@ export default function ArticleCard({
   return (
     <Link
       href={`/noticias/${article.slug}`}
-      className="group flex flex-col border border-linea bg-paper transition-all duration-300 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]"
+      className="group flex h-full flex-col border-2 border-ink bg-paper transition-all duration-300 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]"
     >
       <div
         className={`relative overflow-hidden ${large ? "aspect-[16/9]" : "aspect-[3/2]"}`}

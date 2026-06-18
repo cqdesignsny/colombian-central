@@ -250,17 +250,22 @@ export default function EnviarDineroPage() {
           <Reveal>
             <SectionHeader eyebrow="Preguntas" title="Lo que todos preguntan" />
           </Reveal>
-          <div className="mx-auto max-w-3xl divide-y divide-linea border-y border-linea">
+          <div className="mx-auto max-w-3xl space-y-3">
             {remitFaqs.map((f, i) => (
               <Reveal key={f.q} delay={i * 0.03}>
-                <details className="group py-5">
+                <details
+                  name="remit-faq"
+                  className="group border-2 border-ink bg-paper px-5 py-4"
+                >
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-bold text-ink">
                     {f.q}
                     <span className="font-display text-2xl text-azul transition-transform group-open:rotate-45" aria-hidden>
                       +
                     </span>
                   </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">{f.a}</p>
+                  <p className="font-reading mt-3 text-base leading-relaxed text-ink-soft">
+                    {f.a}
+                  </p>
                 </details>
               </Reveal>
             ))}

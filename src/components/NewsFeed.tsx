@@ -14,6 +14,11 @@ function storyDate(iso: string) {
   }).format(new Date(iso));
 }
 
+function excerpt(body: string, n = 240) {
+  const t = body.replace(/\s+/g, " ").trim();
+  return t.length > n ? `${t.slice(0, n).replace(/\s+\S*$/, "")}…` : t;
+}
+
 function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
   const img = s.image || categoryImage(s.category);
   return (
@@ -36,15 +41,25 @@ function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col p-5">
+        <p className="mb-2 text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
+          {storyDate(s.created_at)} · El Paisa
+        </p>
         <h3
-          className={`display-tight font-display uppercase ${large ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"}`}
+          className={`display-tight font-display uppercase group-hover:text-azul ${large ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"}`}
         >
           {s.title}
         </h3>
-        {s.dek && <p className="mt-2 flex-1 text-sm text-ink-soft">{s.dek}</p>}
-        <p className="mt-3 text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
-          {storyDate(s.created_at)} · El Paisa
-        </p>
+        {s.dek && (
+          <p className="font-reading mt-2 text-base text-ink-soft">{s.dek}</p>
+        )}
+        {large && (
+          <p className="font-reading mt-3 text-base leading-relaxed text-ink-soft">
+            {excerpt(s.body)}
+          </p>
+        )}
+        <span className="mt-4 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+          Leer →
+        </span>
       </div>
     </Link>
   );
@@ -59,12 +74,14 @@ export default async function NewsFeed() {
   const stories = await getLatestStories(9);
   if (stories.length === 0) return null;
   const [lead, ...rest] = stories;
+  const sideCards = rest.slice(0, 2);
+  const gridCards = rest.slice(2);
 
   return (
     <section className="border-b border-linea pb-16 sm:pb-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-8 flex items-center gap-4">
-          <span className="relative h-20 w-16 shrink-0 overflow-hidden">
+          <span className="relative h-20 w-16 shrink-0">
             <Image
               src="/brand/El-Paisa.png"
               alt="El Paisa, reportero"
@@ -80,25 +97,28 @@ export default async function NewsFeed() {
             <h2 className="display-tight font-display text-3xl uppercase sm:text-4xl">
               Noticias al día
             </h2>
-            <p className="mt-1 text-sm text-ink-soft">
+            <p className="font-reading mt-1 text-base text-ink-soft">
               Lo más reciente de Colombia, reportado por El Paisa todos los días.
             </p>
           </div>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid items-start gap-5 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <StoryCard s={lead} large />
           </div>
-          <div className="flex flex-col gap-5">
-            {rest.slice(0, 2).map((s) => (
-              <StoryCard key={s.id} s={s} />
-            ))}
-          </div>
+          {sideCards.length > 0 && (
+            <div className="flex flex-col gap-5">
+              {sideCards.map((s) => (
+                <StoryCard key={s.id} s={s} />
+              ))}
+            </div>
+          )}
         </div>
-        {rest.length > 2 && (
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.slice(2).map((s) => (
+
+        {gridCards.length > 0 && (
+          <div className="mt-5 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid">
+            {gridCards.map((s) => (
               <StoryCard key={s.id} s={s} />
             ))}
           </div>

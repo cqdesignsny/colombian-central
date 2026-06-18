@@ -112,7 +112,7 @@ export default async function ArticlePage({
               />
             </div>
           </div>
-          <div className="mx-auto mt-10 max-w-3xl space-y-6 px-4 text-[17px] leading-relaxed text-ink sm:px-6">
+          <div className="font-reading mx-auto mt-10 max-w-3xl space-y-6 px-4 text-[19px] leading-relaxed text-ink sm:px-6">
             {paragraphs.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}
@@ -241,28 +241,20 @@ export default async function ArticlePage({
             </div>
           )}
 
-          {/* El Paisa byline with the full figure */}
+          {/* El Paisa byline */}
           <div className="mt-4 flex items-center gap-4 border-t border-linea pt-6">
-            <span className="relative h-20 w-16 shrink-0">
+            <span className="relative h-24 w-20 shrink-0">
               <Image
                 src="/brand/El-Paisa.png"
                 alt="El Paisa"
                 fill
-                sizes="64px"
+                sizes="80px"
                 className="object-contain object-bottom"
               />
             </span>
             <p className="text-sm text-ink-soft">
               Reportado por <strong className="text-ink">El Paisa</strong>, nuestro
-              corresponsal colombiano. Escrito con ayuda de IA a partir de fuentes
-              de la web y revisado para que sea fiel. ¿Una corrección? Escríbenos a{" "}
-              <a
-                href={`mailto:${site.publicEmail}`}
-                className="text-azul underline underline-offset-2"
-              >
-                {site.publicEmail}
-              </a>
-              .
+              corresponsal colombiano.
             </p>
           </div>
         </div>

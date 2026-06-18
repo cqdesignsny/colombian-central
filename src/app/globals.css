@@ -27,6 +27,14 @@
   --font-display: var(--font-anton);
   --font-sans: var(--font-archivo);
   --font-serif: var(--font-instrument);
+  --font-reading: var(--font-fraunces);
+}
+
+/* Editorial reading serif for long-form prose. Slightly looser for legibility. */
+.font-reading {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: 0.005em;
 }
 
 html {

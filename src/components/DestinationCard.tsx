@@ -12,7 +12,7 @@ export default function DestinationCard({
   return (
     <Link
       href={`/viajes#${destination.slug}`}
-      className={`group relative block overflow-hidden border border-linea ${
+      className={`group relative block overflow-hidden border-2 border-ink ${
         tall ? "aspect-[4/5]" : "aspect-[3/2]"
       }`}
     >

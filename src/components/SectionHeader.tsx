@@ -41,7 +41,7 @@ export default function SectionHeader({
         </h2>
         {sub && (
           <p
-            className={`mt-4 max-w-xl text-base ${dark ? "text-paper/70" : "text-ink-soft"}`}
+            className={`font-reading mt-4 max-w-xl text-lg ${dark ? "text-paper/70" : "text-ink-soft"}`}
           >
             {sub}
           </p>

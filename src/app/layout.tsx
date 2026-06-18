@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Anton, Archivo, Instrument_Serif } from "next/font/google";
+import { Anton, Archivo, Instrument_Serif, Fraunces } from "next/font/google";
 import "./globals.css";
 import { site } from "@/config/site";
 import { CartProvider } from "@/components/cart";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ElPaisaChat from "@/components/ElPaisaChat";
+import ScrollToTop from "@/components/ScrollToTop";
 import JsonLd from "@/components/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/jsonld";
 
@@ -25,6 +26,14 @@ const instrument = Instrument_Serif({
   style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-instrument",
+});
+
+// Editorial reading serif for body/paragraph copy: warm, literary, and a little
+// Macondo. Levels up the prose without touching the Anton headlines.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
 });
 
 export const metadata: Metadata = {
@@ -60,9 +69,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${anton.variable} ${archivo.variable} ${instrument.variable} h-full antialiased`}
+      className={`${anton.variable} ${archivo.variable} ${instrument.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="grain flex min-h-full flex-col font-sans">
+        <ScrollToTop />
         <CartProvider>
           <Navbar />
           <main className="flex-1">{children}</main>

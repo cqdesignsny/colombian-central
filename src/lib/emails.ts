@@ -44,7 +44,7 @@ function shell(preheader: string, content: string, footerExtra = "") {
     ${content}
   </td></tr>
   <tr><td colspan="3" bgcolor="${C.ink}" style="background-color:${C.ink}; padding-top:20px; padding-bottom:20px; padding-left:32px; padding-right:32px;">
-    <span style="font-family:${FONT}; font-size:12px; line-height:18px; color:#B8AE9C;">${site.brand} · Hecho con orgullo por la diáspora.<br>Independent fan media, not affiliated with FIFA or the FCF.</span>
+    <span style="font-family:${FONT}; font-size:12px; line-height:18px; color:#B8AE9C;">${site.brand} · Hecho con orgullo por colombianos.<br>Independent fan media, not affiliated with FIFA or the FCF.</span>
     ${footerExtra}
   </td></tr>
   <tr>

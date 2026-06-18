@@ -139,19 +139,19 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="mb-4 text-xs font-bold tracking-[0.25em] text-paper/50 uppercase">
-              La red Central
+              La casa
             </h3>
             <p className="text-sm leading-relaxed text-paper/60">
-              Colombian Central is the first of many. Mexican Central,
-              Argentinian Central and more are on the roadmap. One home base
-              per country, built with the same cariño.
+              The home base for everything Colombian in the U.S.: news, fútbol,
+              música, comida, la tienda, and travel back home. Built by and for
+              la diáspora.
             </p>
           </div>
         </div>
 
         <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-paper/15 pt-6 text-xs text-paper/50">
           <p>
-            © 2026 {site.brand}. Hecho con orgullo by la diáspora.
+            © 2026 {site.brand}. Hecho con orgullo por colombianos.
           </p>
           <p>
             Independent fan media. Not affiliated with FIFA or the FCF.

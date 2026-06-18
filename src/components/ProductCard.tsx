@@ -10,7 +10,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
 
   return (
-    <div className="group flex flex-col border border-linea bg-paper transition-all duration-300 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]">
+    <div className="group flex h-full flex-col border-2 border-ink bg-paper transition-all duration-300 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]">
       <Link
         href={`/tienda/${product.slug}`}
         className="relative block aspect-square overflow-hidden"
@@ -48,7 +48,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         )}
       </Link>
-      <div className="flex flex-1 flex-col gap-1 border-t border-linea p-4">
+      <div className="flex flex-1 flex-col gap-1 border-t-2 border-ink p-4">
         <p className="text-[11px] font-bold tracking-[0.22em] text-ink-soft uppercase">
           {product.category}
         </p>

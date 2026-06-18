@@ -11,8 +11,8 @@ export default function MatchCard({
   const k = formatKickoff(fixture.kickoff);
   const home = fixture.colombiaHome;
   const frame = light
-    ? "border-paper/15 bg-paper/5 text-paper"
-    : "border-linea bg-paper text-ink";
+    ? "border-paper/25 bg-paper/5 text-paper"
+    : "border-ink bg-paper text-ink";
   const subtle = light ? "text-paper/60" : "text-ink-soft";
   const result = fixture.result;
 
@@ -31,7 +31,7 @@ export default function MatchCard({
     gs.map((g) => `${g.name} ${g.minute}`).join(", ");
 
   return (
-    <div className={`relative border p-6 ${frame}`}>
+    <div className={`relative border-2 p-6 ${frame}`}>
       <div className="absolute top-0 bottom-0 left-0 flex w-1.5 flex-col" aria-hidden>
         <div className="flex-[2] bg-amarillo" />
         <div className="flex-1 bg-azul" />
