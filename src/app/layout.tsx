@@ -6,6 +6,8 @@ import { CartProvider } from "@/components/cart";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ElPaisaChat from "@/components/ElPaisaChat";
+import JsonLd from "@/components/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/jsonld";
 
 const anton = Anton({
   weight: "400",
@@ -41,6 +43,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: site.brand,
+    description: site.description,
+    images: ["/images/hero-cartagena.jpg"],
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -60,6 +69,7 @@ export default function RootLayout({
           <Footer />
         </CartProvider>
         <ElPaisaChat />
+        <JsonLd data={[organizationLd(), websiteLd()]} />
       </body>
     </html>
   );

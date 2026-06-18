@@ -1,0 +1,18 @@
+# Colombian Central
+
+> The hub for everything Colombian, built for the Colombian diaspora in the United States: La Tricolor at the 2026 World Cup, a tienda of authentic Colombian products, travel to Colombia, music, food, news, and El Paisa (our bilingual AI guide). Independent fan media, not affiliated with FIFA or the FCF.
+
+## Key pages
+
+- [Fútbol](https://colombiancentral.com/futbol): Colombia at the 2026 World Cup (Group K with Portugal, Uzbekistan, DR Congo), fixtures, results, and the official 26-man squad.
+- [Fan gear guide](https://colombiancentral.com/futbol/hinchada): jerseys, flags, and World Cup fan gear.
+- [Música](https://colombiancentral.com/musica): top Colombian artists, a guide to the genres (vallenato, cumbia, salsa, champeta, urbano, bambuco), and 2026 US concert listings.
+- [Comida](https://colombiancentral.com/comida): authentic Colombian recipes and a Colombian restaurant finder across US metros.
+- [Tienda](https://colombiancentral.com/tienda): Colombian coffee, artisan crafts, and World Cup fan gear. Ships from Miami.
+- [Viajes](https://colombiancentral.com/viajes): trips to Colombia plus a World Cup matchday travel guide for the host cities.
+- [Enviar dinero](https://colombiancentral.com/enviar-dinero): a comparison for sending money to Colombia (Wise, Remitly, Xe, Western Union).
+- [Noticias](https://colombiancentral.com/noticias): articles on fútbol, café, music, food, and travel.
+
+## About
+
+Colombian Central serves US Colombians and the broader diaspora. Contact: info@colombiancentral.com. The free weekly newsletter is El Boletín.

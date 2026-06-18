@@ -11,6 +11,8 @@ import SectionHeader from "@/components/SectionHeader";
 import Ticker from "@/components/Ticker";
 import ProductCard from "@/components/ProductCard";
 import NewsletterForm from "@/components/NewsletterForm";
+import JsonLd from "@/components/JsonLd";
+import { sportsEventLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Fútbol: La Tricolor en el Mundial 2026",
@@ -44,6 +46,7 @@ export default function FutbolPage() {
 
   return (
     <div className="bg-ink text-paper">
+      <JsonLd data={worldCup.fixtures.map(sportsEventLd)} />
       {/* Hero */}
       <section className="relative flex min-h-[80svh] items-end overflow-hidden">
         <Image

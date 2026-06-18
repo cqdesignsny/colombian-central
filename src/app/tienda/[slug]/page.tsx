@@ -7,6 +7,8 @@ import { formatPrice } from "@/lib/format";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
+import JsonLd from "@/components/JsonLd";
+import { productLd } from "@/lib/jsonld";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -39,6 +41,7 @@ export default async function ProductPage({
 
   return (
     <>
+      <JsonLd data={productLd(product)} />
       <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Link

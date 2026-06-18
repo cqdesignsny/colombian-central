@@ -7,6 +7,8 @@ import { formatArticleDate } from "@/lib/format";
 import ArticleCard from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
 import NewsletterForm from "@/components/NewsletterForm";
+import JsonLd from "@/components/JsonLd";
+import { articleLd } from "@/lib/jsonld";
 
 export function generateStaticParams() {
   return articles.map((article) => ({ slug: article.slug }));
@@ -41,6 +43,7 @@ export default async function ArticlePage({
 
   return (
     <>
+      <JsonLd data={articleLd(article)} />
       <article className="py-12 sm:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <Link
