@@ -60,8 +60,28 @@ export async function POST(req: Request) {
     paymentStatus: "unpaid",
   });
 
-  // Build line items from the catalog with absolute image URLs for Checkout.
+  // Subscription products (the mystery box) bill monthly via Stripe subscription
+  // mode. Stripe can't cleanly mix one-time and recurring in one session, so a
+  // mixed cart is rejected with a clear message. A cart of only the box -> sub.
   const rawList = (body.items as Array<{ slug?: unknown; qty?: unknown }>) ?? [];
+  const inCart = rawList
+    .map((r) => products.find((p) => p.slug === r.slug))
+    .filter((p): p is (typeof products)[number] => Boolean(p));
+  const anyRecurring = inCart.some((p) => p.recurring);
+  const allRecurring = inCart.length > 0 && inCart.every((p) => p.recurring);
+  if (anyRecurring && !allRecurring) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "Las suscripciones se pagan por separado. Deja solo la suscripción en el carrito y vuelve a intentar.",
+      },
+      { status: 400 },
+    );
+  }
+  const subscription = allRecurring;
+
+  // Build line items from the catalog with absolute image URLs for Checkout.
   const lineItems = rawList.map((r) => {
     const product = products.find((p) => p.slug === r.slug)!;
     const images = product.image ? [`${siteUrl()}${product.image}`] : undefined;
@@ -70,25 +90,36 @@ export async function POST(req: Request) {
       price_data: {
         currency: "usd",
         unit_amount: Math.round(product.price * 100),
+        ...(product.recurring ? { recurring: { interval: product.recurring } } : {}),
         product_data: { name: product.name, ...(images ? { images } : {}) },
       },
     };
   });
 
+  const orderLabel = priced.items.map((i) => `${i.qty}x ${i.name}`).join(", ");
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create(
     {
-      mode: "payment",
+      mode: subscription ? "subscription" : "payment",
       line_items: lineItems,
       customer_email: email,
       shipping_address_collection: { allowed_countries: ["US"] },
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
       metadata: { order_id: String(id) },
-      payment_intent_data: {
-        description: `Pedido #${id}: ${priced.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}`,
-        metadata: { order_id: String(id) },
-      },
+      ...(subscription
+        ? {
+            subscription_data: {
+              description: `Suscripción #${id}: ${orderLabel}`,
+              metadata: { order_id: String(id) },
+            },
+          }
+        : {
+            payment_intent_data: {
+              description: `Pedido #${id}: ${orderLabel}`,
+              metadata: { order_id: String(id) },
+            },
+          }),
       success_url: `${siteUrl()}/gracias?order=${id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl()}/tienda?canceled=1`,
     },

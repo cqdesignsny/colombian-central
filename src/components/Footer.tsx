@@ -21,17 +21,17 @@ export default function Footer() {
               {site.tagline}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-4 border-2 border-amarillo/30 p-3">
-            <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-amarillo bg-crema">
+          <div className="flex shrink-0 items-end gap-4 border-2 border-amarillo/30 p-4">
+            <span className="relative h-28 w-20 shrink-0">
               <Image
-                src="/images/paisa/el-paisa.png"
-                alt="El Paisa"
+                src="/brand/El-Paisa.png"
+                alt="El Paisa, la mascota de Colombian Central"
                 fill
-                sizes="64px"
-                className="origin-top scale-[1.55] object-cover object-top"
+                sizes="80px"
+                className="object-contain object-bottom"
               />
             </span>
-            <div>
+            <div className="pb-1">
               <p className="font-display text-lg leading-tight uppercase">
                 ¿Dudas? Habla con El Paisa
               </p>

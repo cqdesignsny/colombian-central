@@ -4,15 +4,15 @@ import ArticleCard from "@/components/ArticleCard";
 import SectionHeader from "@/components/SectionHeader";
 import Reveal from "@/components/Reveal";
 import NewsletterForm from "@/components/NewsletterForm";
-import PaisaDesk from "@/components/PaisaDesk";
+import NewsFeed from "@/components/NewsFeed";
 
-// ISR: El Paisa's desk reads the DB; regenerate at most every 30 minutes.
-export const revalidate = 1800;
+// ISR: El Paisa's news desk reads the DB; regenerate at most every 15 minutes.
+export const revalidate = 900;
 
 export const metadata: Metadata = {
-  title: "Noticias: fútbol, cultura y la diáspora",
+  title: "Noticias: lo último de Colombia",
   description:
-    "Stories on La Tricolor, Colombian food, music, travel and the diaspora. Written by people who grew up with it.",
+    "Daily Colombia news from El Paisa's desk: La Tricolor at the World Cup, the elections, the economy, culture and music, plus our own stories on food, travel and the diaspora.",
 };
 
 export default function NoticiasPage() {
@@ -22,13 +22,29 @@ export default function NoticiasPage() {
 
   return (
     <>
-      <section className="py-16 sm:py-20">
+      <section className="pt-16 pb-10 sm:pt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <SectionHeader
               eyebrow="Noticias"
-              title="Lo último de lo nuestro"
-              sub="Fútbol, cultura, gastronomía, música, viajes. The stuff the family group chat argues about, written down properly."
+              title="Lo último de Colombia"
+              sub="El Paisa reports the day's biggest Colombian stories, updated daily, from La Tricolor to the elections. Below, our own crónicas and guides."
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* El Paisa's live news desk (auto-updated daily) */}
+      <NewsFeed />
+
+      {/* Evergreen crónicas and guides */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Crónicas y guías"
+              title="Más de lo nuestro"
+              sub="The stuff the family group chat argues about, written down properly."
             />
           </Reveal>
           <div className="grid gap-5 lg:grid-cols-3">
@@ -52,8 +68,6 @@ export default function NoticiasPage() {
           </div>
         </div>
       </section>
-
-      <PaisaDesk />
 
       <section className="border-t border-linea bg-amarillo py-16">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">

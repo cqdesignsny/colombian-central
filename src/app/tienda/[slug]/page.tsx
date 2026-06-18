@@ -96,6 +96,9 @@ export default async function ProductPage({
               </h1>
               <p className="mt-4 font-display text-3xl">
                 {formatPrice(product.price)}
+                {product.recurring && (
+                  <span className="text-lg text-ink-soft"> / mes</span>
+                )}
               </p>
               <p className="mt-6 max-w-lg text-ink-soft">{product.blurb}</p>
               <ul className="mt-8 space-y-3">
@@ -113,8 +116,9 @@ export default async function ProductPage({
               <div className="mt-10">
                 <AddToCartButton product={product} />
                 <p className="mt-4 text-xs text-ink-soft">
-                  {shopNotes.shipping} Checkout is in beta: orders are confirmed
-                  by email within a day.
+                  {product.recurring
+                    ? "Renews monthly, cancel anytime. Secure card checkout. Ships from Miami."
+                    : `${shopNotes.shipping} Secure card checkout.`}
                 </p>
               </div>
             </div>

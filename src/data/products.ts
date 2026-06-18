@@ -9,6 +9,8 @@ export type Product = {
   blurb: string;
   details: string[];
   badge?: string;
+  /** Recurring billing interval. Set for subscription products (the mystery box). */
+  recurring?: "month";
 };
 
 export const products: Product[] = [
@@ -29,9 +31,26 @@ export const products: Product[] = [
     ],
   },
   {
+    slug: "caja-mecato",
+    name: "La Caja Mecato",
+    price: 45,
+    category: "Lifestyle",
+    image: "/images/products/caja-mecato.jpg",
+    badge: "Suscripción mensual",
+    recurring: "month",
+    blurb:
+      "A monthly mystery box of Colombia, straight from home. Mecato is paisa for snacks and treats, and that is the heart of it: dulces, chocolates, galletas and the goodies you grew up with, plus a surprise trinket or two. You never see what is coming. That is the fun. Cancela cuando quieras.",
+    details: [
+      "Ships monthly: a new surprise box every month",
+      "Colombian sweets, snacks and treats, plus a small handmade trinket",
+      "Curated by us and sourced from Colombia. The contents are always a surprise",
+      "Cancel anytime",
+    ],
+  },
+  {
     slug: "cafe-juan-valdez",
     name: "Juan Valdez Café, Dark Roast",
-    price: 16,
+    price: 39,
     category: "Café & Cocina",
     image: "/images/products/cafe-juan-valdez.jpg",
     badge: "Best seller",
@@ -47,7 +66,7 @@ export const products: Product[] = [
   {
     slug: "sombrero-vueltiao",
     name: "Sombrero Vueltiao",
-    price: 65,
+    price: 139,
     category: "Artesanías",
     image: "/images/products/sombrero.jpg",
     blurb:

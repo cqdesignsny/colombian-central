@@ -94,6 +94,26 @@ await sql`
   CREATE INDEX IF NOT EXISTS paisa_posts_recent
   ON paisa_posts (status, created_at DESC)`;
 
+// El Paisa's news desk: full news stories he writes daily from live web search,
+// 1 to 3 a day across topics (futbol, politics, economy, culture, music).
+await sql`
+  CREATE TABLE IF NOT EXISTS paisa_stories (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    slug TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL,
+    dek TEXT,
+    category TEXT NOT NULL,
+    body TEXT NOT NULL,
+    sources JSONB NOT NULL DEFAULT '[]',
+    image TEXT,
+    importance INTEGER NOT NULL DEFAULT 2,
+    status TEXT NOT NULL DEFAULT 'live',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+await sql`
+  CREATE INDEX IF NOT EXISTS paisa_stories_recent
+  ON paisa_stories (status, created_at DESC)`;
+
 const tables = await sql`
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name`;
