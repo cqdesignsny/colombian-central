@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { generateText } from "ai";
 import { PAISA_MODEL, SITE_KNOWLEDGE } from "@/lib/paisa";
+import { paisaWebSearch } from "@/lib/websearch";
 import { hasRecentPaisaPosts, insertPaisaPost } from "@/lib/paisa-posts";
 
 export const runtime = "nodejs";
@@ -16,9 +17,9 @@ type GenPost = {
 
 /**
  * El Paisa's autonomous desk refresh. Vercel cron hits this (GET). It throttles
- * to ~daily, then has El Paisa write a few short posts grounded ONLY in the
- * site's own facts, and stores them. No web search yet (free-tier Gateway), so
- * no invented news or scores. Guarded by CRON_SECRET.
+ * to ~daily, pulls current facts from the web (Perplexity via the Gateway),
+ * then has El Paisa write a few short posts grounded in the site facts plus
+ * those fresh facts, and stores them. Guarded by CRON_SECRET.
  */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
@@ -39,14 +40,24 @@ export async function GET(req: Request) {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  const system = `You are El Paisa, the Colombian mascot of Colombian Central, writing short "desk" posts for the site's El Paisa feed. Full Spanglish, paisa flavor (parce, pues, hagale, que chimba), funny but warm and accurate. Ground EVERY post ONLY in the facts below. Do NOT invent scores, breaking news, prices, dates, or anything not in the facts. Today is ${today}.
 
-FACTS:
-${SITE_KNOWLEDGE}`;
+  // Fully awake: pull current facts from the web so the desk can report the real
+  // latest result, the next fixture, and recent culture news, not just the
+  // static site knowledge. Fails soft to null; then he writes from site facts.
+  const liveFacts = await paisaWebSearch(
+    `Today is ${today}. In a few sentences: Colombia's most recent FIFA World Cup 2026 match (final score, date, and a one-line storyline or standout player), their next fixture with date, plus one notable Colombian music, culture, or food news item from the last week. Be concise and include dates.`,
+  );
+
+  const system = `You are El Paisa, the Colombian mascot of Colombian Central, writing short "desk" posts for the site's El Paisa feed. Full Spanglish, paisa flavor (parce, pues, hagale, que chimba), funny but warm and accurate. Today is ${today}.
+
+Ground every post in the facts below. You MAY use the FRESH FACTS (verified from the web today) for real current news like the latest score and the next match. Do NOT invent anything that is not in either set of facts. Never use em-dashes.
+
+SITE FACTS:
+${SITE_KNOWLEDGE}${liveFacts ? `\n\nFRESH FACTS (from the web, ${today}):\n${liveFacts}` : ""}`;
 
   const prompt = `Write exactly 3 short desk posts as a JSON array, nothing else. Each item:
-{"kind":"preview"|"spotlight"|"note","category":"futbol"|"musica"|"comida"|"cultura","title":"<short punchy paisa title>","body":"<1-2 sentences in your voice>","link":"<an internal path from the facts like /futbol, /comida, /musica, /tienda, /viajes>"}
-Make ONE a hype preview of Colombia's next World Cup group match, and the other two spotlights of real things in the facts (a dish, an artist, the tienda, a trip). Return ONLY the JSON array.`;
+{"kind":"recap"|"preview"|"spotlight"|"note","category":"futbol"|"musica"|"comida"|"cultura","title":"<short punchy paisa title>","body":"<1-2 sentences in your voice>","link":"<an internal path from the facts like /futbol, /comida, /musica, /tienda, /viajes>"}
+Make ONE about La Tricolor at the World Cup: if the fresh facts include a recent result, write a quick recap; otherwise hype the next group match. The other two are spotlights of real things in the facts (a dish, an artist, the tienda, a trip). Return ONLY the JSON array.`;
 
   let posts: GenPost[] = [];
   try {

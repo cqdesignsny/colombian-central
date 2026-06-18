@@ -1,11 +1,82 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment, type ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import TricolorBar from "@/components/TricolorBar";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+// El Paisa replies in Markdown-ish text. Render real, clickable links (Markdown
+// links, bare URLs, and bare internal /paths) and **bold**, so the chat never
+// shows raw slashes or asterisks. Dependency-free and tolerant of the partial
+// text that arrives while streaming.
+function renderBold(text: string, key: string): ReactNode[] {
+  return text
+    .split(/\*\*([^*]+)\*\*/g)
+    .map((part, i) =>
+      i % 2 === 1 ? (
+        <strong key={`${key}-b${i}`}>{part}</strong>
+      ) : (
+        <Fragment key={`${key}-${i}`}>{part}</Fragment>
+      ),
+    );
+}
+
+function ChatLink({ href, children }: { href: string; children: ReactNode }) {
+  const cls =
+    "font-semibold text-azul underline underline-offset-2 break-words hover:opacity-70";
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+      {children}
+    </a>
+  );
+}
+
+function renderRich(text: string, key: string): ReactNode[] {
+  const re =
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[A-Za-z][\w/-]*)\)|(https?:\/\/[^\s)]+)|(\/[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)*)/g;
+  const out: ReactNode[] = [];
+  let last = 0;
+  let i = 0;
+  for (let m = re.exec(text); m; m = re.exec(text)) {
+    if (m.index > last) {
+      out.push(...renderBold(text.slice(last, m.index), `${key}-t${i}`));
+    }
+    const [full, mdLabel, mdHref, bareUrl, barePath] = m;
+    if (mdHref) {
+      out.push(
+        <ChatLink key={`${key}-l${i}`} href={mdHref}>
+          {mdLabel}
+        </ChatLink>,
+      );
+    } else {
+      const raw = (bareUrl || barePath)!;
+      const trail = raw.match(/[.,;:!?)]+$/)?.[0] ?? "";
+      const href = trail ? raw.slice(0, -trail.length) : raw;
+      out.push(
+        <ChatLink key={`${key}-l${i}`} href={href}>
+          {href}
+        </ChatLink>,
+      );
+      if (trail) out.push(<Fragment key={`${key}-tr${i}`}>{trail}</Fragment>);
+    }
+    last = m.index + full.length;
+    i++;
+  }
+  if (last < text.length) {
+    out.push(...renderBold(text.slice(last), `${key}-tEnd`));
+  }
+  return out;
+}
 
 const WELCOME: Msg = {
   role: "assistant",
@@ -148,7 +219,15 @@ export default function ElPaisaChat() {
                       m.role === "user" ? "bg-azul text-paper" : "bg-crema text-ink"
                     }`}
                   >
-                    {m.content || <span className="text-ink-soft">El Paisa está escribiendo…</span>}
+                    {m.content ? (
+                      m.role === "assistant" ? (
+                        renderRich(m.content, `m${i}`)
+                      ) : (
+                        m.content
+                      )
+                    ) : (
+                      <span className="text-ink-soft">El Paisa está escribiendo…</span>
+                    )}
                   </div>
                 </div>
               ))}

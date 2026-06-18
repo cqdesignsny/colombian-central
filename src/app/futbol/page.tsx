@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { worldCup, squad } from "@/data/futbol";
+import { worldCup, squad, nextFixture, lastPlayed } from "@/data/futbol";
 import { products } from "@/data/products";
 import { formatKickoff } from "@/lib/format";
 import Countdown from "@/components/Countdown";
@@ -19,8 +19,28 @@ export const metadata: Metadata = {
 };
 
 export default function FutbolPage() {
-  const debut = formatKickoff(worldCup.debutKickoff);
+  const next = nextFixture();
+  const last = lastPlayed();
+  const nextK = next ? formatKickoff(next.kickoff) : null;
+  const openerVerb = last?.result
+    ? last.result.colombia > last.result.opponent
+      ? "win over"
+      : last.result.colombia === last.result.opponent
+        ? "draw with"
+        : "loss to"
+    : "";
   const jersey = products.find((p) => p.slug === "tricolor-26-jersey");
+
+  const tickerItems = [
+    "Grupo K",
+    ...worldCup.fixtures.map((f) => {
+      const fk = formatKickoff(f.kickoff);
+      return f.result
+        ? `FT · COL ${f.result.colombia}-${f.result.opponent} ${f.opponentCode}`
+        : `COL vs ${f.opponentCode} · ${fk.date} · ${fk.time} · ${f.tv}`;
+    }),
+    "Vamos mi selección",
+  ];
 
   return (
     <div className="bg-ink text-paper">
@@ -50,31 +70,45 @@ export default function FutbolPage() {
           </Reveal>
           <Reveal delay={0.16}>
             <p className="mt-5 max-w-xl text-lg text-paper/80">
-              Seventh World Cup. First one with this generation in full bloom.
-              Every fixture, every kickoff time, every excuse you need to leave
-              work early. It all starts {debut.weekday}, {debut.date}.
+              Seventh World Cup, first one with this generation in full bloom.
+              {last?.result ? (
+                <>
+                  {" "}
+                  La Tricolor opened with a {last.result.colombia}-
+                  {last.result.opponent} {openerVerb} {last.opponent}.
+                </>
+              ) : null}
+              {next ? (
+                <>
+                  {" "}
+                  Next up: {next.opponent}, {nextK!.weekday} {nextK!.date}. Every
+                  kickoff, every excuse you need to leave work early.
+                </>
+              ) : (
+                <> The group stage is done. On to the knockouts.</>
+              )}
             </p>
           </Reveal>
           <Reveal delay={0.24}>
             <div className="mt-8">
-              <p className="mb-3 text-xs font-bold tracking-[0.25em] text-paper/60 uppercase">
-                Countdown to Colombia vs Uzbekistan · {debut.time}
-              </p>
-              <Countdown target={worldCup.debutKickoff} light />
+              {next ? (
+                <>
+                  <p className="mb-3 text-xs font-bold tracking-[0.25em] text-paper/60 uppercase">
+                    Próximo partido · Colombia vs {next.opponent} · {nextK!.time}
+                  </p>
+                  <Countdown target={next.kickoff} light />
+                </>
+              ) : (
+                <p className="font-display text-4xl text-amarillo uppercase sm:text-5xl">
+                  Fase de grupos completa
+                </p>
+              )}
             </div>
           </Reveal>
         </div>
       </section>
 
-      <Ticker
-        items={[
-          "Grupo K",
-          "COL vs UZB · Jun 17 · 10:00 PM ET · FS1",
-          "COL vs COD · Jun 23 · 10:00 PM ET · FS1",
-          "COL vs POR · Jun 27 · 7:30 PM ET · FOX",
-          "Vamos mi selección",
-        ]}
-      />
+      <Ticker items={tickerItems} />
 
       {/* Group K */}
       <section className="py-20 sm:py-24">

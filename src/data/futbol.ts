@@ -1,3 +1,6 @@
+/** A goal in a played match. `team` is from Colombia's point of view. */
+export type Goal = { team: "COL" | "OPP"; name: string; minute: string };
+
 export type Fixture = {
   matchday: number;
   opponent: string;
@@ -8,6 +11,10 @@ export type Fixture = {
   venue: string;
   city: string;
   tv: string;
+  /** Set once the match is played. `status` is "FT" (final) or "HT". */
+  result?: { colombia: number; opponent: number; status: "FT" | "HT" };
+  /** Optional scorer list, in order. Verify against a real source before editing. */
+  goals?: Goal[];
 };
 
 export const worldCup = {
@@ -53,6 +60,13 @@ export const worldCup = {
       venue: "Estadio Azteca",
       city: "Mexico City",
       tv: "FS1",
+      result: { colombia: 3, opponent: 1, status: "FT" },
+      goals: [
+        { team: "COL", name: "Daniel Muñoz", minute: "40'" },
+        { team: "OPP", name: "Fayzullaev", minute: "60'" },
+        { team: "COL", name: "Luis Díaz", minute: "65'" },
+        { team: "COL", name: "Jaminton Campaz", minute: "90'+9'" },
+      ],
     },
     {
       matchday: 2,
@@ -77,6 +91,21 @@ export const worldCup = {
   ] satisfies Fixture[],
   kickoffNote: "All times U.S. Eastern.",
 };
+
+/**
+ * The next match still to be played: the first fixture without a result.
+ * Returns null once all group games are done. Drives the countdown so it
+ * never sticks on a match that already kicked off.
+ */
+export function nextFixture(): Fixture | null {
+  return worldCup.fixtures.find((f) => !f.result) ?? null;
+}
+
+/** The most recent played match (last fixture that has a result), or null. */
+export function lastPlayed(): Fixture | null {
+  const played = worldCup.fixtures.filter((f) => f.result);
+  return played.length ? played[played.length - 1]! : null;
+}
 
 export type Player = {
   name: string;

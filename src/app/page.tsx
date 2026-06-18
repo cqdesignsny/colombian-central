@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/config/site";
-import { worldCup } from "@/data/futbol";
+import { worldCup, nextFixture, lastPlayed } from "@/data/futbol";
 import { products } from "@/data/products";
 import { destinations } from "@/data/destinations";
 import { articles } from "@/data/articles";
@@ -19,16 +19,21 @@ import Stamp from "@/components/Stamp";
 import TricolorBar from "@/components/TricolorBar";
 import PaisaButton from "@/components/PaisaButton";
 
-const tickerItems = [
-  "Mundial 2026 · Grupo K",
-  "Colombia vs Uzbekistan · Jun 17 · Estadio Azteca",
-  "Colombia vs DR Congo · Jun 23 · Guadalajara",
-  "Colombia vs Portugal · Jun 27 · Miami",
-  "Todo lo nuestro, en un solo lugar",
-];
-
 export default function Home() {
-  const debut = formatKickoff(worldCup.debutKickoff);
+  const next = nextFixture();
+  const last = lastPlayed();
+  const nextK = next ? formatKickoff(next.kickoff) : null;
+
+  const tickerItems = [
+    "Mundial 2026 · Grupo K",
+    ...worldCup.fixtures.map((f) => {
+      const fk = formatKickoff(f.kickoff);
+      return f.result
+        ? `FT · COL ${f.result.colombia}-${f.result.opponent} ${f.opponentCode}`
+        : `Colombia vs ${f.opponent} · ${fk.date} · ${f.city}`;
+    }),
+    "Todo lo nuestro, en un solo lugar",
+  ];
 
   return (
     <>
@@ -49,7 +54,9 @@ export default function Home() {
           <Reveal>
             <p className="mb-5 inline-flex items-center gap-3 border border-paper/40 px-3 py-1.5 text-xs font-bold tracking-[0.25em] text-paper uppercase backdrop-blur-sm">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amarillo" />
-              Grupo K · Debut {debut.date} · Estadio Azteca
+              {next
+                ? `Grupo K · Próximo: COL vs ${next.opponentCode} · ${nextK!.date}`
+                : "Grupo K · Mundial 2026"}
             </p>
           </Reveal>
           <Reveal delay={0.08}>
@@ -100,10 +107,19 @@ export default function Home() {
                   sub="Seventh World Cup. A squad in its prime. Three group matches, and two of them within driving distance of half the diaspora. It does not get better than this."
                 />
                 <p className="mb-4 text-xs font-bold tracking-[0.25em] text-paper/60 uppercase">
-                  Countdown to the debut · {debut.weekday} {debut.date} ·{" "}
-                  {debut.time}
+                  {next
+                    ? `Próximo · Colombia vs ${next.opponent} · ${nextK!.weekday} ${nextK!.date} · ${nextK!.time}`
+                    : last?.result
+                      ? `Último · COL ${last.result.colombia}-${last.result.opponent} ${last.opponentCode}`
+                      : "Mundial 2026"}
                 </p>
-                <Countdown target={worldCup.debutKickoff} light />
+                {next ? (
+                  <Countdown target={next.kickoff} light />
+                ) : (
+                  <p className="font-display text-4xl text-amarillo uppercase">
+                    Fase de grupos completa
+                  </p>
+                )}
                 <Link
                   href="/futbol"
                   className="group mt-10 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase"
