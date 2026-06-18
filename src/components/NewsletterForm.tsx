@@ -41,7 +41,8 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
   }
 
   return (
-    <form onSubmit={subscribe} className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+    <div className="w-full max-w-md">
+      <form onSubmit={subscribe} className="flex flex-col gap-3 sm:flex-row">
       <Honeypot value={website} onChange={setWebsite} />
       <input
         type="email"
@@ -68,6 +69,17 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
           Something broke. Try again?
         </p>
       )}
-    </form>
+      </form>
+      <p className={`mt-2 text-xs ${dark ? "text-paper/50" : "text-ink-soft"}`}>
+        Te mandamos El Boletín. Cancela cuando quieras. Mira nuestra{" "}
+        <a
+          href="/privacidad"
+          className="underline underline-offset-2 hover:opacity-80"
+        >
+          Política de Privacidad
+        </a>
+        .
+      </p>
+    </div>
   );
 }

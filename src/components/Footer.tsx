@@ -149,13 +149,27 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-paper/15 pt-6 text-xs text-paper/50">
-          <p>
-            © 2026 {site.brand}. Hecho con orgullo por colombianos.
+        <div className="mt-14 border-t border-paper/15 pt-6 text-xs text-paper/50">
+          <p className="mb-4 max-w-4xl leading-relaxed">
+            Some links on this site are affiliate links, and we may earn a
+            commission at no extra cost to you. As an Amazon Associate we earn
+            from qualifying purchases. Colombian Central is independent fan
+            media, not affiliated with FIFA or the FCF.
           </p>
-          <p>
-            Independent fan media. Not affiliated with FIFA or the FCF.
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p>© 2026 {site.brand}. Hecho con orgullo por colombianos.</p>
+            <nav className="flex flex-wrap gap-x-4 gap-y-1">
+              <Link href="/privacidad" className="hover:text-amarillo">
+                Privacidad
+              </Link>
+              <Link href="/terminos" className="hover:text-amarillo">
+                Términos
+              </Link>
+              <Link href="/envios-devoluciones" className="hover:text-amarillo">
+                Envíos y Devoluciones
+              </Link>
+            </nav>
+          </div>
         </div>
       </div>
       <TricolorBar className="h-2" />

@@ -17,6 +17,9 @@ const STATIC: { path: string; freq: Freq; priority: number }[] = [
   { path: "/enviar-dinero", freq: "weekly", priority: 0.7 },
   { path: "/noticias", freq: "daily", priority: 0.8 },
   { path: "/nosotros", freq: "monthly", priority: 0.5 },
+  { path: "/privacidad", freq: "yearly", priority: 0.2 },
+  { path: "/terminos", freq: "yearly", priority: 0.2 },
+  { path: "/envios-devoluciones", freq: "yearly", priority: 0.3 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

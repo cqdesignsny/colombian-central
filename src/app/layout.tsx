@@ -38,6 +38,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
+  alternates: { canonical: "./" },
   title: {
     default: `${site.brand} | ${site.tagline}`,
     template: `%s | ${site.brand}`,
@@ -48,15 +49,15 @@ export const metadata: Metadata = {
     description: site.description,
     url: site.url,
     siteName: site.brand,
-    images: [{ url: "/images/hero-cartagena.jpg", width: 2048, height: 878 }],
-    locale: "en_US",
+    images: [{ url: "/images/og.jpg", width: 1200, height: 630 }],
+    locale: "es_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: site.brand,
     description: site.description,
-    images: ["/images/hero-cartagena.jpg"],
+    images: ["/images/og.jpg"],
   },
   robots: { index: true, follow: true },
 };
@@ -68,7 +69,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${anton.variable} ${archivo.variable} ${instrument.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="grain flex min-h-full flex-col font-sans">

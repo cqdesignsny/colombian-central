@@ -22,7 +22,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = products.find((p) => p.slug === slug);
   if (!product) return {};
-  return { title: product.name, description: product.blurb };
+  return {
+    title: product.name,
+    description: product.blurb,
+    ...(product.image
+      ? { openGraph: { images: [{ url: product.image }] } }
+      : {}),
+  };
 }
 
 export default async function ProductPage({
