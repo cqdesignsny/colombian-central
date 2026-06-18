@@ -29,19 +29,19 @@ export const products: Product[] = [
     ],
   },
   {
-    slug: "cafe-de-origen-huila",
-    name: "Café de Origen: Huila",
-    price: 18,
+    slug: "cafe-juan-valdez",
+    name: "Juan Valdez Café, Dark Roast",
+    price: 16,
     category: "Café & Cocina",
-    image: "/images/products/cafe.jpg",
+    image: "/images/products/cafe-juan-valdez.jpg",
     badge: "Best seller",
     blurb:
-      "Single-origin from smallholder farms in Huila. Caramel, red fruit, and a clean finish. Roasted the week it ships.",
+      "Juan Valdez, the icon of Colombian coffee. 100% premium Colombian beans, dark roast, with notes of dark chocolate and red berries. The cup that tastes like home.",
     details: [
-      "12 oz / 340 g, whole bean or ground",
-      "Single origin, washed process, 1,500 to 1,900 m",
-      "Direct trade with family fincas in Pitalito and Garzón",
-      "Roasted weekly in small batches",
+      "11 oz / 312 g, ground",
+      "100% premium Colombian arabica, dark roast",
+      "Tasting notes: dark chocolate and red berries",
+      "Ships from Miami",
     ],
   },
   {
