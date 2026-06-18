@@ -40,6 +40,24 @@ const prodHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // colombiacentral.com (the bonus country-name domain) permanently redirects to
+  // the flagship, so we don't split the brand or duplicate content.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "colombiacentral.com" }],
+        destination: "https://colombiancentral.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.colombiacentral.com" }],
+        destination: "https://colombiancentral.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
