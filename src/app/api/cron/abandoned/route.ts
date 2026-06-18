@@ -13,8 +13,9 @@ export const runtime = "nodejs";
  * than 7 days are left alone. Vercel adds the CRON_SECRET as a bearer token.
  */
 export async function GET(req: Request) {
+  // Fail closed: a missing secret must not open the endpoint to anyone.
   const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
@@ -44,6 +45,12 @@ export async function GET(req: Request) {
   let sent = 0;
 
   for (const o of rows) {
+    // Re-check payment in case a Stripe webhook marked it paid since the SELECT.
+    const fresh = (await db`
+      SELECT payment_status FROM orders WHERE id = ${o.id}
+    `) as Array<{ payment_status: string }>;
+    if (fresh[0]?.payment_status !== "unpaid") continue;
+
     const stage = (o.reminder_stage + 1) as 1 | 2 | 3;
     const mail = abandonedCartEmail({
       id: o.id,

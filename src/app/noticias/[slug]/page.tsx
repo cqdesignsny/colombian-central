@@ -151,6 +151,8 @@ export default async function ArticlePage({
   const img = story.image || categoryImage(story.category);
   const paragraphs = story.body.split(/\n+/).filter((p) => p.trim().length > 0);
   const related = (await getLatestStories(4)).filter((s) => s.slug !== story.slug).slice(0, 3);
+  // Only ever render https source links (model output is untrusted).
+  const safeSources = story.sources.filter((s) => /^https:\/\//i.test(s.url));
 
   const newsLd = {
     "@context": "https://schema.org",
@@ -219,13 +221,13 @@ export default async function ArticlePage({
             <p key={i}>{paragraph}</p>
           ))}
 
-          {story.sources.length > 0 && (
+          {safeSources.length > 0 && (
             <div className="border-t border-linea pt-5">
               <p className="text-xs font-bold tracking-[0.2em] text-ink-soft uppercase">
                 Fuentes
               </p>
               <ul className="mt-2 space-y-1">
-                {story.sources.map((src, i) => (
+                {safeSources.map((src, i) => (
                   <li key={i} className="text-sm">
                     <a
                       href={src.url}

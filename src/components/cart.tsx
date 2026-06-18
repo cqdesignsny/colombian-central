@@ -51,7 +51,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setItems(
+            parsed.filter(
+              (i) =>
+                i &&
+                typeof i.slug === "string" &&
+                typeof i.qty === "number" &&
+                i.qty > 0,
+            ),
+          );
+        }
+      }
     } catch {
       // ignore corrupted carts
     }
@@ -60,7 +73,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // storage full or blocked; ignore
+    }
   }, [items, hydrated]);
 
   const add = useCallback((product: Product) => {

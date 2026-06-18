@@ -42,8 +42,9 @@ function slugify(s: string): string {
 }
 
 export async function GET(req: Request) {
+  // Fail closed: no secret configured means no access (never run paid AI + publish unauthenticated).
   const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
     return Response.json({ ok: false }, { status: 401 });
   }
 
@@ -125,10 +126,10 @@ Pick the 1 to 3 MOST newsworthy, DISTINCT-subject stories (different topics, nev
     const category = String(s.category || "Mundo").slice(0, 30);
     const sources = Array.isArray(s.sources)
       ? s.sources
-          .filter((x) => x?.url)
+          .filter((x) => x?.url && /^https:\/\//i.test(String(x.url).trim()))
           .map((x) => ({
             title: String(x.title || x.url).slice(0, 160),
-            url: String(x.url).slice(0, 400),
+            url: String(x.url).trim().slice(0, 400),
           }))
           .slice(0, 4)
       : [];

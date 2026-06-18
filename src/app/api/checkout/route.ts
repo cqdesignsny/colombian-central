@@ -47,22 +47,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Invalid cart" }, { status: 400 });
   }
 
-  // Dormant fallback: no Stripe key, so just save the cart as a recoverable lead.
-  if (!isStripeConfigured()) {
-    const id = await insertOrder({ email, items: priced.items, subtotal: priced.subtotal });
-    return NextResponse.json({ ok: true, fallback: true, orderId: id });
-  }
-
-  const id = await insertOrder({
-    email,
-    items: priced.items,
-    subtotal: priced.subtotal,
-    paymentStatus: "unpaid",
-  });
-
   // Subscription products (the mystery box) bill monthly via Stripe subscription
   // mode. Stripe can't cleanly mix one-time and recurring in one session, so a
-  // mixed cart is rejected with a clear message. A cart of only the box -> sub.
+  // mixed cart is rejected UP FRONT, before any order row is created.
   const rawList = (body.items as Array<{ slug?: unknown; qty?: unknown }>) ?? [];
   const inCart = rawList
     .map((r) => products.find((p) => p.slug === r.slug))
@@ -80,6 +67,19 @@ export async function POST(req: Request) {
     );
   }
   const subscription = allRecurring;
+
+  // Dormant fallback: no Stripe key, so just save the cart as a recoverable lead.
+  if (!isStripeConfigured()) {
+    const id = await insertOrder({ email, items: priced.items, subtotal: priced.subtotal });
+    return NextResponse.json({ ok: true, fallback: true, orderId: id });
+  }
+
+  const id = await insertOrder({
+    email,
+    items: priced.items,
+    subtotal: priced.subtotal,
+    paymentStatus: "unpaid",
+  });
 
   // Build line items from the catalog with absolute image URLs for Checkout.
   const lineItems = rawList.map((r) => {
