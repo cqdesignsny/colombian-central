@@ -51,6 +51,16 @@ body {
   color: var(--color-ink);
 }
 
+/* Deter image theft: no drag, no select on images (paired with ImageProtect). */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Paper grain over everything, very subtle */
 .grain::before {
   content: "";

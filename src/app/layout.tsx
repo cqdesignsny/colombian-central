@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ElPaisaChat from "@/components/ElPaisaChat";
 import ScrollToTop from "@/components/ScrollToTop";
+import ImageProtect from "@/components/ImageProtect";
 import JsonLd from "@/components/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/jsonld";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
     >
       <body className="grain flex min-h-full flex-col font-sans">
         <ScrollToTop />
+        <ImageProtect />
         <CartProvider>
           <Navbar />
           <main className="flex-1">{children}</main>

@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       model: "perplexity/sonar",
       system:
         "You are a Colombian news researcher. Report only current, factual, verifiable news with dates and a source URL for each item. Be neutral and non-partisan, especially on politics.",
-      prompt: `Today is ${today}. List the 4 to 6 most important and current news stories in Colombia right now, across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, and culture/music/entertainment. For EACH story give: a clear factual headline, a 2-3 sentence summary, the topic, the date, and one source URL. Strictly factual, neutral on politics. Include dates.`,
+      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, and culture/music/entertainment. Give 4 to 6 distinct, recent stories. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and one source URL. Strictly factual, neutral on politics. Include dates.`,
       temperature: 0.2,
       maxOutputTokens: 1200,
     });
