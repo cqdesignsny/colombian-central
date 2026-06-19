@@ -1,5 +1,7 @@
 export type ArticleSection = "futbol" | "musica" | "comida" | "viajes" | "colombia";
 
+export type ArticleSource = { title: string; url: string };
+
 export type Article = {
   slug: string;
   title: string;
@@ -12,6 +14,8 @@ export type Article = {
   image: string;
   featured?: boolean;
   body: string[];
+  /** At least two sources backing the piece, rendered as "Fuentes". */
+  sources: ArticleSource[];
 };
 
 export const categoryColors: Record<Article["category"], string> = {
@@ -40,6 +44,11 @@ export const articles: Article[] = [
       "Then Luis Díaz did what Luis Díaz does. Luchito restored the lead in the 65th, the most electric Colombian attacker of his generation reminding everyone why defenders lose sleep over him. From there Colombia managed the tempo, and Jaminton Campaz put a bow on it deep into stoppage time, 90+9, for the 3-1 final.",
       "It is one game, and Néstor Lorenzo will be the first to say so. DR Congo on June 23 in Guadalajara is the classic trap match, and Portugal looms in Miami after that. But a winning debut with goals spread across the team and James pulling the strings is exactly the platform this group wanted. Vamos, mi selección.",
     ],
+    sources: [
+      { title: "ESPN: Uzbekistan 1-3 Colombia, game analysis", url: "https://www.espn.com/soccer/report/_/gameId/760436" },
+      { title: "FIFA: Uzbekistan 1-3 Colombia, match report", url: "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/uzbekistan-colombia-match-report-highlights" },
+      { title: "Wikipedia: 2026 FIFA World Cup Group K", url: "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K" },
+    ],
   },
   {
     slug: "grupo-k-breakdown",
@@ -57,6 +66,10 @@ export const articles: Article[] = [
       "Match two, June 23 against DR Congo at Estadio Akron in Guadalajara, is the trap game. The Leopards came through the playoff route, which means they have already survived more pressure than most teams in this tournament. They are fast, physical, and dangerous on the counter. If Colombia takes three points from the opener, the temptation to rotate will be real. Lorenzo does not strike anyone as a man who falls for temptation.",
       "Then the big one: Portugal at Hard Rock Stadium in Miami on June 27. On paper it decides first place. Off paper, Miami is the second-largest Colombian city in the United States, so the neutral venue is not going to be neutral. Portugal arrives as one of the tournament favorites with a golden generation in full bloom. Colombia arrives with the best squad it has had since 2014 and zero fear of anybody.",
       "The format helps: twelve groups of four, top two advance, plus the eight best third-place teams. Anything less than the knockout rounds would be a failure for this group of players, and they know it. Six points from the first two games makes the Portugal match a celebration with seeding implications. Vamos.",
+    ],
+    sources: [
+      { title: "Wikipedia: 2026 FIFA World Cup Group K", url: "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_K" },
+      { title: "Wikipedia: 2026 FIFA World Cup", url: "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup" },
     ],
   },
   {
@@ -76,6 +89,10 @@ export const articles: Article[] = [
       "Houston's Gessner corridor, the Paterson and Elizabeth areas in New Jersey, Chicago's northwest side, and LA's Pico-Union all have their own pockets of amarillo. The pattern is the same everywhere: find the Colombian bakery, and within two blocks there is a bar showing the game with the sound on.",
       "We are building a city-by-city watch party list for every Colombia match, updated through the tournament. It lands in El Boletín, our newsletter, the week of each game. Sign up at the bottom of this page and bring your jersey.",
     ],
+    sources: [
+      { title: "Wikipedia: Colombian Americans", url: "https://en.wikipedia.org/wiki/Colombian_Americans" },
+      { title: "CBS News: The Arepa Lady, Queens, New York", url: "https://www.cbsnews.com/news/the-arepa-lady-maria-cano-queens-new-york/" },
+    ],
   },
   {
     slug: "karol-g-tropitour",
@@ -93,6 +110,11 @@ export const articles: Article[] = [
       "If you are going, the move is the same one abuela taught you: get there early. The pre-show parking-lot scene at these dates has become its own event, all amarillo and aguardiente and somebody's speaker playing the deep cuts. Bring the flag.",
       "We track every Colombian artist routing through the U.S. and flag when tickets drop in your city. The concerts list on this page stays current, and El Boletín carries the on-sale alerts the week they go live.",
     ],
+    sources: [
+      { title: "Billboard: Karol G unveils 2026 TropiTour dates", url: "https://www.billboard.com/music/latin/karol-g-viajando-por-el-mundo-tropitour-2026-dates-1236227738/" },
+      { title: "Wikipedia: Karol G", url: "https://en.wikipedia.org/wiki/Karol_G" },
+      { title: "Wikipedia: Tropicoqueta", url: "https://en.wikipedia.org/wiki/Tropicoqueta" },
+    ],
   },
   {
     slug: "silvestre-dangond-arenas",
@@ -109,6 +131,10 @@ export const articles: Article[] = [
       "Dangond is the modern face of the genre, the one who took the music of Valledupar and gave it stadium showmanship without sanding off what makes it vallenato. A paseo about heartbreak still hits the same; he just delivers it to ten thousand people who know every word.",
       "It matters beyond one tour. When the costa's music sells out U.S. arenas, it tells promoters that the diaspora will show up for folclor, not only for urbano. That opens doors for the next generation of acordeoneros, and it keeps a UNESCO-recognized tradition loud and alive far from home.",
       "Tours move and dates get added, so confirm the latest before you buy. Our concerts list tracks the Colombian acts coming through the States, and we update it as new shows land.",
+    ],
+    sources: [
+      { title: "Billboard: Silvestre Dangond 2026 US tour", url: "https://www.billboard.com/music/latin/silvestre-dangond-el-ultimo-baile-tour-dates-1236126511/" },
+      { title: "Wikipedia: Silvestre Dangond", url: "https://en.wikipedia.org/wiki/Silvestre_Dangond" },
     ],
   },
   {
@@ -128,6 +154,10 @@ export const articles: Article[] = [
       "Start your education with the classics: Alejo Durán, the first Rey Vallenato. Diomedes Díaz, the most beloved and most complicated voice in the genre. Jorge Oñate, Los Hermanos Zuleta, Binomio de Oro for the romantic era. Then notice how much vallenato DNA lives inside modern Colombian pop. Carlos Vives built a career electrifying it, and half of Shakira's early catalog winks at it.",
       "Heard at the right hour, in the right company, with the accordion close enough to feel, vallenato stops being a genre and becomes a place. We will keep writing about the artists keeping it alive, from Valledupar to the Queens basement parties.",
     ],
+    sources: [
+      { title: "UNESCO: Vallenato music of the Greater Magdalena region", url: "https://ich.unesco.org/en/RL/vallenato-traditional-music-of-the-greater-magdalena-region-01095" },
+      { title: "Wikipedia: Vallenato", url: "https://en.wikipedia.org/wiki/Vallenato" },
+    ],
   },
   {
     slug: "el-cielo-michelin",
@@ -145,6 +175,11 @@ export const articles: Article[] = [
       "What makes it matter for the diaspora is the geography. With rooms in Miami and Washington DC, Barrientos put a Michelin-level Colombian table inside the United States, where most of us actually live. You no longer have to fly to Medellín to taste the high end of your own food.",
       "You do not need a tasting menu to eat well, of course. Our recipes cover the dishes every Colombian grew up on, and the restaurant finder maps the spots doing it right in your city. But it is worth knowing that the ceiling for Colombian cooking just got a lot higher, and a paisa chef is the one who raised it.",
     ],
+    sources: [
+      { title: "MICHELIN Guide: Elcielo Miami", url: "https://guide.michelin.com/us/en/florida/miami/restaurant/elcielo-miami" },
+      { title: "MICHELIN Guide: Elcielo Washington DC", url: "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/elcielo-d-c" },
+      { title: "Wikipedia: El Cielo (restaurant)", url: "https://en.wikipedia.org/wiki/El_Cielo_(restaurant)" },
+    ],
   },
   {
     slug: "arepa-food-halls-eeuu",
@@ -161,6 +196,11 @@ export const articles: Article[] = [
       "The blueprint goes back to vendors like the legendary Arepa Lady in Jackson Heights, who turned a corner griddle into an institution. A new generation took that energy into stalls with menus and merch: arepa de queso, arepa de huevo, choclo arepas loaded like nachos, all of it fast, cheap, and naturally gluten-free, which the American market happens to love.",
       "It is more than a trend line. Every new arepa counter is a small piece of Colombia planted where the diaspora can reach it on a Tuesday, and a doorway for everyone else to discover that corn can do this. The antojo, as we say, does not forgive.",
       "Want it the way la abuela makes it? Our arepa de queso recipe is a few ingredients and twenty minutes. Want someone else to do the work? The restaurant finder has the standout spots by city.",
+    ],
+    sources: [
+      { title: "CBS News: The Arepa Lady, Queens, New York", url: "https://www.cbsnews.com/news/the-arepa-lady-maria-cano-queens-new-york/" },
+      { title: "ABC7 New York: The Arepa Lady brings Colombian food to NYC", url: "https://abc7ny.com/post/the-arepa-lady-alejandro-osorio-maria-piedad-cano-jackson-heights/13767855/" },
+      { title: "Wikipedia: Arepa", url: "https://en.wikipedia.org/wiki/Arepa" },
     ],
   },
   {
@@ -180,6 +220,10 @@ export const articles: Article[] = [
       "Nariño, pressed against the Ecuadorian border, grows coffee at altitudes that should not work, some lots above 2,200 meters. The cherries mature slowly in the thin air and the result is intensity: floral aromatics, citrus, a sparkling cup that tastes more like a fancy tea than a diner coffee. Sierra Nevada coffee from the north, much of it grown by Arhuaco and Kogui families, rounds out the map with earthy, cacao-heavy profiles.",
       "Once you taste the regions side by side, you stop drinking coffee on autopilot. Pick a bag that names where it is from, brew it black at least once, and pay attention. The finca worked hard for that cup, and the geography is right there in the flavor.",
     ],
+    sources: [
+      { title: "Wikipedia: Coffee production in Colombia", url: "https://en.wikipedia.org/wiki/Coffee_production_in_Colombia" },
+      { title: "UNESCO: Coffee Cultural Landscape of Colombia", url: "https://whc.unesco.org/en/list/1121/" },
+    ],
   },
   {
     slug: "arepas-field-guide",
@@ -197,6 +241,10 @@ export const articles: Article[] = [
       "The arepa de huevo is the Caribbean coast showing off. Yellow corn dough, deep fried until it puffs, cracked open, a whole egg poured inside, then fried again. It is breakfast, street food, and an engineering achievement at once. Luruaco, a town between Barranquilla and Cartagena, holds an entire festival in its honor every year.",
       "Arepa de choclo is the sweet one: young corn, almost a pancake, folded around a slab of melting cheese, sold from roadside grills on every mountain highway in the country. Boyacá's arepa boyacense bakes sweetness into the dough itself. And the arepa santandereana goes the other way entirely: yellow corn ground with yuca and chicharrón, sturdy and smoky, built to survive a workday in the Santander heat.",
       "Whichever region you claim, the rule is the same: an arepa is not a side. It is the point. Start with our arepa de queso recipe, then work your way across the map.",
+    ],
+    sources: [
+      { title: "Wikipedia: Arepa", url: "https://en.wikipedia.org/wiki/Arepa" },
+      { title: "Wikipedia: Colombian cuisine", url: "https://en.wikipedia.org/wiki/Colombian_cuisine" },
     ],
   },
   {
@@ -216,6 +264,11 @@ export const articles: Article[] = [
       "If your timing lines up, the Feria de Cali around Christmas is one of the great parties in the Americas: salsódromo parades, orchestras, and a whole city in the street. Cali also opens doors to the Pacific and to haciendas in the Valle del Cauca, so it slots neatly into a bigger southern-Colombia trip.",
       "Ready to add it to a route? Tell us what you want out of the trip and we build it around you, salsa lessons and all. Start a quote and a Colombian who has danced in Juanchito will plan it with you.",
     ],
+    sources: [
+      { title: "Colombia Travel: why Cali is the 'sucursal del cielo'", url: "https://colombia.travel/en/blog/why-cali-sucursal-del-cielo-branch-heaven" },
+      { title: "Wikipedia: Cali", url: "https://en.wikipedia.org/wiki/Cali" },
+      { title: "Wikipedia: Feria de Cali", url: "https://en.wikipedia.org/wiki/Feria_de_Cali" },
+    ],
   },
   {
     slug: "primer-viaje-10-dias",
@@ -234,6 +287,11 @@ export const articles: Article[] = [
       "Days six through eight are Tayrona National Park. Enter at El Zaino, walk the jungle trail an hour through monkeys and absurd birdsong until the trees open onto Arrecifes and then Cabo San Juan: boulders the size of houses, palms leaning into turquoise water. Sleep in a hammock or an ecohab if you booked early. Swim only where flagged, the currents are serious. It is the single most beautiful place most visitors see in Colombia, and it is not close.",
       "Days nine and ten, decompress. Minca, a mountain town forty minutes above Santa Marta, does coffee farms, waterfalls, and the best sunset hammocks in the Sierra Nevada. Then fly home out of Santa Marta or Cartagena. You will spend the flight planning the second trip, because now you know: Medellín, the Eje Cafetero, and the Pacific are all still out there. That is how Colombia gets you.",
     ],
+    sources: [
+      { title: "Wikipedia: Tayrona National Natural Park", url: "https://en.wikipedia.org/wiki/Tayrona_National_Natural_Park" },
+      { title: "Wikipedia: Cartagena, Colombia", url: "https://en.wikipedia.org/wiki/Cartagena,_Colombia" },
+      { title: "Wikipedia: Santa Marta", url: "https://en.wikipedia.org/wiki/Santa_Marta" },
+    ],
   },
   {
     slug: "mejor-epoca-viajar-colombia",
@@ -251,6 +309,10 @@ export const articles: Article[] = [
       "The Andean cities, Bogotá, Medellín and the coffee region, run on two drier windows, around December to March and again in July and August. Bogotá is cool year-round, Medellín earns its eternal-spring nickname, and the Eje Cafetero is green because it rains often, so expect afternoon showers no matter when you go. Cali stays warm and bright most of the year.",
       "The Pacific is its own calendar. The whale-watching season off Nuquí and Bahía Solano runs roughly July through October, when humpbacks come to calve, and that is the reason to go. The Amazon is humid all year with a high-water season early in the year and a low-water season mid-year, each offering different ways to explore.",
       "The honest summary: there is no bad time to visit Colombia, only better times for specific regions and experiences. Tell us what you want to do and when you can travel, and we will steer you to the part of the country that is at its best that week.",
+    ],
+    sources: [
+      { title: "Colombia Travel (official tourism)", url: "https://colombia.travel/en" },
+      { title: "Rough Guides: best time to visit Colombia", url: "https://www.roughguides.com/colombia/when-to-go/" },
     ],
   },
 ];

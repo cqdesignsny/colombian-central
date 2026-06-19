@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       model: "perplexity/sonar",
       system:
         "You are a Colombian news researcher. Report only current, factual, verifiable news with dates and a source URL for each item. Be neutral and non-partisan, especially on politics.",
-      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, culture/music/entertainment, Colombian food and restaurants (in Colombia and the US diaspora), and travel and tourism in Colombia. Give 6 to 8 distinct, recent stories spanning these topics. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and one source URL. Strictly factual, neutral on politics. Include dates.`,
+      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, culture/music/entertainment, Colombian food and restaurants (in Colombia and the US diaspora), and travel and tourism in Colombia. Give 6 to 8 distinct, recent stories spanning these topics. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and two source URLs from different outlets. Strictly factual, neutral on politics. Include dates.`,
       temperature: 0.2,
       maxOutputTokens: 1200,
     });
@@ -96,7 +96,8 @@ ${news}
 Already covered recently, do NOT repeat: ${avoid.length ? avoid.join(" | ") : "nothing yet"}.
 
 Pick the 2 to 5 MOST newsworthy stories, each a DISTINCT subject, and spread them across the site's sections so every section gets fresh coverage over time: fútbol (La Tricolor), música, comida (food and restaurants), viajes (travel and tourism), plus the big general and política headlines. Never two about the same match. Use fewer on a genuinely slow day. Return ONLY a JSON array, nothing else. Each item:
-{"title":"<factual headline>","dek":"<one-sentence standfirst>","category":"<Fútbol|Música|Comida|Viajes|Política|Economía|Cultura|Mundo>","body":"<3 to 4 short paragraphs separated by \\n\\n>","importance":<1 huge,2 notable,3 minor>,"sources":[{"title":"<source name>","url":"<https url>"}]}`;
+{"title":"<factual headline>","dek":"<one-sentence standfirst>","category":"<Fútbol|Música|Comida|Viajes|Política|Economía|Cultura|Mundo>","body":"<3 to 4 short paragraphs separated by \\n\\n>","importance":<1 huge,2 notable,3 minor>,"sources":[{"title":"<source 1>","url":"<https url>"},{"title":"<source 2>","url":"<https url>"}]}
+Every story MUST include at least 2 distinct, reputable source URLs from different outlets.`;
 
   let stories: GenStory[] = [];
   try {

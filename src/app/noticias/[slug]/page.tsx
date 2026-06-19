@@ -116,6 +116,31 @@ export default async function ArticlePage({
             {paragraphs.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}
+
+            {article.sources && article.sources.length > 0 && (
+              <div className="border-t border-linea pt-5">
+                <p className="text-xs font-bold tracking-[0.2em] text-ink-soft uppercase">
+                  Fuentes
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {article.sources
+                    .filter((s) => /^https:\/\//i.test(s.url))
+                    .map((src, i) => (
+                      <li key={i} className="text-sm">
+                        <a
+                          href={src.url}
+                          target="_blank"
+                          rel="nofollow noopener noreferrer"
+                          className="text-azul underline underline-offset-2 hover:opacity-70"
+                        >
+                          {src.title}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+
             <div className="flex items-center gap-2 pt-4" aria-hidden>
               <span className="h-2.5 w-5 bg-amarillo" />
               <span className="h-2.5 w-2.5 bg-azul" />

@@ -52,6 +52,9 @@ function storyToArticle(s: PaisaStory, section: ArticleSection): Article {
     readTime: `${Math.max(2, Math.round(words / 200))} min`,
     image: s.image || categoryImage(s.category),
     body: s.body.split(/\n+/).filter((p) => p.trim().length > 0),
+    sources: (s.sources || [])
+      .filter((x) => /^https:\/\//i.test(x.url))
+      .map((x) => ({ title: x.title, url: x.url })),
   };
 }
 
