@@ -30,7 +30,7 @@ type CartContextValue = {
   subtotal: number;
   isOpen: boolean;
   setOpen: (open: boolean) => void;
-  add: (product: Product) => void;
+  add: (product: Product, qty?: number) => void;
   remove: (slug: string) => void;
   setQty: (slug: string, qty: number) => void;
   clear: () => void;
@@ -80,12 +80,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, hydrated]);
 
-  const add = useCallback((product: Product) => {
+  const add = useCallback((product: Product, qty: number = 1) => {
+    const amount = Math.max(1, Math.floor(qty));
     setItems((prev) => {
       const existing = prev.find((i) => i.slug === product.slug);
       if (existing) {
         return prev.map((i) =>
-          i.slug === product.slug ? { ...i, qty: i.qty + 1 } : i,
+          i.slug === product.slug ? { ...i, qty: i.qty + amount } : i,
         );
       }
       return [
@@ -96,7 +97,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           price: product.price,
           image: product.image,
           placeholderBg: product.placeholder?.bg,
-          qty: 1,
+          qty: amount,
         },
       ];
     });

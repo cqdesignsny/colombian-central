@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ImageProtect from "@/components/ImageProtect";
 import JsonLd from "@/components/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/jsonld";
+import { Analytics } from "@vercel/analytics/next";
 
 const anton = Anton({
   weight: "400",
@@ -83,6 +84,7 @@ export default function RootLayout({
         </CartProvider>
         <ElPaisaChat />
         <JsonLd data={[organizationLd(), websiteLd()]} />
+        <Analytics />
       </body>
     </html>
   );

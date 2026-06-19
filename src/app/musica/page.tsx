@@ -128,13 +128,21 @@ export default async function MusicaPage() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {artists.map((a, i) => (
               <Reveal key={a.name} delay={(i % 3) * 0.05}>
-                <div className="flex h-full flex-col border-2 border-ink/20 bg-paper p-6 transition-transform hover:-translate-y-1 hover:border-ink hover:shadow-[6px_6px_0_0_var(--color-ink)]">
+                <a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${a.name} música`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex h-full flex-col border-2 border-ink/20 bg-paper p-6 transition-transform hover:-translate-y-1 hover:border-ink hover:shadow-[6px_6px_0_0_var(--color-ink)]"
+                >
                   <span className="self-start bg-azul px-2.5 py-1 text-[10px] font-bold tracking-[0.18em] text-paper uppercase">
                     {a.genre}
                   </span>
                   <h3 className="display-tight mt-3 font-display text-3xl uppercase">{a.name}</h3>
-                  <p className="font-reading mt-2 text-sm text-ink-soft">{a.note}</p>
-                </div>
+                  <p className="font-reading mt-2 flex-1 text-sm text-ink-soft">{a.note}</p>
+                  <span className="mt-4 text-xs font-bold tracking-[0.2em] text-rojo uppercase">
+                    Escuchar →
+                  </span>
+                </a>
               </Reveal>
             ))}
           </div>
