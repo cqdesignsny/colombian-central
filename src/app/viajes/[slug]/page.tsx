@@ -101,6 +101,11 @@ export default async function DestinationPage({
             </div>
           </Reveal>
         </div>
+        {d.imageCredit && (
+          <p className="absolute right-2 bottom-2 z-10 text-[10px] text-paper/55">
+            {d.imageCredit}
+          </p>
+        )}
       </section>
 
       {/* Body */}

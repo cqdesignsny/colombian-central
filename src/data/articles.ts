@@ -12,6 +12,10 @@ export type Article = {
   date: string;
   readTime: string;
   image: string;
+  /** Photo credit shown under the hero when the image is a licensed real photo. */
+  imageCredit?: string;
+  /** Optional object-position class (e.g. "object-top") for portrait crops. */
+  imagePosition?: string;
   featured?: boolean;
   body: string[];
   /** At least two sources backing the piece, rendered as "Fuentes". */
@@ -37,6 +41,7 @@ export const articles: Article[] = [
     date: "2026-06-17",
     readTime: "4 min",
     image: "/images/news/futbol-debut.jpg",
+    imageCredit: "Foto: jmmuguerza (CC BY-SA 3.0), Wikimedia Commons",
     featured: true,
     body: [
       "Colombia opened its 2026 World Cup the way the diaspora dreamed it: 3-1 over Uzbekistan at a roaring Estadio Azteca, with a very loud share of the 87,000 dressed in amarillo. Three points, a controlled performance, and the kind of start that settles the nerves for everything that comes next.",
@@ -82,6 +87,7 @@ export const articles: Article[] = [
     date: "2026-06-05",
     readTime: "5 min",
     image: "/images/news/futbol-watch-party.jpg",
+    imageCredit: "Foto: Danilo Borges / Portal da Copa (CC BY 3.0), Wikimedia Commons",
     body: [
       "Watching Colombia play in a quiet living room is technically possible, the same way eating bandeja paisa with a fork and knife and no arepa is technically possible. You can do better. Every Colombian match this World Cup kicks off in U.S. prime time, which means the diaspora neighborhoods are going to be scenes.",
       "In New York, everything starts in Jackson Heights, Queens. Northern Boulevard and Roosevelt Avenue around 80th Street turn into an open-air stadium on match days: bakeries selling pandebono by the bag, bars dragging TVs onto the sidewalk, and at least one guy with a caja drum who never stops. Get there two hours before kickoff or accept standing room.",
@@ -104,6 +110,8 @@ export const articles: Article[] = [
     date: "2026-06-12",
     readTime: "4 min",
     image: "/images/news/karol-g.jpg",
+    imageCredit: "Foto: Programas Telemedellín (CC BY 3.0), Wikimedia Commons",
+    imagePosition: "object-top",
     body: [
       "Karol G is doing the thing almost no Latina artist had done before her: headlining U.S. stadiums, not arenas, on her own name. The Tropitour brings Tropicoqueta to Chicago, Las Vegas, Los Angeles, San Francisco, Houston, Miami, Dallas and Boston between July and October 2026, and the cities with the biggest Colombian populations are exactly the ones selling out first.",
       "The rise is not an accident. La Bichota spent a decade turning Medellín perreo into something stadiums could hold, and Tropicoqueta leans harder into the tropical roots, cumbia, vallenato and salsa colors stitched into the reggaetón. It is the most Colombian record she has made, and live it plays like a block party that happens to have pyro.",
@@ -126,6 +134,7 @@ export const articles: Article[] = [
     date: "2026-06-10",
     readTime: "4 min",
     image: "/images/news/silvestre-dangond.jpg",
+    imageCredit: "Foto: Walter Kolm (CC BY-SA 4.0), Wikimedia Commons",
     body: [
       "For years the conventional wisdom was that vallenato filled clubs in the U.S., not arenas. Silvestre Dangond keeps proving the conventional wisdom wrong. His 2026 dates in Atlanta, Orlando and beyond are the kind of rooms reggaetón stars play, and he fills them with an accordion and a story.",
       "Dangond is the modern face of the genre, the one who took the music of Valledupar and gave it stadium showmanship without sanding off what makes it vallenato. A paseo about heartbreak still hits the same; he just delivers it to ten thousand people who know every word.",
@@ -191,6 +200,7 @@ export const articles: Article[] = [
     date: "2026-06-06",
     readTime: "4 min",
     image: "/images/news/arepa-food-halls.jpg",
+    imageCredit: "Foto: Luca Nebuloni (CC BY 2.0), Wikimedia Commons",
     body: [
       "The arepa is having an American moment, and it earned it. What used to be a thing you made at home or hunted down in one specific neighborhood is now a fixture in food halls and weekend markets across the country, from Queens to Texas to the Carolinas.",
       "The blueprint goes back to vendors like the legendary Arepa Lady in Jackson Heights, who turned a corner griddle into an institution. A new generation took that energy into stalls with menus and merch: arepa de queso, arepa de huevo, choclo arepas loaded like nachos, all of it fast, cheap, and naturally gluten-free, which the American market happens to love.",
@@ -257,6 +267,7 @@ export const articles: Article[] = [
     date: "2026-06-03",
     readTime: "6 min",
     image: "/images/destinations/cali.jpg",
+    imageCredit: "Foto: Mario Carvajal (CC BY 2.0), Wikimedia Commons",
     body: [
       "Cali does not ease you in. The heat hits, the music is already playing somewhere, and within an hour you understand why it calls itself la sucursal del cielo, heaven's branch office. It is the salsa capital of the world, full stop, and the city wears that title in its hips, not just on a sign.",
       "Start in Barrio San Antonio, the colonial hill with the views, the cafés, and the artisans, then come back down for the real reason you are here: the salsa. Juanchito is the legendary nightlife strip, but the move for a first-timer is a class plus a guided salsa night, because caleños dance at a level that will humble you and welcome you in the same song.",
@@ -303,6 +314,7 @@ export const articles: Article[] = [
     date: "2026-06-01",
     readTime: "5 min",
     image: "/images/news/mejor-epoca.jpg",
+    imageCredit: "Foto: Pedro Szekely (CC BY-SA 2.0), Wikimedia Commons",
     body: [
       "Here is the thing nobody tells first-time visitors: Colombia has no summer or winter. Sitting on the equator, it has dry seasons and wet seasons, and which one you hit depends entirely on the region and the altitude, not the month on your ticket. Pack for the place, not the date.",
       "For the Caribbean coast, Cartagena, Santa Marta and Tayrona, the sweet spot is roughly December through April, when the skies are clearest and the sea is calm. It is also peak season and peak prices, so book early. Tayrona sometimes closes for ecological rest periods during the year, so check before you commit to it.",

@@ -27,7 +27,7 @@ export default function ArticleCard({
               ? "(max-width: 1024px) 100vw, 66vw"
               : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           }
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className={`object-cover transition-transform duration-500 group-hover:scale-105 ${article.imagePosition ?? ""}`}
         />
         <span
           className={`absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold tracking-[0.18em] uppercase ${categoryColors[article.category]}`}

@@ -108,9 +108,12 @@ export default async function ArticlePage({
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 1024px"
-                className="object-cover"
+                className={`object-cover ${article.imagePosition ?? ""}`}
               />
             </div>
+            {article.imageCredit && (
+              <p className="mt-2 text-xs text-ink-soft/70">{article.imageCredit}</p>
+            )}
           </div>
           <div className="font-reading mx-auto mt-10 max-w-3xl space-y-6 px-4 text-[19px] leading-relaxed text-ink sm:px-6">
             {paragraphs.map((paragraph, i) => (

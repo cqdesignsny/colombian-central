@@ -3,6 +3,8 @@ export type Destination = {
   name: string;
   region: string;
   image: string;
+  /** Photo credit shown on the hero when the image is a licensed real photo. */
+  imageCredit?: string;
   /** Short line for cards. */
   blurb: string;
   bestFor: string[];
@@ -95,6 +97,7 @@ export const destinations: Destination[] = [
     name: "Cali",
     region: "Valle del Cauca",
     image: "/images/destinations/cali.jpg",
+    imageCredit: "Foto: Mario Carvajal (CC BY 2.0), Wikimedia Commons",
     blurb:
       "The salsa capital of the world. Warm nights, warmer people, and a dance floor calling your name.",
     bestFor: ["Salsa", "Nightlife", "Culture"],
@@ -293,6 +296,7 @@ export const destinations: Destination[] = [
     name: "Nuquí & the Pacific",
     region: "Pacific Coast",
     image: "/images/destinations/nuqui.jpg",
+    imageCredit: "Foto: Reduvida3 (CC BY-SA 4.0), Wikimedia Commons",
     blurb:
       "Wild Pacific Colombia: humpback whales, black-sand beaches, jungle rivers, and eco-lodges off the grid.",
     bestFor: ["Whales", "Nature", "Off the grid"],
