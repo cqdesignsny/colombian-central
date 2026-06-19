@@ -4,6 +4,8 @@ Researched June 10, 2026, the day before the World Cup. The tournament is a 5-we
 
 The model in one line: a diaspora hub monetized through (1) owned-margin commerce, (2) affiliate and referral revenue on high-intent things the audience already does, and (3) sponsorship and membership as the list and traffic grow.
 
+**Update (June 18, 2026):** the verified supplier playbook is now in [SOURCING.md](SOURCING.md), real, named sources for coffee (Cordialsa), private-label coffee (Roastify), snacks (Colombina/JETa/Fedenico), crafts (Lombia+Co., One Thread Collective), the B2B cash cushion (Faire net-60), Amazon Associates mechanics (food only pays 1%, so it's the filler; use OneLink), POD merch (Printful), and the snack-box plan, plus the fan-gear licensing warning (never sell official jerseys). Pricing set this session: sombrero $139, Juan Valdez coffee $39, and a new "La Caja Mecato" monthly subscription box ($45/mo, Stripe subscription mode).
+
 ## Revenue streams, prioritized
 
 ### DO NOW (revenue this month, near-zero setup)

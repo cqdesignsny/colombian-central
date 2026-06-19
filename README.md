@@ -4,7 +4,7 @@ Todo lo nuestro, en un solo lugar. The hub for everything Colombian: news, La Tr
 
 Built with Next.js 16, Tailwind CSS v4, and Motion. Images generated with Higgsfield. Live at [colombiancentral.com](https://colombiancentral.com).
 
-Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + next steps), then [AGENTS.md](AGENTS.md) (conventions) and [MONETIZATION.md](MONETIZATION.md) (revenue plan).
+Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + next steps), then [AGENTS.md](AGENTS.md) (conventions), [MONETIZATION.md](MONETIZATION.md) (revenue plan), and [SOURCING.md](SOURCING.md) (verified suppliers + launch sourcing).
 
 ## Sections
 
@@ -13,12 +13,12 @@ Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + nex
 - **Comida** (`/comida`): real recipes you can cook, a Colombian restaurant finder by US metro (with a "find near you" map search), and a pantry cross-sell to the tienda.
 - **Tienda** (`/tienda`): Colombian products with a client-side cart and real Stripe card checkout (gated by a flag, with an order-by-email fallback).
 - **Viajes** (`/viajes`): destination guides, sample trip packages (including World Cup travel at `/viajes/mundial`), and a trip inquiry form.
-- **Noticias** (`/noticias`): editorial articles plus **El Escritorio de El Paisa**, the feed the AI mascot writes himself.
-- **Nosotros** (`/nosotros`): the story, plus the Central network vision.
+- **Noticias** (`/noticias`): El Paisa's daily news desk (1-3 web-sourced stories he writes each morning) plus evergreen crónicas and guides.
+- **Nosotros** (`/nosotros`): the story and the mission.
 
 The remittance comparison (`/enviar-dinero`) and the fan-gear and matchday-travel guides are affiliate money-pages, gated behind `src/config/partners.ts` until tracking IDs are added.
 
-**El Paisa** is the site's Colombian AI mascot: a full-Spanglish chat on every page plus an autonomous desk that writes its own posts, both powered by the Vercel AI Gateway. See [HANDOFF.md](HANDOFF.md) for the architecture and the paid-credits upgrade path.
+**El Paisa** is the site's Colombian AI mascot: a full-Spanglish chat on every page plus a daily news engine that web-searches and writes its own stories, both on the paid Vercel AI Gateway (Sonnet 4.6 + live search). He also auto-updates the World Cup scores. See [HANDOFF.md](HANDOFF.md) for the architecture.
 
 ## Getting started
 
@@ -48,8 +48,6 @@ Stripe card checkout, the affiliate money-pages, and the abandoned-cart automati
 - First El Boletín broadcast from the Resend dashboard
 - Homepage cards for Música and Comida; a live music-news feed
 - CMS or markdown pipeline for articles
-- Spanish/English toggle (i18n)
-- Live World Cup match data
 - Community features for the diaspora
 
 Hecho con orgullo. Independent fan media, not affiliated with FIFA or the FCF.

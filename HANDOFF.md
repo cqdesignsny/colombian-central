@@ -1,132 +1,132 @@
 # Colombian Central, session handoff
 
-Last updated June 17, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md for the revenue plan, and COMPETITIVE-RESEARCH.md for the market scan.
+Last updated June 18, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
 
 ## What it is
 
-ColombianCentral.com, the hub for everything Colombian: World Cup fútbol, música, comida, a shop for Colombian products and merch, a travel desk for trips to Colombia, news, and culture. Aimed at the Colombian diaspora in the US. First site in a planned multi-country "Central" network (Mexican Central, etc.), so country-specific values live in config and data files, never hardcoded.
+ColombianCentral.com, the hub for everything Colombian: World Cup fútbol, música, comida, a shop for Colombian products and merch, a travel desk, news, and culture. Aimed at the Colombian diaspora in the US. First site in a planned multi-country "Central" network, so country-specific values live in config/data files, never hardcoded. The network plan is kept private (off the public site).
 
 ## Live now
 
-- Production: https://colombiancentral.com (apex + www attached and live)
-- Vercel fallback URL: https://colombian-central-blue.vercel.app
-- Repo: https://github.com/cqdesignsny/colombian-central (pushes to `main` auto-deploy to production)
-- Pages: home, `/futbol` (+ `/futbol/hinchada`), `/musica`, `/comida`, `/tienda` (+ product pages), `/viajes` (+ `/viajes/mundial`), `/enviar-dinero`, `/noticias` (+ articles), `/nosotros`, `/gracias`, 404
+- Production: https://colombiancentral.com (apex + www live). Pushes to `main` auto-deploy.
+- Repo: https://github.com/cqdesignsny/colombian-central
+- Pages: home, `/futbol` (+ `/futbol/hinchada`), `/musica`, `/comida`, `/tienda` (+ product pages), `/viajes` (+ `/viajes/mundial`), `/enviar-dinero`, `/noticias` (+ AI news stories + evergreen articles), `/nosotros`, `/privacidad`, `/terminos`, `/envios-devoluciones`, `/gracias`, 404.
 
 ## Stack
 
-Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4 (tokens in `src/app/globals.css`, no config file), Motion for animation. Fonts: Anton (display), Archivo (body), Instrument Serif (accents). Product/imagery generated with Higgsfield, stored in `public/images`; squad photos are official FIFA cutouts in `public/images/players`.
+Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4 (tokens in `src/app/globals.css`, no config). Motion for animation. Fonts: **Anton** (display/headlines), **Archivo** (UI/sans), **Fraunces** (editorial reading serif for prose, the `font-reading` class), **Instrument Serif** (italic accents). Imagery generated/composited with Higgsfield in `public/images`; squad cutouts in `public/images/players`.
 
-## Infrastructure (all wired and verified)
+## Infrastructure
 
-- **Hosting**: Vercel, team `cq-marketings-projects`, project `colombian-central`. NOT the easyoeepro or tz-electric teams (other clients). Hourly cron defined in `vercel.json`.
-- **AI**: Vercel AI Gateway powers El Paisa (`AI_GATEWAY_API_KEY` in env, free tier, model `anthropic/claude-haiku-4.5`). See the El Paisa section.
-- **Database**: Neon Postgres, connected as a Vercel integration. Tables: `subscribers`, `orders`, `trip_inquiries`, `request_log`, `paisa_posts`. Schema is idempotent in `scripts/db-setup.mjs` (run `node --env-file=.env.local scripts/db-setup.mjs`). The DB is the source of truth.
-- **Payments**: Stripe, **live**, on a dedicated Colombian Central account (`acct_1Tj3kbQny3EkJJVW`), not the CQM account. Real hosted Checkout. See the Payments section below.
-- **Email**: Resend on the verified domain colombiancentral.com (account colombiancentral@gmail.com). DKIM/SPF/MX/DMARC live in Vercel DNS, region us-east-1. Senders: `boletin@` (newsletter), `hola@` (transactional). Owner notifications go to cesar@creativequalitymarketing.com. Newsletter segment "El Boletin" (id `25e0cc2a-99e2-450a-b492-8b27ac7f5a53`). App runs on the full-access key "colombian-central-app".
-- **Secrets**: live in `.env.local` (gitignored) and Vercel envs. See `.env.example` for the list. Env changes in Vercel require a redeploy to take effect.
+- **Hosting**: Vercel, team `cq-marketings-projects`, project `colombian-central`. The Vercel CLI default scope is now permanently set to this team (EasyOEEpro / TZ Electric are other clients, never deploy there). Crons in `vercel.json`.
+- **AI**: Vercel AI Gateway, now on the **PAID tier** (key rotated June 18). El Paisa runs on **`anthropic/claude-sonnet-4.6`** with **live web search** (Perplexity `sonar` / `sonar-pro`). Budget target is **Lean (~$15-25/mo)**: per-IP (12/day) + global (250/day) caps on paid search. **Cesar TODO: set a hard monthly spend cap in the AI Gateway dashboard.** `vercel env add` needs the value piped with a trailing newline.
+- **Database**: Neon Postgres (Vercel integration). Tables: `subscribers`, `orders`, `trip_inquiries`, `request_log`, `paisa_posts` (legacy, superseded), `paisa_stories` (news engine), `match_results` (auto scores). Schema idempotent in `scripts/db-setup.mjs` (`node --env-file=.env.local scripts/db-setup.mjs`).
+- **Payments**: Stripe, **live**, dedicated account `acct_1Tj3kbQny3EkJJVW`. Hosted Checkout, `COLOMBIANCENTRAL.COM` descriptor. Now also supports **subscription mode** (the monthly box). See Payments below.
+- **Email**: Resend on colombiancentral.com (DKIM/SPF/MX/DMARC in Vercel DNS, us-east-1, via the `send` subdomain). Senders `boletin@` + `hola@`; owner notifications to cesar@creativequalitymarketing.com; segment "El Boletin" (`25e0cc2a-99e2-450a-b492-8b27ac7f5a53`). **Inbound forwarding** is wired: root MX `inbound-smtp.us-east-1.amazonaws.com` + `/api/inbound` webhook forwards any mail to `*@colombiancentral.com` to the business inbox (reply-to = original sender), spam-filtered. **Pending: Cesar's real-world test email.**
+- **Secrets**: `.env.local` (gitignored) + Vercel envs. New this session: `AI_GATEWAY_API_KEY` (paid), `RESEND_WEBHOOK_SECRET`.
+
+## Crons (`vercel.json`)
+
+- `/api/cron/abandoned` — hourly, up to 3 abandoned-cart emails (email only, no AI; re-checks payment before each send).
+- `/api/paisa/refresh` — **06:00 ET daily**: El Paisa writes 1-3 news stories recapping the last 24 hours. The only scheduled AI news run.
+- `/api/cron/scores` — every 3h, but only spends AI in the window after a Colombia match ends (~2h15m post-kickoff to ~26h), and only until two sources confirm. Zero AI otherwise.
+
+All crons are `CRON_SECRET`-guarded and **fail closed** if the secret is missing.
+
+## El Paisa (the AI mascot) — fully awake
+
+Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/paisa.ts`. `src/lib/websearch.ts` (`paisaWebSearch`) routes live web search through Perplexity.
+
+- **Chat** (`/api/paisa/chat` + `ElPaisaChat.tsx`): streaming Spanglish, site-wide, on Sonnet 4.6. Has a **cost-capped `web_search` tool** for live scores/news. Renders real clickable Markdown links + bold, **no emojis**. Per-IP rate limited; fails soft. Opens via the `paisa:open` window event.
+- **News engine** (`/api/paisa/refresh` → `paisa_stories` → `NewsFeed.tsx` on `/noticias` + story pages `/noticias/[slug]`, ISR): daily 6am, web-searches across topics (fútbol, the elections/politics handled NEUTRALLY, economy, culture, música), writes 1-3 factual stories with sources, a `NewsArticle` JSON-LD, and an El Paisa byline. Helpers in `src/lib/paisa-stories.ts`. The old short-post desk (`paisa_posts` + `PaisaDesk.tsx`) is SUPERSEDED.
+- **Auto-updating scores** (`/api/cron/scores` + `src/lib/match-results.ts` + `match_results` table): after a Colombia match ends, two web sources (sonar + sonar-pro) must AGREE before a score is written; `/futbol` + homepage overlay DB results onto the static fixtures. Self-updating, no hand-editing, holds the last value on disagreement.
+- **Art**: `public/brand/El-Paisa.png` (full figure) now appears site-wide (footer on every page, news desk header, story bylines) plus the head-crop chat avatar. Do not regenerate.
 
 ## Payments (Stripe, live)
 
-- **Account**: a dedicated Stripe account for Colombian Central (`acct_1Tj3kbQny3EkJJVW`), under Cesar's login alongside CQM. The clean multi-brand model is one account per brand, not DBA sub-accounts. Each future "Central" site gets its own account.
-- **Checkout**: `/api/checkout` creates a hosted Stripe Checkout Session from the cart and redirects. It is gated by `NEXT_PUBLIC_STRIPE_ENABLED`: when `"true"` the cart shows card-checkout copy and routes to Stripe; otherwise it falls back to the order-by-email flow. Stripe collects the shipping address, so the cart only needs an email up front.
-- **Webhook**: `/api/stripe/webhook` verifies the signature (raw body via `req.text()`, `runtime = "nodejs"`), marks the order paid, and sends the confirmation email. Idempotent on `stripe_session_id` (unique index).
-- **Labeling**: each payment carries `payment_intent_data.description` with the order number and items, so the Stripe dashboard line is readable. The customer's card statement reads `COLOMBIANCENTRAL.COM` (account-level statement descriptor).
-- **Orders schema additions**: `payment_status` (default `unpaid`), `stripe_session_id`, `amount_total_cents`, `paid_at`, plus `phone`, `marketing_opt_in`, `reminder_stage`, `reminder_last_at` for the abandoned-cart flow.
-- **To finish in the Stripe dashboard (Cesar)**: confirm Branding (logo + colors on the Checkout page), accept the Terms of Service so consent collection / promotions can be re-enabled (it was removed from `/api/checkout` because the account had not accepted ToS), and confirm wallets (Apple/Google Pay) are on.
+- `/api/checkout` builds a hosted Checkout Session, gated by `NEXT_PUBLIC_STRIPE_ENABLED`. Mixed subscription + one-time carts are rejected up front. `/api/stripe/webhook` verifies + marks paid (idempotent on `stripe_session_id`).
+- **Subscription mode**: products with `recurring: "month"` (La Caja Mecato) check out as a Stripe subscription. NOTE: recurring renewals (`invoice.paid`) are not yet handled, only the first charge. Build that before pushing the box hard.
+- **Cesar TODO**: accept Stripe ToS (re-enable consent/promos), confirm branding + wallets.
 
-## Conversion (CRO) on the cart and checkout
+## Commerce / tienda
 
-- Cart drawer (`src/components/cart.tsx`): free-shipping progress bar, quantity controls, a cross-sell row, trust line, and email capture before the Stripe redirect (the email is the lead even if they bounce).
-- **Abandoned-cart automation**: an unpaid order is a recoverable cart. The hourly cron hits `/api/cron/abandoned`, which sends up to three reminder emails at roughly 1h / 24h / 72h, no discounts, then stops. `reminder_stage` tracks progress and each send uses idempotency key `cart-reminder/<id>/<stage>`; carts older than 7 days are left alone. The route is guarded by `CRON_SECRET` (Vercel sends it as a bearer token; add it to Vercel envs).
-- `/gracias` is the post-checkout success page; `ClearCart` empties the cart on arrival.
+`src/data/products.ts`. Pricing this session: **Sombrero Vueltiao $139**, **Juan Valdez coffee $39** (rewritten honestly as a Juan Valdez resale, not the old single-origin Huila claim), and a new **La Caja Mecato** monthly subscription mystery snack box ($45/mo). Product images composited via Higgsfield. See **SOURCING.md** for the verified supplier plan (Cordialsa, Roastify private-label, Faire net-60, fan-gear licensing warning: never sell official jerseys).
 
-## What works end to end (tested in production)
+## Legal / trust / SEO
 
-- **Newsletter**: signup stores in Neon, syncs to Resend contacts + the El Boletin segment, sends a branded welcome email. Duplicates handled. HMAC-signed unsubscribe links flip both the DB and Resend.
-- **Shop checkout**: real card payment via Stripe when enabled, order-by-email fallback otherwise. Orders store in Neon and send owner + customer emails.
-- **Trip inquiries**: the Viajes form posts to `/api/inquiry`, stores in Neon, sends two emails.
-- **Abuse protection**: per-IP rate limiting (DB-backed, fails open) + honeypot on all public POST routes.
+- **Legal pages**: `/privacidad`, `/terminos`, `/envios-devoluciones` (linked in footer + sitemap). **Cesar: review the 30-day return window and the New York governing-law line.**
+- Site-wide affiliate + FTC disclosure (incl. the Amazon Associates wording) in the footer; newsletter consent microcopy.
+- **SEO/AEO/GEO**: `app/robots.ts`, `app/sitemap.ts`, `public/llms.txt`, JSON-LD via `src/lib/jsonld.ts` + `JsonLd.tsx` (Organization, WebSite, Product, Article, SportsEvent, NewsArticle), site-wide canonical, per-product OG images, dedicated 1200x630 `og.jpg`.
 
-## Content pillars
+## Security / abuse
 
-- **Fútbol** (`/futbol`): real Group K data (Portugal, Uzbekistan, DR Congo; fixtures Jun 17/23/27, 2026), countdown, and "Los 26", the official FIFA squad with transparent player cutouts on dark cards. Group K opponent cards show country flags (`public/images/flags`). Squad photo sources live in `public/Col-Team` (gitignored). `/futbol/hinchada` is the fan-gear affiliate guide.
-- **Música** (`/musica`): top artists, a genre guide (vallenato, cumbia, salsa, champeta, urbano, bambuco), and verified 2026 US concert listings with status badges. Data in `src/data/musica.ts`. Curated, not a live feed.
-- **Comida** (`/comida`): authentic recipes with full ingredients and steps, a Colombian restaurant finder across 9 US metros plus a "find near you" Google Maps search, and a pantry cross-sell to the tienda. Data in `src/data/comida.ts`.
-- Nav now carries seven items (Fútbol, Música, Comida, Tienda, Viajes, Noticias, Nosotros); the inline nav shows at the `lg` breakpoint, hamburger below.
+- **Headers** in `next.config.ts` (prod-gated): CSP, HSTS, `X-Frame-Options: DENY`, nosniff, Referrer-Policy, Permissions-Policy.
+- **Spam protection** (`src/lib/antispam.ts`): disposable-email + link + solicitor-keyword heuristics. Inquiry spam is logged (`status='spam'`) but never emailed; disposable newsletter signups are dropped; inbound spam is not forwarded. Stacks on the honeypot + per-IP rate limiting + global caps. JSON-LD output is escaped; AI-generated source URLs are https-only.
+- **Image protection** (`ImageProtect.tsx` + `globals.css`): blocks right-click, drag, and selection on all images (the squad cutouts especially). A deterrent, not DRM.
+- **Codex** is used as a read-only review gate on substantial build-outs.
 
-## El Paisa (the AI mascot)
+## What was done this session (June 18, 2026)
 
-El Paisa is the site's Colombian AI: a visitor chat plus an autonomous "desk" that writes its own content. Persona, site knowledge, model, and a library of paisa sayings live once in `src/lib/paisa.ts`, reused by both.
+1. Wired the live Jun 17 result (COL 3-1 UZB) and made `/futbol` + homepage track the next unplayed match (countdown, ticker, copy).
+2. Turned El Paisa **fully awake**: paid Gateway, Sonnet 4.6, live web search in chat (cost-capped tool) and the desk.
+3. Rebuilt the desk into a **news engine**: daily 6am, 1-3 web-sourced stories, story pages, `paisa_stories` table.
+4. Built **auto-updating scores** (`/api/cron/scores`, two-source agreement, post-match window only).
+5. Security pass (Codex-reviewed): JSON-LD XSS escaping, https-only source links, fail-closed cron auth, abandoned-cart race fix, checkout orphan-order fix, cart hardening, security headers.
+6. SEO/AEO/GEO foundation (robots, sitemap, llms.txt, structured data, canonicals, OG).
+7. Editorial font upgrade (Fraunces for prose) + UI fixes (scroll-to-top, bold card borders, contained news grid, one-at-a-time FAQ, removed AI disclaimer on stories).
+8. Copy fixes (stamp "CON MUCHO ORGULLO", "Hecho con orgullo por colombianos", `lang="es"`, "Añadir al carrito").
+9. Commerce: pricing ($139 / $39), the **La Caja Mecato** subscription box + Stripe subscription mode, composited product images.
+10. **Legal/trust pages** + footer disclosure + image compression (hero 1.6MB → 487KB, etc.).
+11. **Email forwarding** info@ → cesar@ via Resend Inbound.
+12. **Spam protection** + **image protection** across the site.
+13. Bought 5 network domains + set the Vercel CLI default scope to CQ Marketing.
+14. Wrote **SOURCING.md** (verified suppliers, private-label coffee, Amazon mechanics, snack-box plan, fan-gear legal warning); vetted Zernio.
 
-- **Brain = Vercel AI Gateway.** `AI_GATEWAY_API_KEY` is set in the project env (created via `vercel ai-gateway api-keys create`; I have Vercel CLI access as cqdesignsny). The Gateway is on the **FREE TIER**, which only allows cheaper models: El Paisa runs on **`anthropic/claude-haiku-4.5`** (great for the persona). Sonnet/Opus return a 403 `RestrictedModelsError` until paid credits are added (top up in the Vercel dashboard). Web search is also paid, so the desk has no live web access yet. Note: `vercel env add` needs the value piped with a trailing newline or it stores empty.
-- **Chat** (`/api/paisa/chat` + `src/components/ElPaisaChat.tsx`): a floating, streaming chat in Cesar's mascot art, site-wide. Full Spanglish with real sayings, grounded in `SITE_KNOWLEDGE`, per-IP rate limited, friendly fallback if the Gateway is down. Any element opens it by firing a `paisa:open` window event (`PaisaButton`): used by the homepage "Conoce a El Paisa" section and the footer.
-- **Autonomous desk** (`/api/paisa/refresh` + `src/components/PaisaDesk.tsx` + `paisa_posts` table): a daily cron (`vercel.json`, CRON_SECRET-guarded GET) where El Paisa writes ~3 short posts grounded ONLY in `SITE_KNOWLEDGE` (a match preview + spotlights), stores them, and revalidates `/noticias`, where they render as "El Escritorio de El Paisa." Throttled to ~daily; renders nothing until he has posted; no fabrication by design.
-- **Art**: Cesar's own El Paisa cartoon at `public/brand/El-Paisa.png` (transparent PNG), optimized to `public/images/paisa/el-paisa.png`. Used as the chat avatar (CSS head crop) and the homepage/footer mascot. Do not regenerate.
-- **Upgrade path (Cesar)**: add paid AI Gateway credits, then (1) bump `PAISA_MODEL` to sonnet/opus for richer answers, and (2) give the desk + chat live web search, turning the desk into the true autonomous reporter (real news + final scores).
+## Domain network
 
-## Affiliate money-pages (Option A, built, gated)
+Strategy: nail Colombian Central first, prove the unit economics, then expand deliberately. Do NOT broadcast the network publicly (removed from the site) or spin up thin auto-generated country sites (Google penalizes scaled content). IrishCentral.com is the proof the model works.
+- **Owned (CQ Marketing Vercel team)**: colombiancentral.com (flagship), colombiacentral.com (308 → flagship), argentiniancentral, ecuadoriancentral, peruviancentral, puertoricancentral.
+- **Watch-list (available)**: salvadorancentral, guatemalancentral, hondurancentral, venezuelancentral, + others. **Taken**: mexican, brazilian, dominican, cuban, usa.
 
-Three pages plus a gating layer, live the moment Cesar pastes his tracking IDs.
-- **Pages**: `/enviar-dinero` (remittance comparison: Wise vs Remitly vs Xe vs Western Union, highest-ROI page), `/viajes/mundial` (matchday travel to the 2026 host cities, plus travel insurance, cross-linked to the travel desk), `/futbol/hinchada` (fan-gear guide: our shop first, Amazon Associates for the long tail).
-- **Gating**: `src/config/partners.ts` holds each partner with an empty `affiliateUrl` and a real `publicUrl` fallback, plus `amazonAssociateTag`. Links use the public URL until a tracking link exists. Helpers: `partnerHref`, `isPartnerActive`, `amazonSearch`. Components: `AffiliateLink` (rel="sponsored nofollow noopener") and `AffiliateDisclosure` (FTC, on every money page).
-- **To activate (Cesar)**: paste each approved program's tracking link into its `affiliateUrl`, set `amazonAssociateTag`. One file, no page edits.
+## Marketing
 
-## Marketing / social
+- **Zernio** (zernio.com): legit, API-first social poster; the intended future layer to auto-post El Paisa's daily stories. Vet on its free tier first.
+- Metricool / ManyChat are still Cesar's signups. Workflow: Claude drafts + schedules, Cesar approves.
 
-- **Scheduler**: Metricool (chosen over Buffer) for scheduling; ManyChat for Instagram DM automation. Cesar sets up the accounts and connects the profiles; the workflow is "I draft and schedule, Cesar approves."
-- **Post templates**: a design direction for social posts was drafted (matchday, product, culture). From Cesar: no solid-color backgrounds, use imagery (landscapes, products, match graphics) or full color with differentiated text. These are mockups, not yet a built generator.
+## Cesar's TODOs (cannot be automated)
 
-## What was done this session (June 16 to 17, 2026)
+1. Set a hard monthly **spend cap in the AI Gateway dashboard**.
+2. Send a **test email to info@colombiancentral.com** (plain wording) to confirm forwarding lands at the business inbox.
+3. **Review the legal pages** (return window, governing law).
+4. **Supplier signups** from SOURCING.md (Faire, Cordialsa, JETa, Roastify, Flags Importer, Amazon Associates) and paste affiliate IDs into `src/config/partners.ts`.
+5. **Rotate secrets** pasted in chat: Stripe `sk_live`, the `vck_` Gateway key, `RESEND_WEBHOOK_SECRET`.
+6. Stripe: accept ToS, branding, wallets.
 
-1. Built the affiliate layer and three money pages (`/enviar-dinero`, `/viajes/mundial`, `/futbol/hinchada`), gated behind `partners.ts`.
-2. Stood up **live Stripe payments** on the dedicated Colombian Central account: `/api/checkout`, `/api/stripe/webhook`, branded checkout, labeled and idempotent charges, `COLOMBIANCENTRAL.COM` descriptor.
-3. CRO pass on the cart and checkout: progress bar, lead capture, cross-sell, and the 3-email abandoned-cart cron.
-4. Fixed product copy and replaced placeholder product images with real photos.
-5. Wrote COMPETITIVE-RESEARCH.md (colombiaone.com and other Colombian media/socials).
-6. Added real fútbol imagery: opponent flags and the official FIFA 26-man squad as transparent cutouts on dark cards, matched exactly to the FIFA roster.
-7. Built the **Música** and **Comida** pillar pages and added them to the nav.
-8. New logo across the site, ~20% larger reading type, real imagery + "news" sections on `/musica` and `/comida`, and homepage features for both pillars.
-9. Replaced the empanada photo with an authentic Colombian one (researched: golden-orange fried cornmeal).
-10. Public contact is now `info@colombiancentral.com` (owner notifications still route to the business inbox).
-11. Built **El Paisa**: the live AI chat and the autonomous desk on `/noticias`, plus coach Néstor Lorenzo on `/futbol`.
+## Build backlog (next sessions)
 
-## Next steps
+- Subscription **renewal handling** (`invoice.paid`) for La Caja Mecato.
+- A **review-queue/admin** to approve/hide El Paisa news stories.
+- Surface the news feed on `/musica` + `/comida`.
+- **Zernio auto-posting** of El Paisa stories.
+- World Cup membership + free **Polla** predictions game (Stripe is live).
+- Printful merch integration; more recipes; expand the restaurant finder.
 
-### Cesar's account signups (gate the affiliate/merch builds, cannot be automated)
-Travelpayouts (GetYourGuide + insurance), Awin (Xe), Wise Partnerships, Remitly, Amazon Associates, Printful, a coffee roaster (Roastify or Dripshipper), craft suppliers (Origin Colombia, Wayuu Market). Paste affiliate IDs into `src/config/partners.ts` as each is approved.
+## Known gaps / caveats
 
-### Remaining monetization options (from MONETIZATION.md)
-- **B. Printful merch**: fulfillment-aware product model, catalog sync, order routing, shipment webhooks. Scaffold first; Cesar adds account + designs.
-- **C. World Cup membership + Polla**: tournament pass / monthly membership with a predictions game, on Stripe (now that Stripe is live). The free Polla is the most time-sensitive piece since the group stage is now.
-- **D. Authentic-goods shop**: coffee dropship + owned-stock routing for crafts and food.
-
-### El Paisa upgrade (Cesar)
-Add paid AI Gateway credits (Vercel dashboard top-up). Then bump `PAISA_MODEL` to sonnet/opus for richer chat, and turn on web search so the desk + chat get live Colombian news and final match scores (the true autonomous reporter). A review-queue/admin for the desk is the next build after that.
-
-### Product / content
-- More recipes; expand the restaurant finder.
-- The desk currently posts to `/noticias`; consider surfacing the latest El Paisa post on the homepage too.
-
-## Known gaps, caveats, and security
-
-- **Rotate the live Stripe secret key.** The dedicated account's `sk_live_...` (and the older CQM key) were pasted in chat. Reset the key in the Stripe dashboard and update `.env.local` + Vercel. Keys belong only in `.env.local` (gitignored) and Vercel envs, never in git.
-- **Stripe ToS not yet accepted** in the dashboard, so consent collection / promotions are disabled in `/api/checkout`. Accept ToS, then re-enable if wanted.
-- **Preview env vars**: production and development have all env vars; Vercel preview is missing the Resend/app vars due to a CLI loop bug. Add via the dashboard if PR preview deploys need to send email.
-- **Newsletter is single opt-in.** Rate limiting + honeypot mitigate abuse; consider double opt-in if spam appears.
-- **Rate limiter is DB-backed.** Fine for now; swap to Upstash/Vercel KV at scale.
-- **Other secrets passed through chat** (Neon password, Resend key): rotating them is a free one-click reset.
-- **`/musica` and `/comida` are curated**, not CMS-driven. Concert and restaurant data is researched and flagged where uncertain; confirm before relying on specific dates/hours.
-- **El Paisa runs on the AI Gateway FREE TIER** (`claude-haiku-4.5`). Premium models and web search need paid credits, so the desk writes from site facts only (no live news/scores) until then. See the El Paisa section.
-- **Fulfillment-aware product model not built yet**, deliberately deferred until the dropship/Printful stack is wired (see MONETIZATION.md).
+- **Email forwarding is unverified** until Cesar's test email.
+- **Auto-scores need two-source agreement**; an odd/disputed result may not auto-confirm (the page holds the last known value; a manual cron trigger with `CRON_SECRET` can force a re-check).
+- **Image protection is a deterrent**, not DRM (screenshots/devtools always work).
+- Newsletter is single opt-in; rate limiter is DB-backed (swap to Upstash/KV at scale).
+- `/musica` + `/comida` are curated, not CMS-driven.
+- World Cup data must stay real (Group K, the official 26-man squad). Keep the "independent fan media, not affiliated with FIFA/FCF" line and the unofficial-fanwear framing; never sell official/licensed jerseys.
 
 ## Run it locally
 
 ```bash
 npm install
-cp .env.example .env.local   # fill from Vercel envs or the team vault
+cp .env.example .env.local   # fill from Vercel envs
 node --env-file=.env.local scripts/db-setup.mjs
 npm run dev
 ```
 
-`npm run build` must pass before pushing. Pushing to `main` deploys to production.
+`npm run build` must pass before pushing. Pushing to `main` deploys to production. Verify on the live site, not a local dev server.
