@@ -71,8 +71,17 @@ export async function GET(req: Request) {
   let updated = 0;
   let failed = 0;
 
+  // Only spend AI calls on a Colombia match that has actually FINISHED and is
+  // still recent. A match is over ~2h15m after kickoff; we stop retrying ~26h
+  // out so a match that never confirms can't burn credits forever. Matches that
+  // haven't ended, are already confirmed, or are stale do zero AI calls.
+  const FINISHED_AFTER_MS = 2.25 * 60 * 60 * 1000;
+  const GIVE_UP_AFTER_MS = 26 * 60 * 60 * 1000;
+
   for (const f of worldCup.fixtures) {
-    if (new Date(f.kickoff).getTime() > now) continue; // not played yet
+    const kickoff = new Date(f.kickoff).getTime();
+    if (now < kickoff + FINISHED_AFTER_MS) continue; // not over yet (or not started)
+    if (now > kickoff + GIVE_UP_AFTER_MS) continue; // too old, stop checking
     if (stored.get(f.matchday)?.status === "FT") continue; // already confirmed
     checked.push(f.opponent);
 
