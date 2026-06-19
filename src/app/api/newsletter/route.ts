@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { FROM, NOTIFY_TO, SEGMENT_ID, getResend, resendApi } from "@/lib/resend";
 import { welcomeEmail } from "@/lib/emails";
 import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+import { isDisposableEmail } from "@/lib/antispam";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +28,11 @@ export async function POST(req: Request) {
 
   if (!(await rateLimit(req, "newsletter", { limit: 5, windowMinutes: 10 }))) {
     return tooManyRequests();
+  }
+
+  // Drop disposable/throwaway signups silently (fake success so bots don't learn).
+  if (isDisposableEmail(addr)) {
+    return NextResponse.json({ ok: true, already: true });
   }
 
   const db = getDb();

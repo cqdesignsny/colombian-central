@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { FROM, NOTIFY_TO, getResend } from "@/lib/resend";
 import { inquiryCustomerEmail, inquiryOwnerEmail, type InquiryEmailInput } from "@/lib/emails";
 import { isHoneypotTripped, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+import { messageLooksLikeSpam } from "@/lib/antispam";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,13 +36,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Name, email and trip are required" }, { status: 400 });
   }
 
+  const spam = messageLooksLikeSpam({
+    name,
+    message: `${trip}\n${dates}\n${notes}`,
+    email,
+    maxLinks: 1,
+  });
   const db = getDb();
   const rows = (await db`
-    INSERT INTO trip_inquiries (name, email, trip, travelers, dates, notes)
-    VALUES (${name}, ${email}, ${trip}, ${travelers}, ${dates}, ${notes})
+    INSERT INTO trip_inquiries (name, email, trip, travelers, dates, notes, status)
+    VALUES (${name}, ${email}, ${trip}, ${travelers}, ${dates}, ${notes}, ${spam ? "spam" : "new"})
     RETURNING id
   `) as Array<{ id: number }>;
   const id = rows[0].id;
+
+  // Spam: logged with status='spam' but never emailed to the owner. Real inquiries only.
+  if (spam) {
+    return NextResponse.json({ ok: true, inquiryId: id });
+  }
 
   const inquiry: InquiryEmailInput = { id, name, email, trip, travelers, dates, notes };
   const resend = getResend();

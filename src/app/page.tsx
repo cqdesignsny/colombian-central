@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/config/site";
-import { worldCup, nextFixture, lastPlayed } from "@/data/futbol";
+import { nextFixture, lastPlayed } from "@/data/futbol";
+import { getFixturesWithResults } from "@/lib/match-results";
 import { products } from "@/data/products";
 import { destinations } from "@/data/destinations";
 import { articles } from "@/data/articles";
@@ -19,14 +20,17 @@ import Stamp from "@/components/Stamp";
 import TricolorBar from "@/components/TricolorBar";
 import PaisaButton from "@/components/PaisaButton";
 
-export default function Home() {
-  const next = nextFixture();
-  const last = lastPlayed();
+export const revalidate = 600;
+
+export default async function Home() {
+  const fixtures = await getFixturesWithResults();
+  const next = nextFixture(fixtures);
+  const last = lastPlayed(fixtures);
   const nextK = next ? formatKickoff(next.kickoff) : null;
 
   const tickerItems = [
     "Mundial 2026 · Grupo K",
-    ...worldCup.fixtures.map((f) => {
+    ...fixtures.map((f) => {
       const fk = formatKickoff(f.kickoff);
       return f.result
         ? `FT · COL ${f.result.colombia}-${f.result.opponent} ${f.opponentCode}`
@@ -132,7 +136,7 @@ export default function Home() {
               </div>
             </Reveal>
             <div className="flex flex-col gap-4">
-              {worldCup.fixtures.map((fixture, i) => (
+              {fixtures.map((fixture, i) => (
                 <Reveal key={fixture.matchday} delay={i * 0.08}>
                   <MatchCard fixture={fixture} light />
                 </Reveal>

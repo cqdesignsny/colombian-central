@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getResend, FROM, NOTIFY_TO } from "@/lib/resend";
+import { inboundEmailLooksLikeSpam } from "@/lib/antispam";
 
 export const runtime = "nodejs";
 
@@ -85,6 +86,14 @@ export async function POST(req: Request) {
     const to = (email.to ?? event.data?.to ?? []).join(", ");
     const subject = email.subject ?? event.data?.subject ?? "(no subject)";
     const intro = `Forwarded from Colombian Central inbound.\nTo: ${to}\nFrom: ${from}\n\n`;
+
+    // Don't forward obvious solicitation/spam (still stored in Resend's inbox).
+    // HTML-only mail has text === null, so fall back to stripped HTML.
+    const scanText =
+      email.text ?? (email.html ? email.html.replace(/<[^>]+>/g, " ") : "");
+    if (inboundEmailLooksLikeSpam(subject, scanText)) {
+      return NextResponse.json({ ok: true, skipped: "spam" });
+    }
 
     const { error: sendError } = await resend.emails.send({
       from: FROM.hola,

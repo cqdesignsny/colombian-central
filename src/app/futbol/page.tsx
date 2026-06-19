@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { worldCup, squad, nextFixture, lastPlayed } from "@/data/futbol";
+import { getFixturesWithResults } from "@/lib/match-results";
 import { products } from "@/data/products";
 import { formatKickoff } from "@/lib/format";
 import Countdown from "@/components/Countdown";
@@ -20,9 +21,12 @@ export const metadata: Metadata = {
     "Colombia at the 2026 World Cup: Group K fixtures against Portugal, Uzbekistan and DR Congo, the squad, kickoff times, and where to watch.",
 };
 
-export default function FutbolPage() {
-  const next = nextFixture();
-  const last = lastPlayed();
+export const revalidate = 600;
+
+export default async function FutbolPage() {
+  const fixtures = await getFixturesWithResults();
+  const next = nextFixture(fixtures);
+  const last = lastPlayed(fixtures);
   const nextK = next ? formatKickoff(next.kickoff) : null;
   const openerVerb = last?.result
     ? last.result.colombia > last.result.opponent
@@ -35,7 +39,7 @@ export default function FutbolPage() {
 
   const tickerItems = [
     "Grupo K",
-    ...worldCup.fixtures.map((f) => {
+    ...fixtures.map((f) => {
       const fk = formatKickoff(f.kickoff);
       return f.result
         ? `FT · COL ${f.result.colombia}-${f.result.opponent} ${f.opponentCode}`
@@ -46,7 +50,7 @@ export default function FutbolPage() {
 
   return (
     <div className="bg-ink text-paper">
-      <JsonLd data={worldCup.fixtures.map(sportsEventLd)} />
+      <JsonLd data={fixtures.map(sportsEventLd)} />
       {/* Hero */}
       <section className="relative flex min-h-[80svh] items-end overflow-hidden">
         <Image
@@ -170,7 +174,7 @@ export default function FutbolPage() {
             />
           </Reveal>
           <div className="grid gap-5 lg:grid-cols-3">
-            {worldCup.fixtures.map((fixture, i) => (
+            {fixtures.map((fixture, i) => (
               <Reveal key={fixture.matchday} delay={i * 0.07}>
                 <MatchCard fixture={fixture} light />
               </Reveal>

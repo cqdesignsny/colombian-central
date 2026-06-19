@@ -117,7 +117,7 @@ export default async function NewsFeed() {
         </div>
 
         {gridCards.length > 0 && (
-          <div className="mt-5 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid">
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {gridCards.map((s) => (
               <StoryCard key={s.id} s={s} />
             ))}

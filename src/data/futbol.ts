@@ -97,13 +97,17 @@ export const worldCup = {
  * Returns null once all group games are done. Drives the countdown so it
  * never sticks on a match that already kicked off.
  */
-export function nextFixture(): Fixture | null {
-  return worldCup.fixtures.find((f) => !f.result) ?? null;
+export function nextFixture(
+  fixtures: Fixture[] = worldCup.fixtures,
+): Fixture | null {
+  return fixtures.find((f) => !f.result) ?? null;
 }
 
 /** The most recent played match (last fixture that has a result), or null. */
-export function lastPlayed(): Fixture | null {
-  const played = worldCup.fixtures.filter((f) => f.result);
+export function lastPlayed(
+  fixtures: Fixture[] = worldCup.fixtures,
+): Fixture | null {
+  const played = fixtures.filter((f) => f.result);
   return played.length ? played[played.length - 1]! : null;
 }
 

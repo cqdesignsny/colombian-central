@@ -114,6 +114,20 @@ await sql`
   CREATE INDEX IF NOT EXISTS paisa_stories_recent
   ON paisa_stories (status, created_at DESC)`;
 
+// Auto-updated World Cup match results. The scores cron writes a row per
+// matchday only when two independent web sources agree, and /futbol overlays
+// these onto the static fixtures. Keyed by matchday so it is idempotent.
+await sql`
+  CREATE TABLE IF NOT EXISTS match_results (
+    matchday INTEGER PRIMARY KEY,
+    colombia INTEGER NOT NULL,
+    opponent INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'FT',
+    goals JSONB NOT NULL DEFAULT '[]',
+    source TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+
 const tables = await sql`
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name`;
