@@ -111,3 +111,53 @@ export async function insertStory(s: {
     )
     ON CONFLICT (slug) DO NOTHING`;
 }
+
+export type SiteSection = "futbol" | "musica" | "comida" | "viajes" | "colombia";
+
+/**
+ * Map a story's free-text category to a site section, so El Paisa's auto-written
+ * stories flow into the right section page. "colombia" = general/política, which
+ * only surfaces on /noticias.
+ */
+export function sectionForCategory(category: string): SiteSection {
+  const c = (category || "").toLowerCase();
+  if (c.includes("fútbol") || c.includes("futbol") || c.includes("deporte"))
+    return "futbol";
+  if (c.includes("músic") || c.includes("music")) return "musica";
+  if (
+    c.includes("comida") ||
+    c.includes("gastro") ||
+    c.includes("café") ||
+    c.includes("cafe") ||
+    c.includes("receta")
+  )
+    return "comida";
+  if (c.includes("viaje") || c.includes("turismo") || c.includes("travel"))
+    return "viajes";
+  return "colombia";
+}
+
+/**
+ * Latest live stories that belong to a given site section, newest first. Pulls a
+ * recent window and filters by section (fine at this volume; add a section
+ * column + index if the table grows large).
+ */
+export async function getSectionStories(
+  section: SiteSection,
+  limit = 3,
+): Promise<PaisaStory[]> {
+  try {
+    const db = getDb();
+    const rows = (await db`
+      SELECT id, slug, title, dek, category, body, sources, image, importance, created_at
+      FROM paisa_stories
+      WHERE status = 'live'
+      ORDER BY created_at DESC, importance ASC
+      LIMIT 60`) as PaisaStory[];
+    return rows
+      .filter((r) => sectionForCategory(r.category) === section)
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
+}

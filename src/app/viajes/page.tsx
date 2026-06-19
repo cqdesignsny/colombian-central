@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { destinations, packages, travelNotes } from "@/data/destinations";
-import { articlesForSection } from "@/data/articles";
+import { getSectionNews } from "@/lib/section-news";
 import { formatPrice } from "@/lib/format";
 import SectionHeader from "@/components/SectionHeader";
 import DestinationCard from "@/components/DestinationCard";
@@ -16,8 +16,10 @@ export const metadata: Metadata = {
     "Custom trips to Cartagena, the Coffee Axis, Tayrona, Medellín and beyond. Plus World Cup travel packages. Tell us the trip, we build it.",
 };
 
-export default function ViajesPage() {
-  const viajesNews = articlesForSection("viajes", 3);
+export const revalidate = 900;
+
+export default async function ViajesPage() {
+  const viajesNews = await getSectionNews("viajes", 3);
   return (
     <>
       {/* Hero */}

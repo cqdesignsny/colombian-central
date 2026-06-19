@@ -79,6 +79,9 @@ A full "Laura pass" of fixes and build-outs (build green, browser-verified deskt
 8. **Recipe accordion** opens independently (was a grid-stretch artifact; fixed with `items-start`).
 9. **9 new images** generated (Higgsfield `nano_banana_pro`), compressed to ~200-480KB, in `public/images/news/` + `public/images/destinations/`. No repeated article images. Workflow saved to memory.
 
+10. **Rate limiting moved to Upstash Redis** (`src/lib/rate-limit.ts`) with a Neon fallback, so the per-request Postgres writes that would buckle under a World Cup traffic spike disappear once Upstash is on. Cesar TODO: add the Upstash database via the Vercel Marketplace (it injects `UPSTASH_REDIS_REST_URL`/`_TOKEN`); until then it falls back to the DB limiter. (Vercel KV is retired, Upstash is the path.)
+11. **Automated content at scale.** El Paisa's daily engine (`/api/paisa/refresh`) now writes section-tagged stories spanning fútbol, música, comida and viajes (not just general news), and the section pages render that live DB feed merged with the evergreen seeds via `getSectionNews()` (`src/lib/section-news.ts`). Articles write themselves; the hand-written `src/data/articles.ts` is now the fallback/seed. Cron unchanged (6am ET daily), still ~2 AI calls per run (broader prompt, up to 5 stories). Section is derived from the story `category`, no DB migration needed.
+
 Still unwired: `public/images/products/Coffee.png` (3.8MB, needs compression) and `Sombrero.webp` are Cesar's drops, not yet swapped into the product photos.
 
 ## What was done last session (June 18, 2026)

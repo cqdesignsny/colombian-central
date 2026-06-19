@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { recipes, restaurantsByMetro, foodWays, comidaIntro } from "@/data/comida";
-import { articlesForSection } from "@/data/articles";
+import { getSectionNews } from "@/lib/section-news";
 import SectionHeader from "@/components/SectionHeader";
 import ArticleCard from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
@@ -25,8 +25,10 @@ const recipeImg: Record<string, string> = {
   "Patacones": "/images/comida/patacones.jpg",
 };
 
-export default function ComidaPage() {
-  const comidaNews = articlesForSection("comida", 3);
+export const revalidate = 900;
+
+export default async function ComidaPage() {
+  const comidaNews = await getSectionNews("comida", 3);
   return (
     <>
       {/* Hero */}

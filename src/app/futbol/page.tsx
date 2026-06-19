@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { worldCup, squad, nextFixture, lastPlayed } from "@/data/futbol";
 import { getFixturesWithResults, getGroupStandings } from "@/lib/match-results";
-import { articlesForSection } from "@/data/articles";
+import { getSectionNews } from "@/lib/section-news";
 import { products } from "@/data/products";
 import { formatKickoff } from "@/lib/format";
 import Countdown from "@/components/Countdown";
@@ -29,7 +29,7 @@ export const revalidate = 600;
 export default async function FutbolPage() {
   const fixtures = await getFixturesWithResults();
   const standings = await getGroupStandings();
-  const futbolNews = articlesForSection("futbol", 3);
+  const futbolNews = await getSectionNews("futbol", 3);
   const next = nextFixture(fixtures);
   const last = lastPlayed(fixtures);
   const nextK = next ? formatKickoff(next.kickoff) : null;

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { artists, genres, concerts, musicIntro } from "@/data/musica";
-import { articlesForSection } from "@/data/articles";
+import { getSectionNews } from "@/lib/section-news";
 import { ticketmasterSearch } from "@/config/partners";
 import SectionHeader from "@/components/SectionHeader";
 import ArticleCard from "@/components/ArticleCard";
@@ -22,8 +22,10 @@ const statusStyle: Record<string, { label: string; cls: string }> = {
   tba: { label: "Por anunciar", cls: "border border-ink/30 text-ink-soft" },
 };
 
-export default function MusicaPage() {
-  const musicaNews = articlesForSection("musica", 3);
+export const revalidate = 900;
+
+export default async function MusicaPage() {
+  const musicaNews = await getSectionNews("musica", 3);
   return (
     <>
       {/* Hero (dark, concert energy) */}

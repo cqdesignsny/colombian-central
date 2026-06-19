@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       model: "perplexity/sonar",
       system:
         "You are a Colombian news researcher. Report only current, factual, verifiable news with dates and a source URL for each item. Be neutral and non-partisan, especially on politics.",
-      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, and culture/music/entertainment. Give 4 to 6 distinct, recent stories. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and one source URL. Strictly factual, neutral on politics. Include dates.`,
+      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, culture/music/entertainment, Colombian food and restaurants (in Colombia and the US diaspora), and travel and tourism in Colombia. Give 6 to 8 distinct, recent stories spanning these topics. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and one source URL. Strictly factual, neutral on politics. Include dates.`,
       temperature: 0.2,
       maxOutputTokens: 1200,
     });
@@ -95,8 +95,8 @@ ${news}
 
 Already covered recently, do NOT repeat: ${avoid.length ? avoid.join(" | ") : "nothing yet"}.
 
-Pick the 1 to 3 MOST newsworthy, DISTINCT-subject stories (different topics, never three about the same match). Use fewer on a slow day, up to three only if the news is genuinely big. Return ONLY a JSON array, nothing else. Each item:
-{"title":"<factual headline>","dek":"<one-sentence standfirst>","category":"<Fútbol|Política|Economía|Cultura|Música|Mundo>","body":"<3 to 4 short paragraphs separated by \\n\\n>","importance":<1 huge,2 notable,3 minor>,"sources":[{"title":"<source name>","url":"<https url>"}]}`;
+Pick the 2 to 5 MOST newsworthy stories, each a DISTINCT subject, and spread them across the site's sections so every section gets fresh coverage over time: fútbol (La Tricolor), música, comida (food and restaurants), viajes (travel and tourism), plus the big general and política headlines. Never two about the same match. Use fewer on a genuinely slow day. Return ONLY a JSON array, nothing else. Each item:
+{"title":"<factual headline>","dek":"<one-sentence standfirst>","category":"<Fútbol|Música|Comida|Viajes|Política|Economía|Cultura|Mundo>","body":"<3 to 4 short paragraphs separated by \\n\\n>","importance":<1 huge,2 notable,3 minor>,"sources":[{"title":"<source name>","url":"<https url>"}]}`;
 
   let stories: GenStory[] = [];
   try {
@@ -105,7 +105,7 @@ Pick the 1 to 3 MOST newsworthy, DISTINCT-subject stories (different topics, nev
       system,
       prompt,
       temperature: 0.5,
-      maxOutputTokens: 2400,
+      maxOutputTokens: 3200,
     });
     const a = text.indexOf("[");
     const b = text.lastIndexOf("]");
@@ -117,7 +117,7 @@ Pick the 1 to 3 MOST newsworthy, DISTINCT-subject stories (different topics, nev
 
   let inserted = 0;
   const seen = new Set<string>();
-  for (const s of stories.slice(0, 3)) {
+  for (const s of stories.slice(0, 5)) {
     if (!s?.title || !s?.body) continue;
     let slug = slugify(s.slug || s.title);
     if (!slug) continue;
@@ -150,6 +150,10 @@ Pick the 1 to 3 MOST newsworthy, DISTINCT-subject stories (different topics, nev
     }
   }
 
-  if (inserted > 0) revalidatePath("/noticias");
+  if (inserted > 0) {
+    for (const p of ["/noticias", "/futbol", "/musica", "/comida", "/viajes"]) {
+      revalidatePath(p);
+    }
+  }
   return Response.json({ ok: true, inserted });
 }
