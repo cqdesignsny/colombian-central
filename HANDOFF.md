@@ -23,12 +23,13 @@ Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4 (tokens in
 - **Database**: Neon Postgres (Vercel integration). Tables: `subscribers`, `orders`, `trip_inquiries`, `request_log`, `paisa_posts` (legacy, superseded), `paisa_stories` (news engine), `match_results` (auto scores). Schema idempotent in `scripts/db-setup.mjs` (`node --env-file=.env.local scripts/db-setup.mjs`).
 - **Payments**: Stripe, **live**, dedicated account `acct_1Tj3kbQny3EkJJVW`. Hosted Checkout, `COLOMBIANCENTRAL.COM` descriptor. Now also supports **subscription mode** (the monthly box). See Payments below.
 - **Email**: Resend on colombiancentral.com (DKIM/SPF/MX/DMARC in Vercel DNS, us-east-1, via the `send` subdomain). Senders `boletin@` + `hola@`; owner notifications to cesar@creativequalitymarketing.com; segment "El Boletin" (`25e0cc2a-99e2-450a-b492-8b27ac7f5a53`). **Inbound forwarding** is wired: root MX `inbound-smtp.us-east-1.amazonaws.com` + `/api/inbound` webhook forwards any mail to `*@colombiancentral.com` to the business inbox (reply-to = original sender), spam-filtered. **Pending: Cesar's real-world test email.**
-- **Secrets**: `.env.local` (gitignored) + Vercel envs. New this session: `AI_GATEWAY_API_KEY` (paid), `RESEND_WEBHOOK_SECRET`.
+- **Secrets**: `.env.local` (gitignored) + Vercel envs. `AI_GATEWAY_API_KEY` (paid), `RESEND_WEBHOOK_SECRET`. Optional: `UPSTASH_REDIS_REST_URL` / `_TOKEN` (rate limiting at scale).
+- **Rate limiting / analytics**: `src/lib/rate-limit.ts` uses **Upstash Redis** when the `UPSTASH_*` vars are set, else falls back to Neon (always fails open). **Cesar TODO: add Upstash via the Vercel Marketplace** (auto-injects both vars). **Vercel Web Analytics** is wired (`@vercel/analytics` in `layout.tsx`); **Cesar TODO: enable Web Analytics in the dashboard** to see per-page traffic.
 
 ## Crons (`vercel.json`)
 
 - `/api/cron/abandoned` — hourly, up to 3 abandoned-cart emails (email only, no AI; re-checks payment before each send).
-- `/api/paisa/refresh` — **06:00 ET daily**: El Paisa writes 1-3 news stories recapping the last 24 hours. The only scheduled AI news run.
+- `/api/paisa/refresh` — **06:00 ET daily**: El Paisa web-searches and writes up to 5 section-tagged stories (fútbol, música, comida, viajes + general/política), each with 2+ sources, feeding every section page and `/noticias`. The only scheduled AI news run.
 - `/api/cron/scores` — every 3h, but only spends AI in the window after a Colombia match ends (~2h15m post-kickoff to ~26h), and only until two sources confirm. Zero AI otherwise.
 
 All crons are `CRON_SECRET`-guarded and **fail closed** if the secret is missing.
@@ -38,7 +39,7 @@ All crons are `CRON_SECRET`-guarded and **fail closed** if the secret is missing
 Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/paisa.ts`. `src/lib/websearch.ts` (`paisaWebSearch`) routes live web search through Perplexity.
 
 - **Chat** (`/api/paisa/chat` + `ElPaisaChat.tsx`): streaming Spanglish, site-wide, on Sonnet 4.6. Has a **cost-capped `web_search` tool** for live scores/news. Renders real clickable Markdown links + bold, **no emojis**. Per-IP rate limited; fails soft. Opens via the `paisa:open` window event.
-- **News engine** (`/api/paisa/refresh` → `paisa_stories` → `NewsFeed.tsx` on `/noticias` + story pages `/noticias/[slug]`, ISR): daily 6am, web-searches across topics (fútbol, the elections/politics handled NEUTRALLY, economy, culture, música), writes 1-3 factual stories with sources, a `NewsArticle` JSON-LD, and an El Paisa byline. Helpers in `src/lib/paisa-stories.ts`. The old short-post desk (`paisa_posts` + `PaisaDesk.tsx`) is SUPERSEDED.
+- **News engine** (`/api/paisa/refresh` → `paisa_stories` → `NewsFeed.tsx` on `/noticias` + story pages `/noticias/[slug]`, ISR): daily 6am, web-searches across topics (fútbol, política handled NEUTRALLY, economy, culture, música, comida, viajes) and writes up to 5 factual **section-tagged** stories, each with **2+ sources**, a `NewsArticle` JSON-LD, and an El Paisa byline. `sectionForCategory` routes each story to its section and `getSectionNews()` (`src/lib/section-news.ts`) merges the live DB feed with the evergreen `articles.ts` seeds onto every section page. This is the content-scale answer: the articles write themselves. Helpers in `src/lib/paisa-stories.ts`. The old short-post desk (`paisa_posts` + `PaisaDesk.tsx`) is SUPERSEDED.
 - **Auto-updating scores** (`/api/cron/scores` + `src/lib/match-results.ts` + `match_results` table): after a Colombia match ends, two web sources (sonar + sonar-pro) must AGREE before a score is written; `/futbol` + homepage overlay DB results onto the static fixtures. Self-updating, no hand-editing, holds the last value on disagreement.
 - **Art**: `public/brand/El-Paisa.png` (full figure) now appears site-wide (footer on every page, news desk header, story bylines) plus the head-crop chat avatar. Do not regenerate.
 
@@ -50,7 +51,7 @@ Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/pais
 
 ## Commerce / tienda
 
-`src/data/products.ts`. Pricing this session: **Sombrero Vueltiao $139**, **Juan Valdez coffee $39** (rewritten honestly as a Juan Valdez resale, not the old single-origin Huila claim), and a new **La Caja Mecato** monthly subscription mystery snack box ($45/mo). Product images composited via Higgsfield. See **SOURCING.md** for the verified supplier plan (Cordialsa, Roastify private-label, Faire net-60, fan-gear licensing warning: never sell official jerseys).
+`src/data/products.ts`. Pricing this session: **Sombrero Vueltiao $139**, **Juan Valdez coffee $39** (rewritten honestly as a Juan Valdez resale, not the old single-origin Huila claim), and a new **La Caja Mecato** monthly subscription mystery snack box ($45/mo). Product images composited via Higgsfield. **Product pages have a quantity stepper** (`AddToCartButton`; the cart's `add(product, qty)` supports it), excluded for the subscription box. See **SOURCING.md** for the verified supplier plan (Cordialsa, Roastify private-label, Faire net-60, fan-gear licensing warning: never sell official jerseys).
 
 ## Legal / trust / SEO
 
@@ -81,6 +82,12 @@ A full "Laura pass" of fixes and build-outs (build green, browser-verified deskt
 
 10. **Rate limiting moved to Upstash Redis** (`src/lib/rate-limit.ts`) with a Neon fallback, so the per-request Postgres writes that would buckle under a World Cup traffic spike disappear once Upstash is on. Cesar TODO: add the Upstash database via the Vercel Marketplace (it injects `UPSTASH_REDIS_REST_URL`/`_TOKEN`); until then it falls back to the DB limiter. (Vercel KV is retired, Upstash is the path.)
 11. **Automated content at scale.** El Paisa's daily engine (`/api/paisa/refresh`) now writes section-tagged stories spanning fútbol, música, comida and viajes (not just general news), and the section pages render that live DB feed merged with the evergreen seeds via `getSectionNews()` (`src/lib/section-news.ts`). Articles write themselves; the hand-written `src/data/articles.ts` is now the fallback/seed. Cron unchanged (6am ET daily), still ~2 AI calls per run (broader prompt, up to 5 stories). Section is derived from the story `category`, no DB migration needed.
+
+12. **Product quantity selector.** Product pages have a -/+ stepper; `add(product, qty)` in the cart honors it. The subscription box is excluded (bought once). Verified: set 3 → cart receives 3.
+13. **Clickable artist cards.** Música artist cards lifted on hover but linked nowhere; they now open a YouTube search for the artist.
+14. **Page analytics.** `@vercel/analytics` in `layout.tsx` for per-page traffic (the trip pages especially). Cesar TODO: enable Web Analytics in the Vercel dashboard.
+15. **Article sources.** Every article carries a required `sources` field (2-3 verified links: Wikipedia, ESPN, FIFA, Billboard, MICHELIN, UNESCO, official tourism, news), rendered as "Fuentes." The auto engine now requires 2+ sources per story.
+16. **Real licensed photos.** Article + destination images are now real Creative Commons photos from Wikimedia Commons (license-verified), each credited via `imageCredit` ("Foto: author, license, Wikimedia Commons"); `imagePosition` handles portrait crops. Only El Cielo's dish stays AI. **Policy: NEVER lift news/press/Getty/FIFA photos** (copyright + frozen-payment risk); use Wikimedia Commons / Unsplash / Pexels, or generate.
 
 Still unwired: `public/images/products/Coffee.png` (3.8MB, needs compression) and `Sombrero.webp` are Cesar's drops, not yet swapped into the product photos.
 
@@ -120,12 +127,14 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 4. **Supplier signups** from SOURCING.md (Faire, Cordialsa, JETa, Roastify, Flags Importer, Amazon Associates) and paste affiliate IDs into `src/config/partners.ts`.
 5. **Rotate secrets** pasted in chat: Stripe `sk_live`, the `vck_` Gateway key, `RESEND_WEBHOOK_SECRET`.
 6. Stripe: accept ToS, branding, wallets.
+7. **Provision Upstash** (Vercel Marketplace) so rate limiting leaves Postgres before the traffic spike.
+8. **Enable Vercel Web Analytics** in the dashboard to see page traffic.
 
 ## Build backlog (next sessions)
 
 - Subscription **renewal handling** (`invoice.paid`) for La Caja Mecato.
-- A **review-queue/admin** to approve/hide El Paisa news stories.
-- Surface the news feed on `/musica` + `/comida`.
+- A **review-queue/admin** to approve/hide El Paisa news stories (now that they auto-publish to every section).
+- **Auto-source real licensed photos** for the daily auto-stories (they currently use category fallback images; only the hand-written articles have real Wikimedia photos).
 - **Zernio auto-posting** of El Paisa stories.
 - World Cup membership + free **Polla** predictions game (Stripe is live).
 - Printful merch integration; more recipes; expand the restaurant finder.
@@ -135,8 +144,8 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 - **Email forwarding is unverified** until Cesar's test email.
 - **Auto-scores need two-source agreement**; an odd/disputed result may not auto-confirm (the page holds the last known value; a manual cron trigger with `CRON_SECRET` can force a re-check).
 - **Image protection is a deterrent**, not DRM (screenshots/devtools always work).
-- Newsletter is single opt-in; rate limiter is DB-backed (swap to Upstash/KV at scale).
-- `/musica` + `/comida` are curated, not CMS-driven.
+- Newsletter is single opt-in. Rate limiter uses Upstash when configured, else Neon (provision Upstash for scale).
+- Section news is auto-fed by El Paisa's engine (DB) merged with the hand-written `articles.ts` seeds. The daily auto-stories still use category fallback images; real Wikimedia photos are on the hand-written articles + destinations.
 - World Cup data must stay real (Group K, the official 26-man squad). Keep the "independent fan media, not affiliated with FIFA/FCF" line and the unofficial-fanwear framing; never sell official/licensed jerseys.
 
 ## Run it locally

@@ -26,6 +26,8 @@ The model in one line: a diaspora hub monetized through (1) owned-margin commerc
 **Amazon Associates.** For the long tail we do not stock. Sports/Outdoors is 6% (Colombia jerseys, flags, scarves during the Cup), Gourmet Food is 5% (Colombian coffee brands). Keep our own-margin shop products front and center; Amazon is the filler.
 - Action: Cesar enrolls. Claude builds a "Colombia fan gear" guide that cross-sells our shop.
 
+**Concert tickets (Ticketmaster).** The música page links every concert to Ticketmaster ("Buscar entradas"), already wired through a gated `ticketmaster` slot in `src/config/partners.ts` + `ticketmasterSearch()`. Action: Cesar applies to the Ticketmaster affiliate (Impact/Partnerize); drop the tracking link into the slot and concert referrals start earning with no page edits.
+
 ### BUILD NEXT (30 to 90 days)
 
 **Own commerce (the core margin).** See the fulfillment stack below. This beats every affiliate rate because we keep the full margin.

@@ -55,6 +55,8 @@ The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tie
 - Each section (fútbol, música, comida, viajes) renders its own news via `getSectionNews()` (`src/lib/section-news.ts`), which merges El Paisa's auto-written, section-tagged stories from the DB (the `/api/paisa/refresh` engine now spans all sections; section is derived from `category` via `sectionForCategory`) with the evergreen seeds in `src/data/articles.ts`. The DB feed is the scale path: stories write themselves daily, the seeds are the fallback. `/noticias` aggregates everything. Destinations are full landing pages at `/viajes/[slug]` driven by `src/data/destinations.ts`. Body/paragraph copy uses Fraunces (`font-reading`); keep UI chrome (labels, buttons, prices) in Archivo.
 - Artesanía copy makes sourcing claims (artisan-direct, artisan-set prices). Do not extend those claims to new products without Cesar's confirmation.
 - Concerts in `src/data/musica.ts` and restaurants in `src/data/comida.ts` are researched, not invented. Keep the status badges honest and verify dates/hours before adding new entries.
+- Every article in `src/data/articles.ts` needs a `sources` array with at least two real, working links (rendered as "Fuentes"); the El Paisa engine requires 2+ per auto-story. Never fabricate a source URL, verify it resolves.
+- Article + destination photos must be real, freely-licensed images (Wikimedia Commons CC, or Unsplash/Pexels) carrying an `imageCredit` line. NEVER lift photos from news sites, press releases, Getty, or FIFA for the site (copyright + frozen-payment-gateway risk, same family as the jersey rule). Generate with Higgsfield only when no free real photo exists (e.g. El Cielo's plated dish). Real photos first.
 
 ## Commands
 
