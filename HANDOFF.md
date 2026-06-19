@@ -1,6 +1,6 @@
 # Colombian Central, session handoff
 
-Last updated June 18, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
+Last updated June 19, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
 
 ## What it is
 
@@ -10,7 +10,7 @@ ColombianCentral.com, the hub for everything Colombian: World Cup fútbol, músi
 
 - Production: https://colombiancentral.com (apex + www live). Pushes to `main` auto-deploy.
 - Repo: https://github.com/cqdesignsny/colombian-central
-- Pages: home, `/futbol` (+ `/futbol/hinchada`), `/musica`, `/comida`, `/tienda` (+ product pages), `/viajes` (+ `/viajes/mundial`), `/enviar-dinero`, `/noticias` (+ AI news stories + evergreen articles), `/nosotros`, `/privacidad`, `/terminos`, `/envios-devoluciones`, `/gracias`, 404.
+- Pages: home, `/futbol` (+ `/futbol/hinchada`), `/musica`, `/comida`, `/tienda` (+ product pages), `/viajes` (+ per-destination guide pages `/viajes/[slug]` + `/viajes/mundial`), `/enviar-dinero`, `/noticias` (aggregates every section's news + El Paisa's AI stories + articles, story pages `/noticias/[slug]`), `/nosotros`, `/privacidad`, `/terminos`, `/envios-devoluciones`, `/gracias`, 404. Nav now leads with Noticias.
 
 ## Stack
 
@@ -65,7 +65,23 @@ Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/pais
 - **Image protection** (`ImageProtect.tsx` + `globals.css`): blocks right-click, drag, and selection on all images (the squad cutouts especially). A deterrent, not DRM.
 - **Codex** is used as a read-only review gate on substantial build-outs.
 
-## What was done this session (June 18, 2026)
+## What was done this session (June 19, 2026)
+
+A full "Laura pass" of fixes and build-outs (build green, browser-verified desktop + mobile):
+
+1. **Per-section news.** Every section has its own curated, clickable article strip: fútbol (Noticias de la Tricolor), música, comida (real food news now, not the recipes), viajes. `/noticias` is the aggregator (El Paisa's AI desk + every section's articles). Articles gained a `section` field + `articlesForSection()` in `src/data/articles.ts`; 7 new articles written. Nav leads with Noticias.
+2. **Clickability sweep.** Every hover/card lands somewhere real. Concerts link to Ticketmaster ("Buscar entradas") via a gated `ticketmaster` slot in `partners.ts` + `ticketmasterSearch()` (flip on when the affiliate is approved). Subscribe button is now solid amarillo (was ink-on-ink, invisible on dark panels).
+3. **Group K standings.** Real, web-verified table under the group cards on `/futbol` (`StandingsTable.tsx` + `computeStandings()`/`getGroupStandings()`). Colombia's results auto-update from the cron; the three non-Colombia matches are hand-maintained in `otherGroupMatches` (`src/data/futbol.ts`). Matchday 1 seeded: Portugal 1-1 DR Congo, COL 3-1 UZB.
+4. **Viajes landing pages.** Every destination is a real page (`/viajes/[slug]`) with best time, the basics, a cost estimate, and a quote form pre-tagged with the destination (lead lands in the business inbox). Added **Cali, Bogotá, Nuquí** (nine total), bolder card edges, and a travel news strip. Content lives in `src/data/destinations.ts` (expanded type).
+5. **Noticias redesign.** Big El Paisa beside "Lo último de Colombia" (big on mobile too); "Noticias al día" pulled flush and enlarged.
+6. **Font consistency.** Fraunces (`font-reading`) now on all paragraph/reading copy site-wide; Archivo stays for UI chrome (labels, buttons, prices).
+7. **Honest store copy.** "Lo auténtico se nota" rewritten around hand-curation; dropped the false single-origin/finca coffee claims (coffee is a Juan Valdez resale).
+8. **Recipe accordion** opens independently (was a grid-stretch artifact; fixed with `items-start`).
+9. **9 new images** generated (Higgsfield `nano_banana_pro`), compressed to ~200-480KB, in `public/images/news/` + `public/images/destinations/`. No repeated article images. Workflow saved to memory.
+
+Still unwired: `public/images/products/Coffee.png` (3.8MB, needs compression) and `Sombrero.webp` are Cesar's drops, not yet swapped into the product photos.
+
+## What was done last session (June 18, 2026)
 
 1. Wired the live Jun 17 result (COL 3-1 UZB) and made `/futbol` + homepage track the next unplayed match (countdown, ticker, copy).
 2. Turned El Paisa **fully awake**: paid Gateway, Sonnet 4.6, live web search in chat (cost-capped tool) and the desk.

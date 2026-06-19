@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { artists, genres, concerts, musicIntro, musicNews } from "@/data/musica";
+import { artists, genres, concerts, musicIntro } from "@/data/musica";
+import { articlesForSection } from "@/data/articles";
+import { ticketmasterSearch } from "@/config/partners";
 import SectionHeader from "@/components/SectionHeader";
+import ArticleCard from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
 import TricolorBar from "@/components/TricolorBar";
 import NewsletterForm from "@/components/NewsletterForm";
@@ -20,6 +23,7 @@ const statusStyle: Record<string, { label: string; cls: string }> = {
 };
 
 export default function MusicaPage() {
+  const musicaNews = articlesForSection("musica", 3);
   return (
     <>
       {/* Hero (dark, concert energy) */}
@@ -45,7 +49,7 @@ export default function MusicaPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-5 max-w-2xl text-lg text-paper/80">{musicIntro.lede}</p>
+            <p className="font-reading mt-5 max-w-2xl text-lg text-paper/80">{musicIntro.lede}</p>
           </Reveal>
           <Reveal delay={0.24}>
             <a
@@ -59,48 +63,25 @@ export default function MusicaPage() {
         <TricolorBar className="relative z-10 h-2" />
       </section>
 
-      {/* News + concerts highlights */}
+      {/* Music news */}
       <section className="border-b border-linea bg-crema py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <SectionHeader
               eyebrow="Lo último"
-              title="Noticias y conciertos"
+              title="Noticias de la música"
               sub="What is moving in Colombian music right now, from stadium tours to the folclor filling stages."
+              href="/noticias"
+              linkLabel="Todas las noticias"
             />
           </Reveal>
           <div className="grid gap-5 md:grid-cols-3">
-            {musicNews.map((n, i) => (
-              <Reveal key={n.title} delay={(i % 3) * 0.06}>
-                <article className="group flex h-full flex-col overflow-hidden border-2 border-ink bg-paper transition-transform hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]">
-                  <div className="relative aspect-[16/9] overflow-hidden border-b-2 border-ink">
-                    <Image
-                      src={n.image}
-                      alt={n.title}
-                      fill
-                      sizes="(max-width:768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute top-3 left-3 bg-amarillo px-2 py-0.5 text-[10px] font-bold tracking-[0.18em] text-ink uppercase">
-                      {n.tag}
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="text-[11px] font-bold tracking-[0.2em] text-rojo uppercase">
-                      {n.date}
-                    </p>
-                    <h3 className="display-tight mt-1 font-display text-2xl uppercase">{n.title}</h3>
-                    <p className="mt-2 text-sm text-ink-soft">{n.summary}</p>
-                  </div>
-                </article>
+            {musicaNews.map((article, i) => (
+              <Reveal key={article.slug} delay={(i % 3) * 0.06}>
+                <ArticleCard article={article} />
               </Reveal>
             ))}
           </div>
-          <Reveal>
-            <p className="mt-6 text-xs text-ink-soft/70">
-              Curated by hand and updated regularly. ¿Nos faltó algo? Escríbenos.
-            </p>
-          </Reveal>
         </div>
       </section>
 
@@ -124,7 +105,7 @@ export default function MusicaPage() {
                       {g.region}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-ink-soft">{g.desc}</p>
+                  <p className="font-reading mt-3 text-sm text-ink-soft">{g.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -150,7 +131,7 @@ export default function MusicaPage() {
                     {a.genre}
                   </span>
                   <h3 className="display-tight mt-3 font-display text-3xl uppercase">{a.name}</h3>
-                  <p className="mt-2 text-sm text-ink-soft">{a.note}</p>
+                  <p className="font-reading mt-2 text-sm text-ink-soft">{a.note}</p>
                 </div>
               </Reveal>
             ))}
@@ -184,19 +165,35 @@ export default function MusicaPage() {
                       <p className="mt-1 text-sm font-bold tracking-[0.1em] text-azul uppercase">
                         {c.tour}
                       </p>
-                      <p className="mt-1 text-sm text-ink-soft">{c.cities}</p>
+                      <p className="font-reading mt-1 text-sm text-ink-soft">{c.cities}</p>
                     </div>
-                    <div className="shrink-0 sm:text-right">
-                      <p className="font-display text-xl uppercase">{c.window}</p>
-                      <p className="text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
-                        {c.scale}
-                      </p>
+                    <div className="flex shrink-0 items-center gap-5 sm:justify-end">
+                      <div className="sm:text-right">
+                        <p className="font-display text-xl uppercase">{c.window}</p>
+                        <p className="text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
+                          {c.scale}
+                        </p>
+                      </div>
+                      <a
+                        href={ticketmasterSearch(`${c.artist} tour`)}
+                        target="_blank"
+                        rel="sponsored noopener noreferrer"
+                        className="shrink-0 border-2 border-ink bg-amarillo px-4 py-2.5 text-xs font-bold tracking-[0.18em] text-ink uppercase shadow-[3px_3px_0_0_var(--color-ink)] transition-transform hover:-translate-y-0.5"
+                      >
+                        Buscar entradas →
+                      </a>
                     </div>
                   </div>
                 </Reveal>
               );
             })}
           </div>
+          <Reveal>
+            <p className="font-reading mt-6 text-xs text-ink-soft/70">
+              Ticket links go to Ticketmaster, where you can check dates and
+              prices for your city. Tours move, so confirm before you buy.
+            </p>
+          </Reveal>
         </div>
       </section>
 
@@ -212,7 +209,7 @@ export default function MusicaPage() {
                 <h2 className="display-tight font-display text-4xl uppercase sm:text-5xl">
                   No te pierdas un concierto
                 </h2>
-                <p className="mt-4 max-w-md text-paper/75">
+                <p className="font-reading mt-4 max-w-md text-paper/75">
                   We track every Colombian artist coming through the US. Join El Boletín and we
                   ping you when tickets drop in your city.
                 </p>

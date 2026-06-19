@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { destinations, packages, travelNotes } from "@/data/destinations";
+import { articlesForSection } from "@/data/articles";
 import { formatPrice } from "@/lib/format";
 import SectionHeader from "@/components/SectionHeader";
 import DestinationCard from "@/components/DestinationCard";
+import ArticleCard from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
 import TripInquiryForm from "@/components/TripInquiryForm";
 
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default function ViajesPage() {
+  const viajesNews = articlesForSection("viajes", 3);
   return (
     <>
       {/* Hero */}
@@ -40,7 +43,7 @@ export default function ViajesPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-5 max-w-xl text-lg text-paper/85">
+            <p className="font-reading mt-5 max-w-xl text-lg text-paper/85">
               {travelNotes.promise}
             </p>
           </Reveal>
@@ -82,7 +85,7 @@ export default function ViajesPage() {
             <SectionHeader
               eyebrow="Destinos"
               title="¿Pa' dónde vamos?"
-              sub="Six starting points. Every one of them can anchor a full trip, and every trip we plan is built around you, not a fixed bus route."
+              sub="Nine starting points. Every one of them can anchor a full trip, and every trip we plan is built around you, not a fixed bus route."
             />
           </Reveal>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,12 +94,42 @@ export default function ViajesPage() {
                 <div id={destination.slug}>
                   <DestinationCard destination={destination} />
                   <div className="border border-t-0 border-linea bg-paper p-4">
-                    <p className="text-sm text-ink-soft">{destination.blurb}</p>
-                    <p className="mt-2 text-xs font-bold tracking-[0.2em] text-azul uppercase">
-                      Ideal: {destination.idealDays}
-                    </p>
+                    <p className="font-reading text-sm text-ink-soft">{destination.blurb}</p>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <p className="text-xs font-bold tracking-[0.2em] text-azul uppercase">
+                        Ideal: {destination.idealDays}
+                      </p>
+                      <Link
+                        href={`/viajes/${destination.slug}`}
+                        className="text-xs font-bold tracking-[0.18em] text-rojo uppercase underline-offset-4 hover:underline"
+                      >
+                        Ver guía →
+                      </Link>
+                    </div>
                   </div>
                 </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Travel news */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Lo último"
+              title="Noticias de viaje"
+              sub="Guides, the best time to go, and the trips worth taking right now, from people who actually go."
+              href="/noticias"
+              linkLabel="Todas las noticias"
+            />
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {viajesNews.map((article, i) => (
+              <Reveal key={article.slug} delay={i * 0.06}>
+                <ArticleCard article={article} />
               </Reveal>
             ))}
           </div>
@@ -138,7 +171,7 @@ export default function ViajesPage() {
                       {pkg.highlights.map((highlight) => (
                         <li
                           key={highlight}
-                          className="flex items-start gap-2 text-sm text-ink-soft"
+                          className="font-reading flex items-start gap-2 text-sm text-ink-soft"
                         >
                           <span className="mt-0.5 font-bold text-rojo">✓</span>
                           {highlight}
@@ -180,7 +213,7 @@ export default function ViajesPage() {
                   title="Cuéntanos el sueño"
                   sub="Going back to see la familia, first trip with the partner, Mundial road trip with the parceros. Whatever it is, describe it and we come back with a real plan and a real price."
                 />
-                <ul className="space-y-3 text-sm text-ink-soft">
+                <ul className="font-reading space-y-3 text-sm text-ink-soft">
                   <li className="flex gap-3">
                     <span className="font-display text-2xl text-amarillo">1</span>
                     Tell us the trip in two minutes.

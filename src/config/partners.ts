@@ -18,11 +18,12 @@ export type PartnerSlug =
   | "viator"
   | "getyourguide"
   | "safetywing"
-  | "genki";
+  | "genki"
+  | "ticketmaster";
 
 export type Partner = {
   name: string;
-  category: "remittance" | "tours" | "insurance";
+  category: "remittance" | "tours" | "insurance" | "tickets";
   /**
    * Affiliate / referral tracking link. Empty until the program is approved.
    * When empty, the site falls back to `publicUrl` (works, but earns nothing yet).
@@ -84,6 +85,14 @@ export const partners: Record<PartnerSlug, Partner> = {
     publicUrl: "https://genki.world/",
     program: "Genki affiliate. 5% recurring.",
   },
+  ticketmaster: {
+    name: "Ticketmaster",
+    category: "tickets",
+    affiliateUrl: "",
+    publicUrl: "https://www.ticketmaster.com/",
+    program:
+      "Ticketmaster affiliate (Impact/Partnerize) when approved. Concert ticket referrals on the música page.",
+  },
 };
 
 /**
@@ -108,4 +117,15 @@ export function amazonSearch(query: string): string {
   const params = new URLSearchParams({ k: query });
   if (amazonAssociateTag) params.set("tag", amazonAssociateTag);
   return `https://www.amazon.com/s?${params.toString()}`;
+}
+
+/**
+ * Ticketmaster search URL for an artist or event. Always works; once the
+ * affiliate program is live, wrap this in the tracking redirect to start
+ * earning on concert referrals. One place to flip it on.
+ */
+export function ticketmasterSearch(query: string): string {
+  const base = partners.ticketmaster.affiliateUrl;
+  const search = `https://www.ticketmaster.com/search?q=${encodeURIComponent(query)}`;
+  return base || search;
 }

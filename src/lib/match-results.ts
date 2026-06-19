@@ -1,5 +1,13 @@
 import { getDb } from "@/lib/db";
-import { worldCup, type Fixture, type Goal } from "@/data/futbol";
+import {
+  worldCup,
+  otherGroupMatches,
+  computeStandings,
+  type Fixture,
+  type Goal,
+  type PlayedResult,
+  type Standing,
+} from "@/data/futbol";
 
 /**
  * Auto-updated match results. The scores cron (/api/cron/scores) writes a row
@@ -77,4 +85,35 @@ export async function upsertMatchResult(r: {
       goals = EXCLUDED.goals,
       source = EXCLUDED.source,
       updated_at = now()`;
+}
+
+/**
+ * The live Group K table. Colombia's results come from the DB overlay (auto-
+ * updated by the scores cron); the other three matches come from the maintained
+ * static data in futbol.ts.
+ */
+export async function getGroupStandings(): Promise<Standing[]> {
+  const fixtures = await getFixturesWithResults();
+  const played: PlayedResult[] = [];
+  for (const f of fixtures) {
+    if (f.result) {
+      played.push({
+        aCode: "COL",
+        aGoals: f.result.colombia,
+        bCode: f.opponentCode,
+        bGoals: f.result.opponent,
+      });
+    }
+  }
+  for (const m of otherGroupMatches) {
+    if (m.result) {
+      played.push({
+        aCode: m.homeCode,
+        aGoals: m.result.home,
+        bCode: m.awayCode,
+        bGoals: m.result.away,
+      });
+    }
+  }
+  return computeStandings(played);
 }

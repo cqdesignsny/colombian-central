@@ -34,7 +34,7 @@ export default function HinchadaPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-5 max-w-2xl text-lg text-paper/80">{fanGearIntro.lede}</p>
+            <p className="font-reading mt-5 max-w-2xl text-lg text-paper/80">{fanGearIntro.lede}</p>
           </Reveal>
           <Reveal delay={0.24}>
             <Link
@@ -107,7 +107,7 @@ export default function HinchadaPage() {
                       <h3 className="display-tight font-display text-2xl uppercase">
                         {product.name}
                       </h3>
-                      <p className="mt-2 flex-1 text-sm text-ink-soft">{pick.pitch}</p>
+                      <p className="font-reading mt-2 flex-1 text-sm text-ink-soft">{pick.pitch}</p>
                       <div className="mt-4 flex items-center justify-between">
                         <span className="font-display text-3xl">{formatPrice(product.price)}</span>
                         <span className="text-xs font-bold tracking-[0.18em] text-azul uppercase">
@@ -138,7 +138,7 @@ export default function HinchadaPage() {
               <Reveal key={pick.name} delay={i * 0.05}>
                 <div className="flex h-full flex-col border-2 border-ink/30 bg-paper p-6">
                   <h3 className="display-tight font-display text-2xl uppercase">{pick.name}</h3>
-                  <p className="mt-2 flex-1 text-sm text-ink-soft">{pick.desc}</p>
+                  <p className="font-reading mt-2 flex-1 text-sm text-ink-soft">{pick.desc}</p>
                   <AffiliateLink
                     href={amazonSearch(pick.query)}
                     ariaLabel={`Shop ${pick.name} on Amazon`}
@@ -166,7 +166,7 @@ export default function HinchadaPage() {
                 <h2 className="display-tight font-display text-4xl uppercase sm:text-5xl">
                   Más que merch
                 </h2>
-                <p className="mt-4 max-w-md text-paper/75">
+                <p className="font-reading mt-4 max-w-md text-paper/75">
                   Café de origen, artesanías hechas a mano, y el sabor de la tierra. Todo lo nuestro,
                   en un solo lugar.
                 </p>

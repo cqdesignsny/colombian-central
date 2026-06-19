@@ -80,27 +80,16 @@ export default async function NewsFeed() {
   return (
     <section className="border-b border-linea pb-16 sm:pb-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-8 flex items-center gap-4">
-          <span className="relative h-20 w-16 shrink-0">
-            <Image
-              src="/brand/El-Paisa.png"
-              alt="El Paisa, reportero"
-              fill
-              sizes="64px"
-              className="object-contain object-bottom"
-            />
-          </span>
-          <div>
-            <p className="text-xs font-bold tracking-[0.25em] text-rojo uppercase">
-              El Escritorio de El Paisa
-            </p>
-            <h2 className="display-tight font-display text-3xl uppercase sm:text-4xl">
-              Noticias al día
-            </h2>
-            <p className="font-reading mt-1 text-base text-ink-soft">
-              Lo más reciente de Colombia, reportado por El Paisa todos los días.
-            </p>
-          </div>
+        <div className="mb-8">
+          <p className="text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+            El Escritorio de El Paisa
+          </p>
+          <h2 className="display-tight font-display text-4xl uppercase sm:text-5xl">
+            Noticias al día
+          </h2>
+          <p className="font-reading mt-2 max-w-2xl text-base text-ink-soft">
+            Lo más reciente de Colombia, reportado por El Paisa todos los días.
+          </p>
         </div>
 
         <div className="grid items-start gap-5 lg:grid-cols-3">

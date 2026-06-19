@@ -21,7 +21,7 @@ export default function TiendaPage() {
             <SectionHeader
               eyebrow="La Tienda"
               title="De Colombia, pa' tu casa"
-              sub="Everything here is either made in Colombia or made for Colombians. Coffee roasted weekly, artesanías bought at artisan-set prices, and fan gear for the Mundial."
+              sub="Everything here is either made in Colombia or made for Colombians. Real artesanías at artisan-set prices, café from home, and fan gear for the Mundial, each piece chosen by hand."
             />
           </Reveal>
           <Reveal delay={0.05}>
@@ -60,11 +60,11 @@ export default function TiendaPage() {
             <h2 className="display-tight font-display text-3xl uppercase sm:text-5xl">
               Lo auténtico se nota
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-ink-soft lg:mx-0">
-              {shopNotes.authenticity} When you buy a mochila here, a weaver in
-              La Guajira set the price. When you buy coffee, the finca is named
-              on the bag. That is the whole business model: lo nuestro, treated
-              with respect.
+            <p className="font-reading mx-auto mt-4 max-w-2xl text-ink-soft lg:mx-0">
+              {shopNotes.authenticity} Some pieces we bring back from Colombia
+              ourselves. Others ship straight from the artisan families who make
+              them. The rest we vet by hand before it earns a place here. That is
+              the whole business model: lo nuestro, treated with respect.
             </p>
           </div>
         </div>

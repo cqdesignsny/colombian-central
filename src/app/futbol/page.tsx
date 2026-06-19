@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { worldCup, squad, nextFixture, lastPlayed } from "@/data/futbol";
-import { getFixturesWithResults } from "@/lib/match-results";
+import { getFixturesWithResults, getGroupStandings } from "@/lib/match-results";
+import { articlesForSection } from "@/data/articles";
 import { products } from "@/data/products";
 import { formatKickoff } from "@/lib/format";
 import Countdown from "@/components/Countdown";
@@ -11,6 +12,8 @@ import Reveal from "@/components/Reveal";
 import SectionHeader from "@/components/SectionHeader";
 import Ticker from "@/components/Ticker";
 import ProductCard from "@/components/ProductCard";
+import ArticleCard from "@/components/ArticleCard";
+import StandingsTable from "@/components/StandingsTable";
 import NewsletterForm from "@/components/NewsletterForm";
 import JsonLd from "@/components/JsonLd";
 import { sportsEventLd } from "@/lib/jsonld";
@@ -25,6 +28,8 @@ export const revalidate = 600;
 
 export default async function FutbolPage() {
   const fixtures = await getFixturesWithResults();
+  const standings = await getGroupStandings();
+  const futbolNews = articlesForSection("futbol", 3);
   const next = nextFixture(fixtures);
   const last = lastPlayed(fixtures);
   const nextK = next ? formatKickoff(next.kickoff) : null;
@@ -76,7 +81,7 @@ export default async function FutbolPage() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-5 max-w-xl text-lg text-paper/80">
+            <p className="font-reading mt-5 max-w-xl text-lg text-paper/80">
               Seventh World Cup, first one with this generation in full bloom.
               {last?.result ? (
                 <>
@@ -154,11 +159,20 @@ export default async function FutbolPage() {
                   <p className="mt-2 text-sm font-bold tracking-[0.2em] uppercase">
                     {team.name}
                   </p>
-                  <p className="mt-3 text-sm text-paper/65">{team.note}</p>
+                  <p className="font-reading mt-3 text-sm text-paper/65">{team.note}</p>
                 </div>
               </Reveal>
             ))}
           </div>
+
+          <Reveal>
+            <div className="mt-14">
+              <h3 className="display-tight mb-5 font-display text-2xl uppercase sm:text-3xl">
+                La tabla del Grupo K
+              </h3>
+              <StandingsTable standings={standings} />
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -199,6 +213,29 @@ export default async function FutbolPage() {
         </div>
       </section>
 
+      {/* Noticias de la Tricolor */}
+      <section className="border-b border-paper/10 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              dark
+              eyebrow="Lo último"
+              title="Noticias de la Tricolor"
+              sub="Match recaps, watch-party guides, and the road through Group K, by people who live and die with this team."
+              href="/noticias"
+              linkLabel="Todas las noticias"
+            />
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {futbolNews.map((article, i) => (
+              <Reveal key={article.slug} delay={i * 0.06}>
+                <ArticleCard article={article} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Squad */}
       <section className="py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -234,7 +271,7 @@ export default async function FutbolPage() {
                   </div>
                   <div className="flex flex-1 flex-col p-5">
                     <p className="display-tight font-display text-2xl uppercase">{squad.coach}</p>
-                    <p className="mt-2 text-sm text-paper/65">{squad.coachLine}</p>
+                    <p className="font-reading mt-2 text-sm text-paper/65">{squad.coachLine}</p>
                   </div>
                 </div>
               </Reveal>
@@ -287,7 +324,7 @@ export default async function FutbolPage() {
                     <p className="display-tight font-display text-2xl uppercase">
                       {player.name}
                     </p>
-                    <p className="mt-2 text-sm text-paper/65">{player.line}</p>
+                    <p className="font-reading mt-2 text-sm text-paper/65">{player.line}</p>
                   </div>
                 </div>
               </Reveal>
@@ -309,7 +346,7 @@ export default async function FutbolPage() {
               <h2 className="display-tight font-display text-4xl uppercase sm:text-6xl">
                 Ponte la <span className="text-amarillo">amarilla</span>
               </h2>
-              <p className="mt-4 max-w-md text-paper/75">
+              <p className="font-reading mt-4 max-w-md text-paper/75">
                 Our fan-made &apos;26 jersey ships from Miami in days, and El
                 Boletín carries the city-by-city watch party list the week of
                 every match. Two problems solved.

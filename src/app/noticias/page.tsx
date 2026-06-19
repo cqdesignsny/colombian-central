@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { articles } from "@/data/articles";
 import ArticleCard from "@/components/ArticleCard";
 import SectionHeader from "@/components/SectionHeader";
@@ -22,15 +23,39 @@ export default function NoticiasPage() {
 
   return (
     <>
-      <section className="pt-16 pb-10 sm:pt-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <Reveal>
-            <SectionHeader
-              eyebrow="Noticias"
-              title="Lo último de Colombia"
-              sub="El Paisa reports the day's biggest Colombian stories, updated daily, from La Tricolor to the elections. Below, our own crónicas and guides."
+      {/* Hero: El Paisa delivers the news */}
+      <section className="border-b border-linea pt-12 sm:pt-16">
+        <div className="mx-auto grid max-w-7xl items-end gap-6 px-4 sm:px-6 lg:grid-cols-[1.3fr_0.7fr]">
+          <div className="pb-10 sm:pb-14">
+            <Reveal>
+              <p className="mb-3 flex items-center gap-2 text-xs font-bold tracking-[0.25em] text-ink-soft uppercase">
+                <span className="flex gap-0.5" aria-hidden>
+                  <span className="h-2 w-3 bg-amarillo" />
+                  <span className="h-2 w-1.5 bg-azul" />
+                  <span className="h-2 w-1.5 bg-rojo" />
+                </span>
+                Noticias
+              </p>
+              <h1 className="display-tight font-display text-[clamp(2.8rem,8vw,6rem)] uppercase">
+                Lo último de Colombia
+              </h1>
+              <p className="font-reading mt-4 max-w-xl text-lg text-ink-soft">
+                El Paisa reports the day&apos;s biggest Colombian stories, updated
+                daily, from La Tricolor to the elections. Plus our own fútbol,
+                música, comida and travel coverage, all in one place.
+              </p>
+            </Reveal>
+          </div>
+          <div className="relative mx-auto -mb-px h-72 w-full max-w-[20rem] self-end sm:h-80 lg:mx-0 lg:h-[26rem] lg:max-w-none">
+            <Image
+              src="/brand/El-Paisa.png"
+              alt="El Paisa, nuestro corresponsal"
+              fill
+              priority
+              sizes="(max-width: 1024px) 320px, 420px"
+              className="object-contain object-bottom"
             />
-          </Reveal>
+          </div>
         </div>
       </section>
 
@@ -42,9 +67,9 @@ export default function NoticiasPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <SectionHeader
-              eyebrow="Crónicas y guías"
-              title="Más de lo nuestro"
-              sub="The stuff the family group chat argues about, written down properly."
+              eyebrow="Todo lo nuestro"
+              title="Del fútbol a la mesa"
+              sub="Every story we write across the site, fútbol, música, comida and viajes, plus the crónicas the family group chat argues about."
             />
           </Reveal>
           <div className="grid gap-5 lg:grid-cols-3">

@@ -118,38 +118,3 @@ export const musicIntro = {
   updated: "Actualizado junio 2026",
   heroImage: "/images/musica/hero.jpg",
 };
-
-export type MusicNews = {
-  date: string;
-  tag: string;
-  title: string;
-  summary: string;
-  image: string;
-};
-
-export const musicNews: MusicNews[] = [
-  {
-    date: "Jun 2026",
-    tag: "Gira",
-    title: "Karol G arranca su Tropitour por los estadios de EE.UU.",
-    summary:
-      "La Bichota lleva Tropicoqueta a estadios de Chicago a Miami entre julio y octubre. Si vives cerca de uno, las entradas vuelan.",
-    image: "/images/musica/urbano.jpg",
-  },
-  {
-    date: "2026",
-    tag: "En vivo",
-    title: "Silvestre Dangond devuelve el vallenato a las arenas",
-    summary:
-      "El showman del acordeón suma fechas en Atlanta, Orlando y más. El vallenato moderno, en pleno apogeo gringo.",
-    image: "/images/musica/vallenato.jpg",
-  },
-  {
-    date: "Temporada",
-    tag: "Festivales",
-    title: "El folclor manda en los festivales del verano",
-    summary:
-      "De la cumbia al Pacífico, los sonidos de la costa siguen llenando tarimas mientras Medellín exporta urbano al mundo entero.",
-    image: "/images/musica/cumbia.jpg",
-  },
-];

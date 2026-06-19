@@ -106,7 +106,7 @@ export default async function ProductPage({
                   <span className="text-lg text-ink-soft"> / mes</span>
                 )}
               </p>
-              <p className="mt-6 max-w-lg text-ink-soft">{product.blurb}</p>
+              <p className="font-reading mt-6 max-w-lg text-ink-soft">{product.blurb}</p>
               <ul className="mt-8 space-y-3">
                 {product.details.map((detail) => (
                   <li key={detail} className="flex items-start gap-3 text-sm">

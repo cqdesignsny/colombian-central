@@ -60,7 +60,7 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="border-2 border-ink bg-ink px-6 py-3.5 text-sm font-bold tracking-[0.2em] text-paper uppercase transition-colors hover:bg-rojo hover:border-rojo disabled:opacity-60"
+        className="border-2 border-ink bg-amarillo px-6 py-3.5 text-sm font-bold tracking-[0.2em] text-ink uppercase shadow-[3px_3px_0_0_var(--color-ink)] transition-transform hover:-translate-y-0.5 disabled:opacity-60"
       >
         {status === "loading" ? "Un momento…" : "Suscríbete"}
       </button>

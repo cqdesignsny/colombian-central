@@ -71,7 +71,7 @@ export default async function Home() {
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-6 max-w-xl text-lg text-paper/85">
+            <p className="font-reading mt-6 max-w-xl text-lg text-paper/85">
               Colombian news, La Tricolor at the World Cup, products from back
               home, and trips to the motherland. If it&apos;s Colombian, it
               lives here.
@@ -177,7 +177,7 @@ export default async function Home() {
                   <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
                     La banda sonora de Colombia
                   </h3>
-                  <p className="mt-3 max-w-sm text-paper/80">
+                  <p className="font-reading mt-3 max-w-sm text-paper/80">
                     Artists, genres, and every Colombian concert coming through the US.
                   </p>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
@@ -208,7 +208,7 @@ export default async function Home() {
                   <h3 className="display-tight font-display text-4xl uppercase sm:text-5xl">
                     El sabor de la tierra
                   </h3>
-                  <p className="mt-3 max-w-sm text-paper/80">
+                  <p className="font-reading mt-3 max-w-sm text-paper/80">
                     Recipes you can actually cook, plus a Colombian restaurant finder for your city.
                   </p>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-amarillo uppercase">
@@ -230,7 +230,7 @@ export default async function Home() {
             <SectionHeader
               eyebrow="La Tienda"
               title="De Colombia, pa' tu casa"
-              sub="Coffee from real fincas, artesanías sourced straight from the people who make them, and fan gear for the Mundial."
+              sub="Real artesanías sourced straight from the people who make them, café from home, and fan gear for the Mundial, each piece chosen by hand."
               href="/tienda"
               linkLabel="Toda la tienda"
             />
@@ -243,7 +243,7 @@ export default async function Home() {
             ))}
           </div>
           <Reveal>
-            <p className="mt-6 text-sm text-ink-soft">
+            <p className="font-reading mt-6 text-sm text-ink-soft">
               Free U.S. shipping on orders over $75 · Ships from Miami ·
               Artisan-direct sourcing
             </p>
@@ -345,7 +345,7 @@ export default async function Home() {
               <br />
               sabe todo
             </h2>
-            <p className="mt-4 max-w-md text-ink-soft">
+            <p className="font-reading mt-4 max-w-md text-ink-soft">
               Mitad guía, mitad cuento. Ask him anything about Colombia or this site, en
               español, in English, o en el Spanglish más bacano. He has got the recipes, the
               squad, the music, y un dicho para cada cosa.
@@ -365,7 +365,7 @@ export default async function Home() {
               <h2 className="display-tight font-display text-5xl uppercase sm:text-7xl">
                 El Boletín
               </h2>
-              <p className="mt-4 max-w-md text-base font-medium">
+              <p className="font-reading mt-4 max-w-md text-base font-medium">
                 One email a week: La Tricolor, new drops, travel deals, and the
                 best of la cultura. Cero spam, puro contenido.
               </p>

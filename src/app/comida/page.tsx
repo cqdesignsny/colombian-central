@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { recipes, restaurantsByMetro, foodWays, comidaIntro, foodNews } from "@/data/comida";
+import { recipes, restaurantsByMetro, foodWays, comidaIntro } from "@/data/comida";
+import { articlesForSection } from "@/data/articles";
 import SectionHeader from "@/components/SectionHeader";
+import ArticleCard from "@/components/ArticleCard";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
@@ -24,6 +26,7 @@ const recipeImg: Record<string, string> = {
 };
 
 export default function ComidaPage() {
+  const comidaNews = articlesForSection("comida", 3);
   return (
     <>
       {/* Hero */}
@@ -46,7 +49,7 @@ export default function ComidaPage() {
               </h1>
             </Reveal>
             <Reveal delay={0.16}>
-              <p className="mt-5 max-w-xl text-lg text-ink-soft">{comidaIntro.lede}</p>
+              <p className="font-reading mt-5 max-w-xl text-lg text-ink-soft">{comidaIntro.lede}</p>
             </Reveal>
           </div>
           <Reveal delay={0.2}>
@@ -64,48 +67,25 @@ export default function ComidaPage() {
         </div>
       </section>
 
-      {/* News */}
+      {/* Food news */}
       <section className="border-b border-linea bg-crema py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <SectionHeader
               eyebrow="Del fogón"
               title="Novedades del sabor"
-              sub="What is cooking in Colombian food right now, from Michelin stars to the arepa spots opening near you."
+              sub="Colombian food news, from Michelin recognition to the arepa spots taking over US food halls."
+              href="/noticias"
+              linkLabel="Todas las noticias"
             />
           </Reveal>
           <div className="grid gap-5 md:grid-cols-3">
-            {foodNews.map((n, i) => (
-              <Reveal key={n.title} delay={(i % 3) * 0.06}>
-                <article className="group flex h-full flex-col overflow-hidden border-2 border-ink bg-paper transition-transform hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]">
-                  <div className="relative aspect-[16/9] overflow-hidden border-b-2 border-ink">
-                    <Image
-                      src={n.image}
-                      alt={n.title}
-                      fill
-                      sizes="(max-width:768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute top-3 left-3 bg-amarillo px-2 py-0.5 text-[10px] font-bold tracking-[0.18em] text-ink uppercase">
-                      {n.tag}
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="text-[11px] font-bold tracking-[0.2em] text-rojo uppercase">
-                      {n.date}
-                    </p>
-                    <h3 className="display-tight mt-1 font-display text-2xl uppercase">{n.title}</h3>
-                    <p className="mt-2 text-sm text-ink-soft">{n.summary}</p>
-                  </div>
-                </article>
+            {comidaNews.map((article, i) => (
+              <Reveal key={article.slug} delay={(i % 3) * 0.06}>
+                <ArticleCard article={article} />
               </Reveal>
             ))}
           </div>
-          <Reveal>
-            <p className="mt-6 text-xs text-ink-soft/70">
-              Curated by hand and updated regularly. ¿Conoces un sitio que debamos incluir? Cuéntanos.
-            </p>
-          </Reveal>
         </div>
       </section>
 
@@ -127,7 +107,7 @@ export default function ComidaPage() {
                   className="flex h-full flex-col border-2 border-ink bg-crema p-6 transition-transform hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]"
                 >
                   <h3 className="display-tight font-display text-2xl uppercase">{w.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-ink-soft">{w.desc}</p>
+                  <p className="font-reading mt-2 flex-1 text-sm text-ink-soft">{w.desc}</p>
                   <span className="mt-4 text-xs font-bold tracking-[0.18em] text-azul uppercase">
                     {w.cta} →
                   </span>
@@ -148,7 +128,7 @@ export default function ComidaPage() {
               sub="The dishes every Colombian grew up on, the way they are actually made. Tap a recipe for the full ingredients and steps."
             />
           </Reveal>
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid items-start gap-5 lg:grid-cols-2">
             {recipes.map((r, i) => (
               <Reveal key={r.name} delay={(i % 2) * 0.06}>
                 <details className="group h-full overflow-hidden border-2 border-ink bg-paper">
@@ -168,7 +148,7 @@ export default function ComidaPage() {
                           {r.region} · {r.time} · {r.difficulty}
                         </p>
                         <h3 className="display-tight mt-1 font-display text-3xl uppercase">{r.name}</h3>
-                        <p className="mt-2 text-sm text-ink-soft">{r.blurb}</p>
+                        <p className="font-reading mt-2 text-sm text-ink-soft">{r.blurb}</p>
                       </div>
                       <span
                         className="mt-1 font-display text-3xl text-azul transition-transform group-open:rotate-45"
@@ -255,7 +235,7 @@ export default function ComidaPage() {
                         <p className="text-xs font-bold tracking-[0.1em] text-ink-soft uppercase">
                           {rest.area}
                         </p>
-                        <p className="mt-0.5 text-xs text-ink-soft">{rest.specialty}</p>
+                        <p className="font-reading mt-0.5 text-xs text-ink-soft">{rest.specialty}</p>
                       </li>
                     ))}
                   </ul>
@@ -282,7 +262,7 @@ export default function ComidaPage() {
               <h2 className="display-tight font-display text-4xl uppercase sm:text-5xl">
                 Lleva la tienda a tu cocina
               </h2>
-              <p className="mt-4 max-w-md text-paper/75">
+              <p className="font-reading mt-4 max-w-md text-paper/75">
                 Café de origen, bocadillo veleño, the chocolatera for your hot chocolate. The
                 staples of a Colombian kitchen, shipped from Miami.
               </p>

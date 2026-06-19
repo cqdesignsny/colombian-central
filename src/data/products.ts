@@ -158,5 +158,5 @@ export const products: Product[] = [
 export const shopNotes = {
   shipping: "Free U.S. shipping on orders over $75. Ships from Miami.",
   authenticity:
-    "Artesanías are sourced directly from artisan cooperatives in Colombia and we pay artisan-set prices.",
+    "We curate every item ourselves and verify it is authentically Colombian, from artisan-made crafts to the café and snacks we bring up from home.",
 };

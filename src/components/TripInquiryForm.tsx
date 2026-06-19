@@ -5,10 +5,14 @@ import { destinations, packages } from "@/data/destinations";
 import { site } from "@/config/site";
 import Honeypot from "@/components/Honeypot";
 
-export default function TripInquiryForm() {
+export default function TripInquiryForm({
+  defaultTrip = "",
+}: {
+  defaultTrip?: string;
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [trip, setTrip] = useState("");
+  const [trip, setTrip] = useState(defaultTrip);
   const [travelers, setTravelers] = useState("2");
   const [dates, setDates] = useState("");
   const [notes, setNotes] = useState("");

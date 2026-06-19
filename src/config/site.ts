@@ -22,12 +22,12 @@ export const site = {
     rojo: "#C8102E",
   },
   nav: [
+    { label: "Noticias", href: "/noticias" },
     { label: "Fútbol", href: "/futbol" },
     { label: "Música", href: "/musica" },
     { label: "Comida", href: "/comida" },
     { label: "Tienda", href: "/tienda" },
     { label: "Viajes", href: "/viajes" },
-    { label: "Noticias", href: "/noticias" },
     { label: "Nosotros", href: "/nosotros" },
   ],
   socials: {

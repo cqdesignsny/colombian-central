@@ -249,38 +249,3 @@ export const comidaIntro = {
     "Food is how Colombians say te quiero. Cook it at home, find it in your city, or stock your pantry. From the arepa on every table to the bandeja that needs its own zip code, esto es comida de verdad.",
   heroImage: "/images/comida/hero.jpg",
 };
-
-export type FoodNews = {
-  date: string;
-  tag: string;
-  title: string;
-  summary: string;
-  image: string;
-};
-
-export const foodNews: FoodNews[] = [
-  {
-    date: "Jun 2026",
-    tag: "Reconocimiento",
-    title: "El Cielo mantiene viva la estrella Michelin",
-    summary:
-      "El restaurante del chef Juan Manuel Barrientos sigue llevando la cocina colombiana a la mesa más alta, de Miami a Washington DC.",
-    image: "/images/comida/ajiaco.jpg",
-  },
-  {
-    date: "Tendencia",
-    tag: "Street food",
-    title: "La arepa conquista los food halls de EE.UU.",
-    summary:
-      "De Jackson Heights a Doral, los puestos de arepas y empanadas se multiplican donde vive la diáspora. El antojo no perdona.",
-    image: "/images/comida/arepa.jpg",
-  },
-  {
-    date: "De temporada",
-    tag: "Receta",
-    title: "Sancocho de domingo, sin pena",
-    summary:
-      "Baja el calor, sube la olla. Nuestra receta de sancocho es la excusa perfecta para reunir a toda la familia este fin de semana.",
-    image: "/images/comida/sancocho.jpg",
-  },
-];

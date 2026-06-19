@@ -141,7 +141,7 @@ export default function Footer() {
             <h3 className="mb-4 text-xs font-bold tracking-[0.25em] text-paper/50 uppercase">
               La casa
             </h3>
-            <p className="text-sm leading-relaxed text-paper/60">
+            <p className="font-reading text-sm leading-relaxed text-paper/60">
               The home base for everything Colombian in the U.S.: news, fútbol,
               música, comida, la tienda, and travel back home. Built by and for
               la diáspora.

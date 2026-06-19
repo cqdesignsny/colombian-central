@@ -161,3 +161,130 @@ export const squad = {
     { name: "Jhon Córdoba", position: "ST", line: "Raw power and a striker's instinct.", image: "/images/players/cordoba.avif" },
   ] satisfies Player[],
 };
+
+/** A Group K match not involving Colombia. Colombia's own matches live in `fixtures`. */
+export type GroupMatch = {
+  matchday: number;
+  homeCode: string;
+  awayCode: string;
+  /** Kickoff in U.S. Eastern Time. */
+  kickoff: string;
+  venue: string;
+  city: string;
+  result?: { home: number; away: number };
+};
+
+/**
+ * The three Group K matches Colombia is not in. Colombia's results auto-update
+ * from the DB (see match-results.ts); these are maintained here by hand. Verify
+ * scores against a real source before editing. Matchday 1 confirmed June 18, 2026
+ * (Portugal 1-1 DR Congo, Houston).
+ */
+export const otherGroupMatches: GroupMatch[] = [
+  {
+    matchday: 1,
+    homeCode: "POR",
+    awayCode: "COD",
+    kickoff: "2026-06-17T18:00:00-04:00",
+    venue: "NRG Stadium",
+    city: "Houston",
+    result: { home: 1, away: 1 },
+  },
+  {
+    matchday: 2,
+    homeCode: "POR",
+    awayCode: "UZB",
+    kickoff: "2026-06-23T15:00:00-04:00",
+    venue: "NRG Stadium",
+    city: "Houston",
+  },
+  {
+    matchday: 3,
+    homeCode: "COD",
+    awayCode: "UZB",
+    kickoff: "2026-06-27T16:00:00-04:00",
+    venue: "Mercedes-Benz Stadium",
+    city: "Atlanta",
+  },
+];
+
+export type Standing = {
+  code: string;
+  name: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  gf: number;
+  ga: number;
+  gd: number;
+  points: number;
+};
+
+/** A played match, normalized for tallying the table. */
+export type PlayedResult = {
+  aCode: string;
+  aGoals: number;
+  bCode: string;
+  bGoals: number;
+};
+
+/**
+ * Compute the Group K table from the played matches. Ranking: points, then goal
+ * difference, then goals for. Teams still level fall back to the confirmed
+ * official ordering (FIFA breaks remaining ties by fair play then drawing of
+ * lots, which we cannot derive here).
+ */
+export function computeStandings(played: PlayedResult[]): Standing[] {
+  const table = new Map<string, Standing>(
+    worldCup.groupTeams.map((t) => [
+      t.code,
+      {
+        code: t.code,
+        name: t.name,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        gf: 0,
+        ga: 0,
+        gd: 0,
+        points: 0,
+      },
+    ]),
+  );
+  for (const m of played) {
+    const a = table.get(m.aCode);
+    const b = table.get(m.bCode);
+    if (!a || !b) continue;
+    a.played++;
+    b.played++;
+    a.gf += m.aGoals;
+    a.ga += m.bGoals;
+    b.gf += m.bGoals;
+    b.ga += m.aGoals;
+    if (m.aGoals > m.bGoals) {
+      a.won++;
+      a.points += 3;
+      b.lost++;
+    } else if (m.aGoals < m.bGoals) {
+      b.won++;
+      b.points += 3;
+      a.lost++;
+    } else {
+      a.drawn++;
+      b.drawn++;
+      a.points++;
+      b.points++;
+    }
+  }
+  for (const s of table.values()) s.gd = s.gf - s.ga;
+  const officialOrder = ["COL", "COD", "POR", "UZB"];
+  return [...table.values()].sort(
+    (x, y) =>
+      y.points - x.points ||
+      y.gd - x.gd ||
+      y.gf - x.gf ||
+      officialOrder.indexOf(x.code) - officialOrder.indexOf(y.code),
+  );
+}
