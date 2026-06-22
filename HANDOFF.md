@@ -78,6 +78,7 @@ A polish + correctness pass on Noticias and the orphan sections (build green, br
 6. **Viajes news moved up top**, right under the World Cup banner (was buried below destinations).
 7. **Orphan rows filled.** Música artists 16 → 18 (Diomedes Díaz, Morat); tienda 9 → 12 products (Bandera de Colombia, Camiseta "Tan Colombiano", Café Sello Rojo). The three new products use the built-in branded **placeholder cards** (honest copy, no fabricated sourcing claims); they need real photos (Cesar to supply, or generate).
 8. **Image drops done.** `Coffee.png`/`Sombrero.webp` were already converted + wired (`cafe-juan-valdez.jpg`, `sombrero.jpg`); the raw originals in `public/images/products/` are redundant leftovers, ignore them.
+9. **News freshness.** El Paisa had published a stale pre-tournament send-off ("beats Costa Rica 3-1 and ships out to the World Cup") as current news while the Cup is already underway. Deleted that story from `paisa_stories`, and hardened `/api/paisa/refresh`: it now injects a real World Cup status line (built from the live fixtures + results in `src/data/futbol.ts`) into both the search and writer prompts, with an explicit rule to never write pre-tournament friendlies / send-off / qualifying as if current. The desk also now adapts its layout to the story count (equal cards for a small desk, featured lead for a full one) so it never strands a card.
 
 Affiliate links stay gated/unearning on purpose: Cesar is still creating the programs. The fallback `publicUrl`s work now; he pastes tracking IDs into `src/config/partners.ts` later.
 

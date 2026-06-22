@@ -73,9 +73,14 @@ function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
  */
 export default function NewsFeed({ stories }: { stories: PaisaStory[] }) {
   if (stories.length === 0) return null;
+
+  // A small desk reads cleanest as equal cards in a row (no stranded card, no
+  // over-stretched hero). Once there are enough stories, switch to a featured
+  // lead + side card (equal heights) with the rest flowing into a grid.
+  const featured = stories.length >= 4;
   const [lead, ...rest] = stories;
   const side = rest[0];
-  const gridCards = rest.slice(1);
+  const below = rest.slice(1);
 
   return (
     <section className="border-b border-linea pb-16 sm:pb-20">
@@ -92,23 +97,32 @@ export default function NewsFeed({ stories }: { stories: PaisaStory[] }) {
           </p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <StoryCard s={lead} large />
-          </div>
-          {side && (
-            <div>
-              <StoryCard s={side} />
-            </div>
-          )}
-        </div>
-
-        {gridCards.length > 0 && (
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {gridCards.map((s) => (
+        {!featured ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {stories.map((s) => (
               <StoryCard key={s.id} s={s} />
             ))}
           </div>
+        ) : (
+          <>
+            <div className="grid gap-5 lg:grid-cols-3">
+              <div className="lg:col-span-2">
+                <StoryCard s={lead} large />
+              </div>
+              {side && (
+                <div>
+                  <StoryCard s={side} />
+                </div>
+              )}
+            </div>
+            {below.length > 0 && (
+              <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {below.map((s) => (
+                  <StoryCard key={s.id} s={s} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

@@ -7,6 +7,8 @@ import {
   insertStory,
   recentStoryTitles,
 } from "@/lib/paisa-stories";
+import { getFixturesWithResults } from "@/lib/match-results";
+import type { Fixture } from "@/data/futbol";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -41,6 +43,38 @@ function slugify(s: string): string {
     .slice(0, 64);
 }
 
+/**
+ * A factual snapshot of where Colombia actually is in the World Cup, built from
+ * the real fixtures + live results. Injected into the news prompts so El Paisa
+ * never writes about pre-tournament friendlies or send-off matches as if they
+ * were current news. The tournament is happening NOW; the schedule is the truth.
+ */
+function worldCupStatus(fixtures: Fixture[], today: string): string {
+  const day = (iso: string) => iso.slice(0, 10);
+  const played = fixtures.filter((f) => f.result);
+  const upcoming = fixtures.filter((f) => !f.result);
+  const phase =
+    played.length === 0
+      ? "about to start"
+      : upcoming.length === 0
+        ? "group stage complete"
+        : "IN PROGRESS right now";
+  const playedLines = played.map(
+    (f) =>
+      `Matchday ${f.matchday} (${day(f.kickoff)}): Colombia ${f.result!.colombia}-${f.result!.opponent} ${f.opponent} (final)`,
+  );
+  const upcomingLines = upcoming.map(
+    (f) => `Matchday ${f.matchday} (${day(f.kickoff)}): Colombia vs ${f.opponent} in ${f.city}`,
+  );
+  return [
+    `2026 FIFA World Cup, Group K. Today is ${today}. The tournament is ${phase}.`,
+    played.length ? `Already played: ${playedLines.join("; ")}.` : "Colombia has not played yet.",
+    upcoming.length
+      ? `Still to play: ${upcomingLines.join("; ")}.`
+      : "Colombia's group stage is finished.",
+  ].join(" ");
+}
+
 export async function GET(req: Request) {
   // Fail closed: no secret configured means no access (never run paid AI + publish unauthenticated).
   const secret = process.env.CRON_SECRET;
@@ -62,6 +96,7 @@ export async function GET(req: Request) {
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  const wcStatus = worldCupStatus(await getFixturesWithResults(), today);
 
   // 1) Live web search for current Colombia news across topics (with sources).
   let news: string | null = null;
@@ -70,7 +105,8 @@ export async function GET(req: Request) {
       model: "perplexity/sonar",
       system:
         "You are a Colombian news researcher. Report only current, factual, verifiable news with dates and a source URL for each item. Be neutral and non-partisan, especially on politics.",
-      prompt: `Today is ${today}. This is a morning news recap, so list the most important Colombia news from the LAST 24 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, culture/music/entertainment, Colombian food and restaurants (in Colombia and the US diaspora), and travel and tourism in Colombia. Give 6 to 8 distinct, recent stories spanning these topics. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and two source URLs from different outlets. Strictly factual, neutral on politics. Include dates.`,
+      prompt: `Today is ${today}. WORLD CUP CONTEXT: ${wcStatus}
+This is a morning news recap, so list the most important Colombia news from the LAST 48 HOURS (what happened yesterday and overnight), across DIFFERENT topics: the Colombia national team (La Tricolor) at the 2026 FIFA World Cup, the current national elections and politics, the economy, culture/music/entertainment, Colombian food and restaurants (in Colombia and the US diaspora), and travel and tourism in Colombia. For La Tricolor, focus ONLY on the ongoing tournament per the context above (the result of the most recent match, the build-up to the next one). IGNORE pre-tournament friendlies, send-off games, and qualifying: that is old news now. Give 6 to 8 distinct, recent stories spanning these topics. For EACH: a clear factual headline, a 2-3 sentence summary, the topic, the date, and two source URLs from different outlets. Strictly factual, neutral on politics. Include dates.`,
       temperature: 0.2,
       maxOutputTokens: 1200,
     });
@@ -87,6 +123,9 @@ export async function GET(req: Request) {
   // 2) El Paisa writes 1 to 3 distinct stories, grounded only in the search.
   const system = `You are El Paisa, the Colombian news editor for Colombian Central (colombiancentral.com), writing the daily news for the diaspora in the US. Today is ${today}.
 Write like a real news desk: clear, factual and concise, with a light touch of Colombian warmth, in English (an occasional Spanish phrase is fine, but this is news, not a comedy bit). NEVER use em-dashes. No emojis.
+This is NEWS: it must be NEW. Only write about things happening now or in the last day or two. Never present old events as current.
+WORLD CUP STATUS (the truth, use it): ${wcStatus}
+For any La Tricolor story, anchor it to that schedule: the most recent PLAYED match (with its real score) or the build-up to the NEXT one. NEVER write about pre-tournament friendlies, send-off matches, or qualifying as if they were current; the tournament is already underway and those are stale.
 Ground EVERY story ONLY in the VERIFIED NEWS provided. Do NOT invent facts, quotes, numbers, names or dates. If a detail is not in the news, leave it out.
 On politics and the elections: report neutrally and factually. State what happened, who and when. Do NOT take sides, endorse anyone, or editorialize. Headlines and facts only.`;
 
