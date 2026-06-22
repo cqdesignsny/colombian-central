@@ -2,6 +2,8 @@
 
 Last updated June 22, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
 
+**> NEXT SESSION (June 23): the marketing push.** Build the full plan and start driving traffic, using tomorrow's match (Colombia vs DR Congo) as the launch moment. Cesar will connect the social/analytics integrations. Jump to "Marketing + match-day push" below.
+
 ## What it is
 
 ColombianCentral.com, the hub for everything Colombian: World Cup fútbol, música, comida, a shop for Colombian products and merch, a travel desk, news, and culture. Aimed at the Colombian diaspora in the US. First site in a planned multi-country "Central" network, so country-specific values live in config/data files, never hardcoded. The network plan is kept private (off the public site).
@@ -29,7 +31,7 @@ Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4 (tokens in
 ## Crons (`vercel.json`)
 
 - `/api/cron/abandoned` — hourly, up to 3 abandoned-cart emails (email only, no AI; re-checks payment before each send).
-- `/api/paisa/refresh` — **06:00 ET daily**: El Paisa web-searches and writes up to 5 section-tagged stories (fútbol, música, comida, viajes + general/política), each with 2+ sources, feeding every section page and `/noticias`. The only scheduled AI news run.
+- `/api/paisa/refresh` — **06:00 ET daily**: El Paisa web-searches and writes up to 5 section-tagged stories (fútbol, música, comida, viajes + general/política), each with 2+ sources, feeding every section page and `/noticias`. The only scheduled AI news run. Grounded in the live World Cup schedule (real fixtures + results injected into the prompts) so it never publishes stale pre-tournament/send-off matches as current news.
 - `/api/cron/scores` — every 3h, but only spends AI in the window after a Colombia match ends (~2h15m post-kickoff to ~26h), and only until two sources confirm. Zero AI otherwise.
 
 All crons are `CRON_SECRET`-guarded and **fail closed** if the secret is missing.
@@ -128,10 +130,30 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 - **Owned (CQ Marketing Vercel team)**: colombiancentral.com (flagship), colombiacentral.com (308 → flagship), argentiniancentral, ecuadoriancentral, peruviancentral, puertoricancentral.
 - **Watch-list (available)**: salvadorancentral, guatemalancentral, hondurancentral, venezuelancentral, + others. **Taken**: mexican, brazilian, dominican, cuban, usa.
 
-## Marketing
+## Marketing + match-day push (NEXT SESSION, June 23)
 
-- **Zernio** (zernio.com): legit, API-first social poster; the intended future layer to auto-post El Paisa's daily stories. Vet on its free tier first.
-- Metricool / ManyChat are still Cesar's signups. Workflow: Claude drafts + schedules, Cesar approves.
+This is the focus of the next session: build the full marketing plan and start driving traffic, using tomorrow's match as the launch moment. The site work is done; this is now about distribution.
+
+**The moment.** Matchday 2: **Colombia vs DR Congo, June 23, 2026, 10:00 PM ET, Estadio Akron (Guadalajara), on FS1** (verify against `src/data/futbol.ts`). The World Cup is the once-a-decade acquisition window (June 11 to mid-July). Match days are the spikes; we want content live BEFORE kickoff.
+
+**Strategy (from COMPETITIVE-RESEARCH.md).** One hero channel done relentlessly: **Instagram first** (then TikTok). Formats that travel: news-graphic cards/carousels + Reels, warm Spanglish, food-nostalgia + fútbol. Match-day cadence: 2-3 posts (pre-match hype, live reactions, post-match). Owned channel: **El Boletín** (Resend) blast with the watch-party guide + match info. Cross-link every post back to the site (content → tienda → travel → affiliate).
+
+**What Cesar connects (so we can post):**
+- Pick the social poster: **Zernio** (API-first, the intended auto-post layer for El Paisa's stories) or **Metricool**. Get the API key / login.
+- Connect the **Instagram Business** + **TikTok** accounts to it. (ManyChat for IG DMs is optional/later.)
+- **Enable Vercel Web Analytics** (also TODO #8) so we can measure the traffic the push drives.
+- Confirm the **Resend "El Boletín" broadcast** is ready to send (segment `RESEND_SEGMENT_ID`).
+
+**What Claude builds/does next session:**
+- A match-day **content calendar** + drafted captions (Spanglish, pre/live/post), for Cesar to approve.
+- **Match-day graphics** via Higgsfield (matchday card, score template, watch-party promo).
+- Draft + schedule the **El Boletín match-day email** (reuses the `donde-ver-la-tricolor` watch-party guide).
+- Wire **Zernio auto-posting** of El Paisa's daily stories (the automation layer), once the key is in.
+- Newsletter-capture CTAs anywhere they're thin.
+
+**Assets we can repurpose now:** the watch-party guide (`/noticias/donde-ver-la-tricolor`), the `/futbol` page (countdown, fixtures, live standings), El Paisa's daily news, the squad cutouts, the fan-gear guide (`/futbol/hinchada`).
+
+**Reference:** Zernio (zernio.com) is API-first and legit; vet on the free tier first. Metricool / ManyChat are Cesar's signups. Workflow stays: Claude drafts + schedules, Cesar approves.
 
 ## Cesar's TODOs (cannot be automated)
 
