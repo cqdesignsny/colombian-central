@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { articles } from "@/data/articles";
+import { getLatestStories, assignDistinctImages } from "@/lib/paisa-stories";
+import { isWithinDays } from "@/lib/recency";
 import ArticleCard from "@/components/ArticleCard";
 import SectionHeader from "@/components/SectionHeader";
 import Reveal from "@/components/Reveal";
@@ -16,10 +19,27 @@ export const metadata: Metadata = {
     "Daily Colombia news from El Paisa's desk: La Tricolor at the World Cup, the elections, the economy, culture and music, plus our own stories on food, travel and the diaspora.",
 };
 
-export default function NoticiasPage() {
-  const [featured, ...rest] = [...articles].sort((a, b) =>
-    b.date.localeCompare(a.date),
+export default async function NoticiasPage() {
+  // El Paisa's live desk: recent stories, each with a distinct photo.
+  const allStories = await getLatestStories(12);
+  const recentStories = allStories.filter((s) => isWithinDays(s.created_at));
+  const deskStories = assignDistinctImages(
+    recentStories.map((s) => ({ ...s, imagePinned: false })),
   );
+  const deskImages = deskStories
+    .map((s) => s.image)
+    .filter((src): src is string => Boolean(src));
+
+  // Evergreen crónicas from the last two months. Real photos are pinned, and we
+  // reserve the desk's photos so the same one never shows up twice on the page.
+  const recentArticles = [...articles]
+    .filter((a) => isWithinDays(a.date))
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((a) => ({ ...a, imagePinned: true }));
+  const everArticles = assignDistinctImages(recentArticles, deskImages);
+  const [featured, ...restArticles] = everArticles;
+  const sideArticle = restArticles[0];
+  const gridArticles = restArticles.slice(1);
 
   return (
     <>
@@ -60,39 +80,53 @@ export default function NoticiasPage() {
       </section>
 
       {/* El Paisa's live news desk (auto-updated daily) */}
-      <NewsFeed />
+      <NewsFeed stories={deskStories} />
 
-      {/* Evergreen crónicas and guides */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <Reveal>
-            <SectionHeader
-              eyebrow="Todo lo nuestro"
-              title="Del fútbol a la mesa"
-              sub="Every story we write across the site, fútbol, música, comida and viajes, plus the crónicas the family group chat argues about."
-            />
-          </Reveal>
-          <div className="grid gap-5 lg:grid-cols-3">
-            <Reveal className="lg:col-span-2">
-              <ArticleCard article={featured} large />
+      {/* Evergreen crónicas and guides (last two months) */}
+      {featured && (
+        <section className="py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <Reveal>
+              <SectionHeader
+                eyebrow="Todo lo nuestro"
+                title="Del fútbol a la mesa"
+                sub="Every story we write across the site, fútbol, música, comida and viajes, plus the crónicas the family group chat argues about."
+                href="/noticias/archivo"
+                linkLabel="Hemeroteca"
+              />
             </Reveal>
-            <div className="flex flex-col gap-5">
-              {rest.slice(0, 2).map((article, i) => (
-                <Reveal key={article.slug} delay={i * 0.07}>
-                  <ArticleCard article={article} />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.slice(2).map((article, i) => (
-              <Reveal key={article.slug} delay={i * 0.06}>
-                <ArticleCard article={article} />
+            <div className="grid gap-5 lg:grid-cols-3">
+              <Reveal className="lg:col-span-2">
+                <ArticleCard article={featured} large />
               </Reveal>
-            ))}
+              {sideArticle && (
+                <div>
+                  <ArticleCard article={sideArticle} />
+                </div>
+              )}
+            </div>
+            {gridArticles.length > 0 && (
+              <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {gridArticles.map((article, i) => (
+                  <Reveal key={article.slug} delay={i * 0.06}>
+                    <ArticleCard article={article} />
+                  </Reveal>
+                ))}
+              </div>
+            )}
+            <Reveal>
+              <div className="mt-10 border-t border-linea pt-6">
+                <Link
+                  href="/noticias/archivo"
+                  className="text-sm font-bold tracking-[0.18em] text-rojo uppercase underline-offset-4 hover:underline"
+                >
+                  Ver toda la hemeroteca →
+                </Link>
+              </div>
+            </Reveal>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="border-t border-linea bg-amarillo py-16">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">

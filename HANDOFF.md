@@ -1,6 +1,6 @@
 # Colombian Central, session handoff
 
-Last updated June 19, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
+Last updated June 22, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
 
 ## What it is
 
@@ -66,7 +66,22 @@ Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/pais
 - **Image protection** (`ImageProtect.tsx` + `globals.css`): blocks right-click, drag, and selection on all images (the squad cutouts especially). A deterrent, not DRM.
 - **Codex** is used as a read-only review gate on substantial build-outs.
 
-## What was done this session (June 19, 2026)
+## What was done this session (June 22, 2026)
+
+A polish + correctness pass on Noticias and the orphan sections (build green, browser-verified):
+
+1. **Never the same photo twice.** The auto-stories used a single category fallback image, so two fútbol stories (and política vs economía) showed the identical photo. New system in `src/lib/paisa-stories.ts`: per-category image **pools** + `assignDistinctImages()`, a no-repeat picker that walks a feed and guarantees every card a distinct photo (pinned real photos win, auto-stories draw the next free pool image by slug hash). Applied in `getSectionNews` (section strips) and across the whole `/noticias` page (desk + evergreen deduped together via a `reserved` set). Padded the thin fútbol pool with two new fan-scene images so the 5 fútbol items on `/noticias` are all unique.
+2. **Loop-Cesar-in image hook.** `src/data/story-images.ts` is a slug→photo override map. When the right photo for a piece exists, drop the file in `/public/images` and add one line; it wins over the auto picker and never gets swapped. This is the workflow for Cesar to hand over the correct/accurate photo per article.
+3. **Fútbol card titles were invisible.** `ArticleCard`/`NewsFeed` titles inherited `text-paper` on the dark fútbol page, so you only saw them on hover. Added explicit `text-ink`.
+4. **`/noticias` white space.** The desk's lead + two-stacked-side layout left a tall gap when the side stack outran the lead. Rebuilt as lead + one side card that stretches to the lead's height (verified equal), the rest in a uniform grid. `NewsFeed` is now presentational (takes `stories`); the page fetches + dedupes.
+5. **60-day window + Hemeroteca.** Front-facing feeds show the last two months (`src/lib/recency.ts`, `RECENT_DAYS = 60`), with a never-empty backfill. Everything older lives in the full archive at **`/noticias/archivo`** (a month-grouped headline index of every story + crónica), linked from the footer (Explorar → Hemeroteca) and the bottom of `/noticias`.
+6. **Viajes news moved up top**, right under the World Cup banner (was buried below destinations).
+7. **Orphan rows filled.** Música artists 16 → 18 (Diomedes Díaz, Morat); tienda 9 → 12 products (Bandera de Colombia, Camiseta "Tan Colombiano", Café Sello Rojo). The three new products use the built-in branded **placeholder cards** (honest copy, no fabricated sourcing claims); they need real photos (Cesar to supply, or generate).
+8. **Image drops done.** `Coffee.png`/`Sombrero.webp` were already converted + wired (`cafe-juan-valdez.jpg`, `sombrero.jpg`); the raw originals in `public/images/products/` are redundant leftovers, ignore them.
+
+Affiliate links stay gated/unearning on purpose: Cesar is still creating the programs. The fallback `publicUrl`s work now; he pastes tracking IDs into `src/config/partners.ts` later.
+
+## What was done June 19, 2026
 
 A full "Laura pass" of fixes and build-outs (build green, browser-verified desktop + mobile):
 
@@ -89,9 +104,7 @@ A full "Laura pass" of fixes and build-outs (build green, browser-verified deskt
 15. **Article sources.** Every article carries a required `sources` field (2-3 verified links: Wikipedia, ESPN, FIFA, Billboard, MICHELIN, UNESCO, official tourism, news), rendered as "Fuentes." The auto engine now requires 2+ sources per story.
 16. **Real licensed photos.** Article + destination images are now real Creative Commons photos from Wikimedia Commons (license-verified), each credited via `imageCredit` ("Foto: author, license, Wikimedia Commons"); `imagePosition` handles portrait crops. Only El Cielo's dish stays AI. **Policy: NEVER lift news/press/Getty/FIFA photos** (copyright + frozen-payment risk); use Wikimedia Commons / Unsplash / Pexels, or generate.
 
-Still unwired: `public/images/products/Coffee.png` (3.8MB, needs compression) and `Sombrero.webp` are Cesar's drops, not yet swapped into the product photos.
-
-## What was done last session (June 18, 2026)
+## What was done June 18, 2026
 
 1. Wired the live Jun 17 result (COL 3-1 UZB) and made `/futbol` + homepage track the next unplayed match (countdown, ticker, copy).
 2. Turned El Paisa **fully awake**: paid Gateway, Sonnet 4.6, live web search in chat (cost-capped tool) and the desk.
@@ -134,7 +147,7 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 
 - Subscription **renewal handling** (`invoice.paid`) for La Caja Mecato.
 - A **review-queue/admin** to approve/hide El Paisa news stories (now that they auto-publish to every section).
-- **Auto-source real licensed photos** for the daily auto-stories (they currently use category fallback images; only the hand-written articles have real Wikimedia photos).
+- **Real photos for the daily auto-stories.** They now draw from per-category pools with a no-repeat picker (no more duplicate photos), but the pools are still generic stock/scenes. The path to accurate, specific photos is `src/data/story-images.ts` (pin a real photo per slug) fed by a Cesar-supplies-the-photo workflow (Slack channel idea), and growing the thin pools (fútbol, the city bucket) with more real licensed images.
 - **Zernio auto-posting** of El Paisa stories.
 - World Cup membership + free **Polla** predictions game (Stripe is live).
 - Printful merch integration; more recipes; expand the restaurant finder.
@@ -145,7 +158,7 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 - **Auto-scores need two-source agreement**; an odd/disputed result may not auto-confirm (the page holds the last known value; a manual cron trigger with `CRON_SECRET` can force a re-check).
 - **Image protection is a deterrent**, not DRM (screenshots/devtools always work).
 - Newsletter is single opt-in. Rate limiter uses Upstash when configured, else Neon (provision Upstash for scale).
-- Section news is auto-fed by El Paisa's engine (DB) merged with the hand-written `articles.ts` seeds. The daily auto-stories still use category fallback images; real Wikimedia photos are on the hand-written articles + destinations.
+- Section news is auto-fed by El Paisa's engine (DB) merged with the hand-written `articles.ts` seeds. Front-facing feeds show the last 60 days; older content lives in the Hemeroteca (`/noticias/archivo`). The no-repeat image picker guarantees no duplicate photo within a feed, but the auto-story pools are still generic; real Wikimedia photos are on the hand-written articles + destinations, and per-slug real photos can be pinned in `src/data/story-images.ts`.
 - World Cup data must stay real (Group K, the official 26-man squad). Keep the "independent fan media, not affiliated with FIFA/FCF" line and the unofficial-fanwear framing; never sell official/licensed jerseys.
 
 ## Run it locally

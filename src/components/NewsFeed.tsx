@@ -1,10 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  getLatestStories,
-  categoryImage,
-  type PaisaStory,
-} from "@/lib/paisa-stories";
+import { categoryImage, type PaisaStory } from "@/lib/paisa-stories";
 
 function storyDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -45,7 +41,7 @@ function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
           {storyDate(s.created_at)} · El Paisa
         </p>
         <h3
-          className={`display-tight font-display uppercase group-hover:text-azul ${large ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"}`}
+          className={`display-tight font-display text-ink uppercase group-hover:text-azul ${large ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"}`}
         >
           {s.title}
         </h3>
@@ -57,7 +53,7 @@ function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
             {excerpt(s.body)}
           </p>
         )}
-        <span className="mt-4 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+        <span className="mt-auto pt-4 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
           Leer →
         </span>
       </div>
@@ -67,15 +63,19 @@ function StoryCard({ s, large = false }: { s: PaisaStory; large?: boolean }) {
 
 /**
  * El Paisa's live news desk: the stories he writes himself each day (see
- * /api/paisa/refresh). Async server component; renders nothing until he has
- * published, so the page is never broken while the desk is empty.
+ * /api/paisa/refresh). Presentational; /noticias fetches the stories, trims them
+ * to the recent window, and runs the no-repeat image picker across the whole
+ * page before handing them here. Renders nothing until he has published, so the
+ * page is never broken while the desk is empty.
+ *
+ * Layout is a lead + one side card (which stretches to the lead's height, so no
+ * white gap) and then a uniform grid for the rest, which fills its rows.
  */
-export default async function NewsFeed() {
-  const stories = await getLatestStories(9);
+export default function NewsFeed({ stories }: { stories: PaisaStory[] }) {
   if (stories.length === 0) return null;
   const [lead, ...rest] = stories;
-  const sideCards = rest.slice(0, 2);
-  const gridCards = rest.slice(2);
+  const side = rest[0];
+  const gridCards = rest.slice(1);
 
   return (
     <section className="border-b border-linea pb-16 sm:pb-20">
@@ -92,15 +92,13 @@ export default async function NewsFeed() {
           </p>
         </div>
 
-        <div className="grid items-start gap-5 lg:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <StoryCard s={lead} large />
           </div>
-          {sideCards.length > 0 && (
-            <div className="flex flex-col gap-5">
-              {sideCards.map((s) => (
-                <StoryCard key={s.id} s={s} />
-              ))}
+          {side && (
+            <div>
+              <StoryCard s={side} />
             </div>
           )}
         </div>

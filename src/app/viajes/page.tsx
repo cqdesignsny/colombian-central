@@ -80,8 +80,30 @@ export default async function ViajesPage() {
         </div>
       </section>
 
+      {/* Travel news (up top: latest first) */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Lo último"
+              title="Noticias de viaje"
+              sub="Guides, the best time to go, and the trips worth taking right now, from people who actually go."
+              href="/noticias"
+              linkLabel="Todas las noticias"
+            />
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {viajesNews.map((article, i) => (
+              <Reveal key={article.slug} delay={i * 0.06}>
+                <ArticleCard article={article} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Destinations */}
-      <section className="py-20 sm:py-24">
+      <section className="border-t border-linea py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <SectionHeader
@@ -110,28 +132,6 @@ export default async function ViajesPage() {
                     </div>
                   </div>
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Travel news */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <Reveal>
-            <SectionHeader
-              eyebrow="Lo último"
-              title="Noticias de viaje"
-              sub="Guides, the best time to go, and the trips worth taking right now, from people who actually go."
-              href="/noticias"
-              linkLabel="Todas las noticias"
-            />
-          </Reveal>
-          <div className="grid gap-5 md:grid-cols-3">
-            {viajesNews.map((article, i) => (
-              <Reveal key={article.slug} delay={i * 0.06}>
-                <ArticleCard article={article} />
               </Reveal>
             ))}
           </div>

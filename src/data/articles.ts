@@ -16,6 +16,8 @@ export type Article = {
   imageCredit?: string;
   /** Optional object-position class (e.g. "object-top") for portrait crops. */
   imagePosition?: string;
+  /** Set by the news pipeline: a real hand-picked photo the picker must keep. */
+  imagePinned?: boolean;
   featured?: boolean;
   body: string[];
   /** At least two sources backing the piece, rendered as "Fuentes". */

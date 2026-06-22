@@ -58,6 +58,14 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/noticias/archivo"
+                  className="text-sm font-medium text-paper/80 hover:text-amarillo"
+                >
+                  Hemeroteca
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

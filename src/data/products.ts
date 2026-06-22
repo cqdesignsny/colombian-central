@@ -153,6 +153,52 @@ export const products: Product[] = [
       "Stack them. You know you want to.",
     ],
   },
+  {
+    slug: "bandera-colombia",
+    name: "Bandera de Colombia",
+    price: 19,
+    category: "Fútbol",
+    placeholder: { bg: "#003087", fg: "#F7F1E3" },
+    badge: "World Cup drop",
+    blurb:
+      "The amarillo, azul y rojo, ready for the window, the balcony, or the back of the section. Standard 3x5 ft, bright and built to wave all tournament long.",
+    details: [
+      "3 x 5 ft (90 x 150 cm) printed polyester",
+      "Double-stitched edges, brass grommets",
+      "Vivid color that holds up outdoors",
+      "Ships from Miami in 2 to 4 business days",
+    ],
+  },
+  {
+    slug: "camiseta-tan-colombiano",
+    name: "Camiseta 'Tan Colombiano'",
+    price: 32,
+    category: "Lifestyle",
+    placeholder: { bg: "#C8102E", fg: "#F7F1E3" },
+    blurb:
+      "A soft everyday tee for wearing la tierrita off the pitch. Designed in-house, printed in the U.S. on premium ringspun cotton.",
+    details: [
+      "100% ringspun cotton, unisex fit",
+      "Designed in-house by Colombian Central",
+      "Sizes S to 3XL",
+      "Print-on-demand, made and shipped in the U.S.",
+    ],
+  },
+  {
+    slug: "cafe-sello-rojo",
+    name: "Café Sello Rojo",
+    price: 16,
+    category: "Café & Cocina",
+    placeholder: { bg: "#4a2c1a", fg: "#F7F1E3" },
+    blurb:
+      "Colombia's everyday coffee and the taste of home for millions of households. A traditional medium roast, ground, the tinto abuela actually brews.",
+    details: [
+      "17.6 oz / 500 g, ground",
+      "Traditional Colombian medium roast",
+      "The supermarket staple back home, brought up to you",
+      "Ships from Miami",
+    ],
+  },
 ];
 
 export const shopNotes = {

@@ -40,7 +40,7 @@ export default function ArticleCard({
           {formatArticleDate(article.date)} · {article.readTime}
         </p>
         <h3
-          className={`display-tight font-display uppercase group-hover:text-azul ${
+          className={`display-tight font-display text-ink uppercase group-hover:text-azul ${
             large ? "text-3xl sm:text-4xl" : "text-2xl"
           }`}
         >
@@ -49,7 +49,7 @@ export default function ArticleCard({
         <p className="mt-3 line-clamp-2 text-sm text-ink-soft">
           {article.excerpt}
         </p>
-        <span className="mt-4 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
+        <span className="mt-auto pt-4 text-xs font-bold tracking-[0.25em] text-rojo uppercase">
           Leer →
         </span>
       </div>

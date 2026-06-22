@@ -6,8 +6,10 @@ import {
 import {
   getSectionStories,
   categoryImage,
+  assignDistinctImages,
   type PaisaStory,
 } from "@/lib/paisa-stories";
+import { isWithinDays } from "@/lib/recency";
 
 function articleCategoryFor(
   section: ArticleSection,
@@ -64,21 +66,34 @@ function storyToArticle(s: PaisaStory, section: ArticleSection): Article {
  * feed is what makes content scale, the daily engine writes section-tagged
  * stories and they flow straight into the section pages. Falls back to the
  * seeds when the DB is empty (local dev, fresh deploy, or a slow news day).
+ *
+ * Front-facing strips favor the last two months, but never go empty: if fewer
+ * than `limit` recent items exist, older ones backfill so a section is never an
+ * orphan. The auto-stories (which carry a category fallback photo) get distinct
+ * images via the no-repeat picker; the seeds keep their real hand-picked photos.
  */
 export async function getSectionNews(
   section: ArticleSection,
   limit = 3,
 ): Promise<Article[]> {
-  const stories = await getSectionStories(section, limit + 3);
+  const stories = await getSectionStories(section, limit + 6);
   const fromDb = stories.map((s) => storyToArticle(s, section));
   const seen = new Set(fromDb.map((a) => a.slug));
   const merged = [...fromDb];
-  for (const a of articlesForSection(section, 6)) {
+  for (const a of articlesForSection(section)) {
     if (!seen.has(a.slug)) {
-      merged.push(a);
+      // Seeds carry real, hand-picked photos: pin them so the picker keeps them.
+      merged.push({ ...a, imagePinned: true });
       seen.add(a.slug);
     }
   }
   merged.sort((a, b) => b.date.localeCompare(a.date));
-  return merged.slice(0, limit);
+
+  const recent = merged.filter((a) => isWithinDays(a.date));
+  const chosen =
+    recent.length >= limit
+      ? recent.slice(0, limit)
+      : [...recent, ...merged.filter((a) => !isWithinDays(a.date))].slice(0, limit);
+
+  return assignDistinctImages(chosen);
 }
