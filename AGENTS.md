@@ -25,6 +25,8 @@ The hub for everything Colombian: news, La Tricolor at the 2026 World Cup, a tie
 - Square corners everywhere. Hover states translate up with a hard ink shadow.
 - The fútbol page is dark (ink background); the rest of the site is paper.
 - No em-dashes in copy. Spanish phrases are used for warmth, English for information.
+- **Accessibility conventions (keep these):** keyboard focus is a site-wide `:focus-visible` rojo outline in `globals.css` (one ring color because rojo is the only brand color that clears 3:1 on both the paper surfaces and the dark fútbol page; do not add per-component focus rings that fight it). All Motion animations honor `prefers-reduced-motion` via `<MotionConfig reducedMotion="user">` in `layout.tsx`, so new Motion code needs no manual opt-out. Modal/drawer surfaces use `role="dialog"` + `aria-modal` + `aria-labelledby` + Escape-to-close (see `cart.tsx`). Icon-only and ambiguous controls carry Spanish `aria-label`s to match `lang="es"`; form inputs are associated with their labels (`htmlFor`/`id`).
+- **Brand/design context for the impeccable skill** lives in `PRODUCT.md` (register, users, anti-references, principles) and `DESIGN.md` (the full visual system). Run `/impeccable audit|critique|polish <target>` for quality passes; it reads those files. Identity-preservation rule: the committed fonts (Fraunces, Instrument Serif) sit on impeccable's reflex-reject list but are deliberate shipped identity. Do not swap them.
 
 ## Structure
 

@@ -1,8 +1,8 @@
 # Colombian Central, session handoff
 
-Last updated June 22, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
+Last updated June 23, 2026. This is the pick-up-here doc. Read this first, then AGENTS.md for code conventions, PRODUCT.md + DESIGN.md for the brand/design system (impeccable context), MONETIZATION.md + SOURCING.md for the revenue and supplier plan, and COMPETITIVE-RESEARCH.md for the market scan.
 
-**> NEXT SESSION (June 23): the marketing push.** Build the full plan and start driving traffic, using tomorrow's match (Colombia vs DR Congo) as the launch moment. Cesar will connect the social/analytics integrations. Jump to "Marketing + match-day push" below.
+**> NEXT SESSION: the marketing push (still pending).** The June 23 session was redirected to a site-wide quality pass with the new impeccable skill (see "What was done June 23" below); the marketing/match-day push was NOT started. Pick it up next. Note the timing shift: the DR Congo match (June 23, 10pm ET) is now played, so the next live moment is the group finale, **Colombia vs Portugal, June 27, 7:30 PM ET, Hard Rock Stadium (Miami), on FOX** (verify against `src/data/futbol.ts`). Cesar connects the social/analytics integrations. Jump to "Marketing + match-day push" below.
 
 ## What it is
 
@@ -68,7 +68,18 @@ Persona, sayings, `SITE_KNOWLEDGE`, and `PAISA_MODEL` live once in `src/lib/pais
 - **Image protection** (`ImageProtect.tsx` + `globals.css`): blocks right-click, drag, and selection on all images (the squad cutouts especially). A deterrent, not DRM.
 - **Codex** is used as a read-only review gate on substantial build-outs.
 
-## What was done this session (June 22, 2026)
+## What was done June 23, 2026 (impeccable quality pass)
+
+Cesar asked for a sweep of the whole site with the newly installed skills (especially **impeccable**) to clean up anything that could be made better. Build green, browser-verified, pushed to production. This session did NOT touch the marketing push (still the next priority, above).
+
+1. **Impeccable is set up.** Wrote `PRODUCT.md` (brand register, users, anti-references, design principles) and `DESIGN.md` (the kiosco editorial system: tokens, type, motion, imagery, a11y), grounded in AGENTS.md + the live `globals.css` tokens. These unblock impeccable's `audit`/`critique`/`polish` commands and keep future sessions on-brand. **Guardrail recorded:** the committed fonts (Fraunces, Instrument Serif) are on impeccable's reflex-reject list but are deliberate shipped identity, so identity-preservation wins. Do not let a future impeccable run swap them.
+2. **Accessibility.** Site-wide `:focus-visible` ring in `globals.css` (rojo, clears WCAG 1.4.11 3:1 on both the paper surfaces and the dark fútbol page, keyboard-only). `MotionConfig reducedMotion="user"` in `layout.tsx` so every Motion animation (cart slide, nav menu, Reveal) honors `prefers-reduced-motion`, matching the CSS marquee/spin opt-out. Cart drawer gained `role=dialog` + `aria-modal` + `aria-labelledby` + Escape-to-close, backdrop removed from tab order. TripInquiryForm's six labels associated with their inputs (`htmlFor`/`id`); cart email label associated. Spanish accessible names (cart count, menu toggle, qty buttons, email) to match `lang="es"`.
+3. **Design tells removed.** The impeccable detector flagged two `border-l-4` side-stripes (an absolute ban): the affiliate disclosure (now a full hairline border + an intentional amarillo "Aviso" chip) and the tienda promo bar (now a full ink border with an amarillo wash). Fixed one contrast failure (`text-paper/40` → `/60` on the fútbol page). Detector now clean of real tells (only two known false positives remain: a `<img>` inside a JSDoc comment and `Arial` in a transactional email).
+4. **Honest coffee copy.** The coffee is a Juan Valdez resale, but three spots still claimed "from real fincas": the tienda meta description, El Paisa's `SITE_KNOWLEDGE` (`paisa.ts`), and the nosotros sourcing pillar. All corrected. The coffee-regions article and Eje Cafetero travel content are accurate and were left untouched.
+
+Verification note: the cart open/close interaction could not be exercised through the preview harness (even the unchanged "Cerrar" button didn't respond to automated clicks in eval checks, a harness limitation, not a regression). The cart edits are additive ARIA/effect changes validated by the passing build and the live DOM (`role`/`aria-modal`/`aria-labelledby` confirmed present). What was browser-verified: the promo-bar and affiliate-disclosure restyles (via computed styles), the focus-ring CSS, a clean console.
+
+## What was done June 22, 2026
 
 A polish + correctness pass on Noticias and the orphan sections (build green, browser-verified):
 
@@ -134,7 +145,7 @@ Strategy: nail Colombian Central first, prove the unit economics, then expand de
 
 This is the focus of the next session: build the full marketing plan and start driving traffic, using tomorrow's match as the launch moment. The site work is done; this is now about distribution.
 
-**The moment.** Matchday 2: **Colombia vs DR Congo, June 23, 2026, 10:00 PM ET, Estadio Akron (Guadalajara), on FS1** (verify against `src/data/futbol.ts`). The World Cup is the once-a-decade acquisition window (June 11 to mid-July). Match days are the spikes; we want content live BEFORE kickoff.
+**The moment.** Matchday 2 (Colombia vs DR Congo, June 23) is now played. The next live moment is the group finale, **Colombia vs Portugal, June 27, 2026, 7:30 PM ET, Hard Rock Stadium (Miami), on FOX** (verify against `src/data/futbol.ts`, and confirm the DR Congo result auto-updated via `/api/cron/scores`). The World Cup is the once-a-decade acquisition window (June 11 to mid-July). Match days are the spikes; we want content live BEFORE kickoff. After the group stage, the round of 32 is the next wave.
 
 **Strategy (from COMPETITIVE-RESEARCH.md).** One hero channel done relentlessly: **Instagram first** (then TikTok). Formats that travel: news-graphic cards/carousels + Reels, warm Spanglish, food-nostalgia + fútbol. Match-day cadence: 2-3 posts (pre-match hype, live reactions, post-match). Owned channel: **El Boletín** (Resend) blast with the watch-party guide + match info. Cross-link every post back to the site (content → tienda → travel → affiliate).
 
