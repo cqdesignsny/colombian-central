@@ -197,6 +197,7 @@ export const otherGroupMatches: GroupMatch[] = [
     kickoff: "2026-06-23T15:00:00-04:00",
     venue: "NRG Stadium",
     city: "Houston",
+    result: { home: 5, away: 0 },
   },
   {
     matchday: 3,
