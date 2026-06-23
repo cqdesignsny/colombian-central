@@ -128,6 +128,24 @@ await sql`
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
 
+// Auto-updated results for the Group K matches Colombia is NOT in (e.g. Portugal
+// vs Uzbekistan). The standings table depends on these, but the scores cron only
+// tracked Colombia, so they used to go stale. The cron now fetches them too (same
+// two-source agreement); getGroupStandings overlays these onto the static
+// otherGroupMatches in futbol.ts. One non-Colombia match per matchday in a
+// four-team group, so matchday is the key; codes are stored to verify the overlay.
+await sql`
+  CREATE TABLE IF NOT EXISTS group_match_results (
+    matchday INTEGER PRIMARY KEY,
+    home_code TEXT NOT NULL,
+    away_code TEXT NOT NULL,
+    home_goals INTEGER NOT NULL,
+    away_goals INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'FT',
+    source TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+
 const tables = await sql`
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name`;

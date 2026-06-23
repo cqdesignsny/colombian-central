@@ -1,7 +1,12 @@
 import { revalidatePath } from "next/cache";
 import { generateText } from "ai";
-import { worldCup } from "@/data/futbol";
-import { getStoredResults, upsertMatchResult } from "@/lib/match-results";
+import { worldCup, otherGroupMatches } from "@/data/futbol";
+import {
+  getStoredResults,
+  upsertMatchResult,
+  getStoredGroupResults,
+  upsertGroupMatchResult,
+} from "@/lib/match-results";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -48,6 +53,47 @@ async function fetchScore(
     return parseScore(text);
   } catch (err) {
     console.error("[scores] fetch failed", model, err);
+    return null;
+  }
+}
+
+// Generic version for the Group K matches Colombia is not in (home vs away).
+type PairScore = { a: number; b: number; status: string } | null;
+
+function parsePairScore(text: string): PairScore {
+  try {
+    const i = text.indexOf("{");
+    const j = text.lastIndexOf("}");
+    if (i < 0 || j <= i) return null;
+    const o = JSON.parse(text.slice(i, j + 1));
+    const a = Number(o.a);
+    const b = Number(o.b);
+    if (!Number.isInteger(a) || !Number.isInteger(b)) return null;
+    if (a < 0 || b < 0 || a > 30 || b > 30) return null;
+    return { a, b, status: String(o.status ?? "").toUpperCase() };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchPairScore(
+  model: string,
+  teamA: string,
+  teamB: string,
+  date: string,
+): Promise<PairScore> {
+  try {
+    const { text } = await generateText({
+      model,
+      system:
+        "You report only verified, finished sports results. If the match is not finished or you cannot verify it, use status UPCOMING. Output ONLY compact JSON, no prose.",
+      prompt: `Final score of ${teamA} vs ${teamB} at the FIFA World Cup 2026 (kickoff ${date})? Reply ONLY as JSON: {"a": <${teamA} goals>, "b": <${teamB} goals>, "status": "FT" or "UPCOMING"}. If not finished or unverifiable, use "UPCOMING".`,
+      temperature: 0.1,
+      maxOutputTokens: 200,
+    });
+    return parsePairScore(text);
+  } catch (err) {
+    console.error("[scores] group fetch failed", model, err);
     return null;
   }
 }
@@ -112,6 +158,53 @@ export async function GET(req: Request) {
       } catch (e) {
         failed++;
         console.error("[scores] upsert failed", f.matchday, e);
+      }
+    }
+  }
+
+  // The non-Colombia Group K matches (e.g. Portugal vs Uzbekistan). The standings
+  // table depends on these too, so we keep them current the same way: same post-
+  // match window, same two-source agreement, separate group_match_results table.
+  const teamName = new Map(worldCup.groupTeams.map((t) => [t.code, t.name]));
+  const storedGroup = await getStoredGroupResults();
+  for (const m of otherGroupMatches) {
+    const kickoff = new Date(m.kickoff).getTime();
+    if (now < kickoff + FINISHED_AFTER_MS) continue; // not over yet
+    if (now > kickoff + GIVE_UP_AFTER_MS) continue; // too old, stop checking
+    if (storedGroup.get(m.matchday)?.status === "FT") continue; // confirmed
+    checked.push(`${m.homeCode}-${m.awayCode}`);
+
+    const home = teamName.get(m.homeCode) ?? m.homeCode;
+    const away = teamName.get(m.awayCode) ?? m.awayCode;
+    const date = m.kickoff.slice(0, 10);
+    const [a, b] = await Promise.all([
+      fetchPairScore("perplexity/sonar", home, away, date),
+      fetchPairScore("perplexity/sonar-pro", home, away, date),
+    ]);
+
+    const agree =
+      a &&
+      b &&
+      a.status === "FT" &&
+      b.status === "FT" &&
+      a.a === b.a &&
+      a.b === b.b;
+
+    if (agree) {
+      try {
+        await upsertGroupMatchResult({
+          matchday: m.matchday,
+          homeCode: m.homeCode,
+          awayCode: m.awayCode,
+          home: a.a,
+          away: a.b,
+          status: "FT",
+          source: "two-source agreement (perplexity sonar + sonar-pro)",
+        });
+        updated++;
+      } catch (e) {
+        failed++;
+        console.error("[scores] group upsert failed", m.matchday, e);
       }
     }
   }

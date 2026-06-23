@@ -175,10 +175,13 @@ export type GroupMatch = {
 };
 
 /**
- * The three Group K matches Colombia is not in. Colombia's results auto-update
- * from the DB (see match-results.ts); these are maintained here by hand. Verify
- * scores against a real source before editing. Matchday 1 confirmed June 18, 2026
- * (Portugal 1-1 DR Congo, Houston).
+ * The three Group K matches Colombia is not in. These now auto-update from the
+ * DB too: the scores cron fetches them with two-source agreement into
+ * group_match_results, and getGroupStandings overlays that onto these values
+ * (see match-results.ts). The values here are the seed/fallback used until a
+ * confirmed result lands, so verify against a real source before editing them.
+ * Confirmed: MD1 Portugal 1-1 DR Congo (Houston, June 17); MD2 Portugal 5-0
+ * Uzbekistan (Houston, June 23, 2026).
  */
 export const otherGroupMatches: GroupMatch[] = [
   {
