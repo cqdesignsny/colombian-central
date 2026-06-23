@@ -4,7 +4,7 @@ Todo lo nuestro, en un solo lugar. The hub for everything Colombian: news, La Tr
 
 Built with Next.js 16, Tailwind CSS v4, and Motion. Images generated with Higgsfield. Live at [colombiancentral.com](https://colombiancentral.com).
 
-Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + next steps), then [AGENTS.md](AGENTS.md) (conventions), [MONETIZATION.md](MONETIZATION.md) (revenue plan), and [SOURCING.md](SOURCING.md) (verified suppliers + launch sourcing).
+Picking up the project? Start with [HANDOFF.md](HANDOFF.md) (current state + next steps), then [AGENTS.md](AGENTS.md) (conventions), [PRODUCT.md](PRODUCT.md) + [DESIGN.md](DESIGN.md) (brand and design system, used by the impeccable skill), [MONETIZATION.md](MONETIZATION.md) (revenue plan), and [SOURCING.md](SOURCING.md) (verified suppliers + launch sourcing).
 
 ## Sections
 
