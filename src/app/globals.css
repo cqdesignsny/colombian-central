@@ -51,6 +51,19 @@ body {
   color: var(--color-ink);
 }
 
+/*
+ * Visible keyboard focus, site-wide. One ring color for both themes: rojo
+ * clears the WCAG 1.4.11 3:1 bar against the paper surfaces AND the dark
+ * fútbol page (azul/amarillo each vanish on one of them). Only shows for
+ * keyboard users via :focus-visible, never on mouse click. Square to match
+ * the kiosco corners. Unlayered, so it overrides Tailwind's outline-none
+ * utility on the form inputs that suppress the default outline.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-rojo);
+  outline-offset: 2px;
+}
+
 /* Deter image theft: no drag, no select on images (paired with ImageProtect). */
 img {
   -webkit-user-drag: none;

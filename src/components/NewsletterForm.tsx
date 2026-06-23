@@ -50,7 +50,7 @@ export default function NewsletterForm({ dark = false }: { dark?: boolean }) {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="tu@email.com"
-        aria-label="Email address"
+        aria-label="Correo electrónico"
         className={`flex-1 border-2 px-4 py-3.5 text-sm font-medium outline-none placeholder:opacity-50 focus:border-azul ${
           dark
             ? "border-paper/30 bg-paper/10 text-paper placeholder:text-paper"

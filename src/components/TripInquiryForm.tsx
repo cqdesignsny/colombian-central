@@ -61,10 +61,14 @@ export default function TripInquiryForm({
     <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
       <Honeypot value={website} onChange={setWebsite} />
       <div>
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-name"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           Tu nombre
         </label>
         <input
+          id="trip-name"
           className={inputStyles}
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -73,10 +77,14 @@ export default function TripInquiryForm({
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-email"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           Tu email
         </label>
         <input
+          id="trip-email"
           type="email"
           className={inputStyles}
           value={email}
@@ -86,10 +94,14 @@ export default function TripInquiryForm({
         />
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-dest"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           ¿Pa&apos; dónde?
         </label>
         <select
+          id="trip-dest"
           className={inputStyles}
           value={trip}
           onChange={(e) => setTrip(e.target.value)}
@@ -106,10 +118,14 @@ export default function TripInquiryForm({
         </select>
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-travelers"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           Viajeros
         </label>
         <select
+          id="trip-travelers"
           className={inputStyles}
           value={travelers}
           onChange={(e) => setTravelers(e.target.value)}
@@ -122,10 +138,14 @@ export default function TripInquiryForm({
         </select>
       </div>
       <div className="sm:col-span-2">
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-dates"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           Fechas aproximadas
         </label>
         <input
+          id="trip-dates"
           className={inputStyles}
           value={dates}
           onChange={(e) => setDates(e.target.value)}
@@ -133,10 +153,14 @@ export default function TripInquiryForm({
         />
       </div>
       <div className="sm:col-span-2">
-        <label className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase">
+        <label
+          htmlFor="trip-notes"
+          className="mb-1.5 block text-xs font-bold tracking-[0.2em] uppercase"
+        >
           Cuéntanos del viaje
         </label>
         <textarea
+          id="trip-notes"
           className={`${inputStyles} min-h-28 resize-y`}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

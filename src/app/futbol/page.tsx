@@ -331,7 +331,7 @@ export default async function FutbolPage() {
             ))}
           </div>
           <Reveal>
-            <p className="mt-8 text-xs text-paper/40">
+            <p className="mt-8 text-xs text-paper/60">
               Country flags are public domain.
             </p>
           </Reveal>

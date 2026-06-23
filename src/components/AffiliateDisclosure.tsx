@@ -27,12 +27,14 @@ export default function AffiliateDisclosure({
 
   return (
     <div
-      className={`flex items-start gap-3 border-l-4 border-amarillo ${
-        dark ? "bg-paper/5 text-paper/70" : "bg-crema text-ink-soft"
+      className={`flex items-start gap-3 border ${
+        dark
+          ? "border-paper/20 bg-paper/5 text-paper/70"
+          : "border-linea bg-crema text-ink-soft"
       } px-4 py-3 ${className}`}
     >
       <span
-        className="mt-0.5 text-[10px] font-bold tracking-[0.2em] text-azul uppercase"
+        className="mt-0.5 shrink-0 bg-amarillo px-1.5 py-0.5 text-[10px] font-bold tracking-[0.2em] text-ink uppercase"
         aria-hidden
       >
         Aviso

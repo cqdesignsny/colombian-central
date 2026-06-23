@@ -158,6 +158,17 @@ function CartDrawer() {
     if (stage === "done") setStage("cart");
   }
 
+  // Escape closes the drawer (expected dialog behavior for keyboard users).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, stage]);
+
   const remaining = Math.max(0, FREE_SHIP - subtotal);
   const pct = subtotal === 0 ? 0 : Math.min(100, (subtotal / FREE_SHIP) * 100);
   const crossSell = useMemo(
@@ -203,7 +214,8 @@ function CartDrawer() {
       {isOpen && (
         <>
           <motion.button
-            aria-label="Close cart"
+            aria-label="Cerrar carrito"
+            tabIndex={-1}
             className="fixed inset-0 z-50 cursor-default bg-ink/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -211,6 +223,9 @@ function CartDrawer() {
             onClick={close}
           />
           <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-title"
             className="fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col bg-paper shadow-2xl"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -223,7 +238,10 @@ function CartDrawer() {
               <div className="flex-1 bg-rojo" />
             </div>
             <div className="flex items-center justify-between border-b border-linea px-6 py-4">
-              <h2 className="font-display text-2xl tracking-wide uppercase">
+              <h2
+                id="cart-title"
+                className="font-display text-2xl tracking-wide uppercase"
+              >
                 {stage === "done" ? "¡Gracias!" : "Tu carrito"}
               </h2>
               <button
@@ -311,7 +329,7 @@ function CartDrawer() {
                                   <button
                                     className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
                                     onClick={() => setQty(item.slug, item.qty - 1)}
-                                    aria-label={`Decrease ${item.name}`}
+                                    aria-label={`Disminuir cantidad de ${item.name}`}
                                   >
                                     −
                                   </button>
@@ -321,7 +339,7 @@ function CartDrawer() {
                                   <button
                                     className="px-2.5 py-1 text-sm font-bold hover:bg-crema"
                                     onClick={() => setQty(item.slug, item.qty + 1)}
-                                    aria-label={`Increase ${item.name}`}
+                                    aria-label={`Aumentar cantidad de ${item.name}`}
                                   >
                                     +
                                   </button>
@@ -387,16 +405,19 @@ function CartDrawer() {
                       <span className="font-display text-2xl">{formatPrice(subtotal)}</span>
                     </div>
                     <Honeypot value={website} onChange={setWebsite} />
-                    <label className="mb-1.5 block text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase">
+                    <label
+                      htmlFor="cart-email"
+                      className="mb-1.5 block text-[11px] font-bold tracking-[0.2em] text-ink-soft uppercase"
+                    >
                       Email para tu recibo
                     </label>
                     <input
+                      id="cart-email"
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="tu@email.com"
-                      aria-label="Email address"
                       className="mb-3 w-full border-2 border-ink/20 bg-paper px-4 py-3 text-sm font-medium outline-none placeholder:text-ink/40 focus:border-azul"
                     />
                     <button

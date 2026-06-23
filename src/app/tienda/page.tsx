@@ -9,7 +9,7 @@ import Stamp from "@/components/Stamp";
 export const metadata: Metadata = {
   title: "La Tienda: Colombian products, artisan-direct",
   description:
-    "Colombian coffee from real fincas, handwoven artesanías sourced directly from artisans, and World Cup fan gear. Ships from Miami.",
+    "Colombian coffee, handwoven artesanías sourced directly from artisans, and World Cup fan gear. Ships from Miami.",
 };
 
 export default function TiendaPage() {
@@ -37,7 +37,7 @@ export default function TiendaPage() {
           <Reveal delay={0.08}>
             <Link
               href="/futbol/hinchada"
-              className="mb-10 flex items-center justify-between gap-4 border-l-4 border-amarillo bg-crema px-5 py-4 transition-colors hover:bg-amarillo/20"
+              className="mb-10 flex items-center justify-between gap-4 border-2 border-ink bg-amarillo/15 px-5 py-4 transition-colors hover:bg-amarillo/30"
             >
               <span className="text-sm font-bold tracking-[0.1em] text-ink uppercase">
                 Nueva guía de la hinchada para el Mundial 2026

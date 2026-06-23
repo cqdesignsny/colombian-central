@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, Archivo, Instrument_Serif, Fraunces } from "next/font/google";
+import { MotionConfig } from "motion/react";
 import "./globals.css";
 import { site } from "@/config/site";
 import { CartProvider } from "@/components/cart";
@@ -75,16 +76,21 @@ export default function RootLayout({
       className={`${anton.variable} ${archivo.variable} ${instrument.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="grain flex min-h-full flex-col font-sans">
-        <ScrollToTop />
-        <ImageProtect />
-        <CartProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </CartProvider>
-        <ElPaisaChat />
-        <JsonLd data={[organizationLd(), websiteLd()]} />
-        <Analytics />
+        {/* reducedMotion="user" makes every Motion animation (cart slide,
+            nav menu, Reveal entrances) honor prefers-reduced-motion: transforms
+            drop to a crossfade, matching the CSS marquee/spin opt-out. */}
+        <MotionConfig reducedMotion="user">
+          <ScrollToTop />
+          <ImageProtect />
+          <CartProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </CartProvider>
+          <ElPaisaChat />
+          <JsonLd data={[organizationLd(), websiteLd()]} />
+          <Analytics />
+        </MotionConfig>
       </body>
     </html>
   );

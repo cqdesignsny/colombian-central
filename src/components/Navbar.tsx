@@ -54,6 +54,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setOpen(true)}
+              aria-label={`Abrir carrito, ${count} ${count === 1 ? "artículo" : "artículos"}`}
               className="relative flex items-center gap-2 border-2 border-ink bg-amarillo px-4 py-2 text-[13px] font-bold tracking-[0.18em] uppercase transition-transform hover:-translate-y-0.5"
             >
               Carrito
@@ -64,8 +65,9 @@ export default function Navbar() {
             <button
               className="flex flex-col gap-1.5 p-2 lg:hidden"
               onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
               aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
             >
               <span
                 className={`block h-0.5 w-6 bg-ink transition-transform ${menuOpen ? "translate-y-2 rotate-45" : ""}`}
@@ -83,6 +85,7 @@ export default function Navbar() {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
+              id="mobile-menu"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}

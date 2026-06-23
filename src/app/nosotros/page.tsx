@@ -21,7 +21,7 @@ const pillars = [
   {
     title: "Conectar",
     color: "bg-azul text-paper",
-    text: "A tienda that pays artisans their price and puts the finca's name on the bag. Direct, fair, traceable.",
+    text: "A tienda that pays artisans their price and names the makers behind every piece. Direct, fair, traceable.",
   },
   {
     title: "Regresar",
